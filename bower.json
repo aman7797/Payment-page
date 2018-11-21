@@ -1,0 +1,29 @@
+{
+  "name": "sample-project",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "^4.0.0",
+    "purescript-foreign-generic": "^7.0.0",
+    "purescript-presto-dom": "https://bitbucket.org/juspay/purescript-presto-dom.git#compiler/0.12",
+    "purescript-presto": "https://github.com/juspay/purescript-presto.git#presto-dom-v0.5",
+    "purescript-behaviors": "^7.0.0",
+    "purescript-profunctor-lenses": "^4.0.0",
+    "purescript-aff": "^5.0.0",
+    "purescript-js-timers": "^4.0.1",
+    "purescript-backtrack": "https://github.com/ashutoshdas96/purescript-backtrack.git#compiler/0.12",
+    "purescript-numbers": "^6.0.0",
+    "purescript-either": "^4.0.0",
+    "purescript-js-date": "^6.0.0",
+    "purescript-simple-json": "^4.2.0"
+  },
+  "devDependencies": {
+    "purescript-debug": "^4.0.0",
+    "purescript-console": "^4.1.0",
+    "purescript-psci-support": "^4.0.0"
+  }
+}

@@ -1,0 +1,60 @@
+*.DS_Store
+/**/bower_components/
+/**/godel-core/
+/**/node_modules/
+/**/.pulp-cache/
+/**/output/
+/**/generated-docs/
+/**/.psc-package/
+/**/.psc*
+/**/purs*
+/**/.psa*
+/**/.idea/
+/**/.vscode/
+/**/package-lock.json
+/**/yarn.lock
+/**/app.data.log
+/**/yarn-error.log
+/**/dist/index.js
+/**/dist/index_bundle.js.map
+**.rdb
+**.pyc
+**.iml
+**.log
+
+__MACOSX/*
+
+# Elastic Beanstalk Files
+/**/.elasticbeanstalk/*
+!/**/.elasticbeanstalk/*.cfg.yml
+!/**/.elasticbeanstalk/*.global.yml
+
+# Xcode
+#
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+
+## Build generated
+build/
+DerivedData/
+
+## Various settings
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+## Other
+/**/*.moved-aside
+/**/*.xccheckout
+/**/*.xcscmblueprint
+
+## Obj-C/Swift specific
+/**/*.hmap
+/**/*.ipa
+/**/*.dSYM.zip
+/**/*.dSYM
