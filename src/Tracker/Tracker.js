@@ -1,4 +1,4 @@
-window.bundle = JSON.parse(JBridge.getSessionAttribute("bundleParams","{}"));
+window.bundle = {} // JSON.parse(JBridge.getSessionAttribute("bundleParams","{}"));
 window.logList = [];
 window.sn = 0;
 window.canPostLogs = true;

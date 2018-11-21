@@ -21,7 +21,7 @@ appFlow :: Boolean -> Flow Unit
 appFlow recreated = do
   _ <- attach Constants.networkStatus "{}" ""
   sdkParams <- readSDKParams <$> _getPayload
-  _ <- loadConfig *> startTrackerEngine
+  {-- _ <- loadConfig *> startTrackerEngine --}
   initUI *> startPaymentFlow sdkParams Nothing
 
 startTrackerEngine :: Flow Unit

@@ -74,7 +74,7 @@ window["onEvent'"] = function(fnName,args,callback) {
     } else if(fnName == "onNetworkChange") {
       if(window.__dui_screen && window.isObject(window.onNetworkChange) && window.onNetworkChange[window.__dui_screen]) {
         window.onNetworkChange[window.__dui_screen]()
-      }    
+      }
     } else if (fnName == "onResume" && JBridge.requestKeyboardHide) {
       setTimeout(() => {
         JBridge.requestKeyboardHide();
@@ -84,7 +84,13 @@ window["onEvent'"] = function(fnName,args,callback) {
 
 window.onBundleUpdate = function() {}
 
+window.__payload = {}
+window.DUIGatekeeper = {
+  getSessionInfo: function getSessionInfo() {
+    return JSON.stringify({});
+  }
 
+}
 
 // if(__OS == "ANDROID") {
   // require("./dist/src.js");

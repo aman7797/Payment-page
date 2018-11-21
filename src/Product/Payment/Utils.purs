@@ -17,15 +17,15 @@ import Presto.Core.Flow (Flow)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
 import UI.Utils (os)
 
-mkPaymentPageState :: SDKParams -> PaymentSourceResp ->  PaymentPageState
-mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput)
+mkPaymentPageState :: SDKParams -> PaymentPageState
+mkPaymentPageState sdkParams = (initialState mkPPInput)
 
     where
 
         mkPPInput =
           PaymentPageInput
-            { piInfo : paymentMethods
-            , customer : mkCustomer
+            {-- { piInfo : paymentMethods --}
+            { customer : mkCustomer
             , orderInfo : mkOrderInfo sdkParams
             , sdk : sdkParams
             }

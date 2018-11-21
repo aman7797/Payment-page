@@ -125,7 +125,7 @@ newtype CallBack = CallBack { serial_no:: String
 
 newtype PaymentPageInput = PaymentPageInput
   { customer  :: Customer
-  , piInfo    :: PaymentSourceResp
+  {-- , piInfo    :: PaymentSourceResp --}
   , orderInfo :: OrderInfo
   {-- , upiInfo   :: UPIInfo --}
   , sdk :: SDKParams

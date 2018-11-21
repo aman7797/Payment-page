@@ -58,8 +58,8 @@ import UPI.Mapper as UPIMap
 startPaymentFlow :: SDKParams -> Maybe PaymentPageState -> Flow Unit
 startPaymentFlow sdkParams optPPState = do
   _ <- doAff do liftEffect $ setScreen "LoadingScreen"
-  _ <- showScreen (Loader.screen getLoaderConfig)
-  _ <- if os /= "IOS" then getRequiredPermissions else (pure true)
+  {-- _ <- showScreen (Loader.screen getLoaderConfig) --}
+  {-- _ <- if os /= "IOS" then getRequiredPermissions else (pure true) --}
   result <- runExceptT <<< runBackT $ paymentPageFlow sdkParams optPPState 
   ppState <- getFromWindow Constants.ppStateKey
   case result of
@@ -108,11 +108,13 @@ type UPIFLOWSTATE =  {upiTab :: UPIState, sims :: Array SIM, token :: String, to
 
 paymentPageFlow :: SDKParams -> Maybe PaymentPageState -> FlowBT PaymentPageError PaymentPageExitAction
 paymentPageFlow sdkParams optPPState = do
-    ppState <- case optPPState of 
-        Nothing -> do
-          paymentMethods <- Remote.getPaymentMethods $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken, offers: "", refresh : "" }
-          pure $ fromMaybe (mkPaymentPageState sdkParams paymentMethods) optPPState
-        Just state -> pure state
+    ppState <-  pure $ fromMaybe (mkPaymentPageState sdkParams) optPPState
+
+    {-- ppState <- case optPPState of --} 
+        {-- Nothing -> do --}
+          {-- paymentMethods <- Remote.getPaymentMethods $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken, offers: "", refresh : "" } --}
+          {-- pure $ fromMaybe (mkPaymentPageState sdkParams paymentMethods) optPPState --}
+        {-- Just state -> pure state --}
     res <- UI.showPaymentPage ppState
     paymentPageFlow sdkParams $ Just ppState
     -- Logging
