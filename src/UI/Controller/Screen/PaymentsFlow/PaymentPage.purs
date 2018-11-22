@@ -12,6 +12,9 @@ import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype)
 import Data.Number (fromString)
 import Data.Number.Format (toString)
+import Data.Generic.Rep (class Generic)
+import Data.Generic.Rep.Show (genericShow)
+import Data.Generic.Rep.Eq (genericEq)
 import Effect (Effect)
 import Engineering.Helpers.Commons (dpToPx, log, startAnim)
 import Engineering.Helpers.Utils (setDelay)
@@ -47,12 +50,30 @@ isSnackBar (Snackbar err) = GONE
 isSnackBar (Popup err) = GONE
 
 
-type UIState = { a :: String}
+type UIState =
+    { currentTab :: Tabs
+    }
 
+
+data Tabs
+    = Wallets
+    | Cards
+    | NetBanking
+    | UPI
+    | NoTabSelected
+
+derive instance genericTabs :: Generic Tabs _
+
+instance showTabs :: Show Tabs where
+    show = genericShow
+
+instance eqTabs :: Eq Tabs where
+    eq = genericEq
 -- UIActions
 
 data PaymentPageUIAction
   = BillerCard
+  | TabSelect Tabs
 -- Exit Type
 
 data PaymentPageResponse
@@ -75,7 +96,9 @@ initialState ppInput = PaymentPageState
         }
 
 defaultUIState :: PaymentPageInput -> UIState
-defaultUIState ppInput = { a : ""}
+defaultUIState ppInput =
+    { currentTab : Wallets
+    }
 
 eval
 	:: PaymentPageUIAction
@@ -83,4 +106,11 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval action ppState = continue ppState
   {-- case action of --}
+
+
+
+
+
+data Overrides
+    = TabOverride
 
