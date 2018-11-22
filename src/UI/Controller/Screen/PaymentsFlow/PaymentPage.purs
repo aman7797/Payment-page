@@ -18,6 +18,7 @@ import Data.Generic.Rep.Eq (genericEq)
 import Effect (Effect)
 import Engineering.Helpers.Commons (dpToPx, log, startAnim)
 import Engineering.Helpers.Utils (setDelay)
+import Engineering.Helpers.Types.Accessor
 import JBridge (requestKeyboardShow, requestKeyboardHide)
 import Engineering.Helpers.Commons (dpToPx, log, startAnim, startAnim_, getIinNb)
 import Engineering.Helpers.Utils (setDelay)
@@ -50,9 +51,13 @@ isSnackBar (Snackbar err) = GONE
 isSnackBar (Popup err) = GONE
 
 
-type UIState =
-    { currentTab :: Tabs
+newtype UIState = UIState
+    { selectedTab :: Tabs
     }
+
+derive instance paymentPageStateNewtype :: Newtype PaymentPageState _
+
+derive instance uiStateNewtype :: Newtype UIState _
 
 
 data Tabs
@@ -96,16 +101,18 @@ initialState ppInput = PaymentPageState
         }
 
 defaultUIState :: PaymentPageInput -> UIState
-defaultUIState ppInput =
-    { currentTab : Wallets
+defaultUIState ppInput = UIState
+    { selectedTab  : Wallets
     }
 
 eval
 	:: PaymentPageUIAction
 	-> PaymentPageState
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
-eval action ppState = continue ppState
-  {-- case action of --}
+eval =
+  case _ of
+       TabSelect tab -> continue <<<  (_uiState <<<  _selectedTab .~ tab)
+       _ -> continue
 
 
 

@@ -14,6 +14,7 @@ import Data.Lens
 import Engineering.Helpers.Commons
 import Engineering.Helpers.Events
 
+import Engineering.Helpers.Types.Accessor
 import PrestoDOM
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Utils ((<>>))
@@ -49,10 +50,10 @@ view
 	. (PaymentPageUIAction -> Effect Unit)
 	-> PaymentPageState
 	-> PrestoDOM (Effect Unit) w
-view push (PaymentPageState {ppInput, uiState })  =
+view push ppState  =
     mainScrollView
         [ headingView
-        , paymentView push uiState
+        , paymentView push $ ppState ^. _uiState
         ]
 
 
@@ -81,7 +82,7 @@ headingView =
 paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
 paymentView push state =
     linearLayout
-        [ height $ V 100
+        [ height $ V 440
         , width MATCH_PARENT
         , orientation HORIZONTAL
         ]
@@ -201,10 +202,11 @@ tabLayout push state value =
         [ height $ V 100
         , width $ V 334
         , orientation VERTICAL
-        , background $ if state.currentTab == value.tab
+        , background $ if state ^. _selectedTab == value.tab
                            then "#e9e9e9"
                            else "#ffffff"
         , margin $ MarginBottom 10
+        , onClick push $ const (TabSelect value.tab)
         ]
         [ linearLayout
             [ height $ V 25
