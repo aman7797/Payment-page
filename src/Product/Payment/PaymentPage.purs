@@ -20,7 +20,7 @@ import Data.String (Pattern(..), Replacement(..), contains, replaceAll, toLower,
 import Data.String as S
 import Data.Traversable (traverse)
 import Engineering.Helpers.Commons (checkPermissions, continue, getFromWindow, liftFlow, log, requestPermissions, startAnim, startAnim_, unsafeJsonStringify, unsafeJsonDecode )
-import Engineering.Helpers.Types.Accessor (_addNewCardState, _amount, _bank_Name, _banks, _billerCard, _cardBrand, _cardMethod, _cardProvider, _currentOverlay, _customerId, _debitCardCount, _dueIn, _error, _ifsc, _mobile, _orderId, _orderToken, _payTotal, _payUsing, _ppInput, _preferedBanks, _selectedBank, _selectedProvider, _selectedTab, _session_token, _storedCards, _uiState, _upiAccounts, _upiInfo, _upiNBTabState, _upiNLAccounts, _upiState, _upiTabState, _youPay)
+import Engineering.Helpers.Types.Accessor
 import Engineering.Helpers.Utils (exitApp, exitWithSuccess, getCurrentTime, getLoaderConfig, liftFlowBT, sendBillerChanges, setScreen, (>>))
 import Engineering.OS.Permission (toAndroidPermission)
 import Engineering.Types.App (FlowBT, MicroAppResponse, PaymentPageError)

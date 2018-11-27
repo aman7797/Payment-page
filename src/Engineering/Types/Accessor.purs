@@ -355,8 +355,8 @@ _currentOverlay :: forall a b c. Newtype a { currentOverlay :: c | b} => Lens' a
 _currentOverlay = lens (unwrap >>> _.currentOverlay) (\oldrec newval -> wrap ((unwrap oldrec) { currentOverlay = newval }))
 
 
-_selectedTab :: forall a b c. Newtype a { selectedTab :: c | b} => Lens' a c
-_selectedTab = lens (unwrap >>> _.selectedTab) (\oldrec newval -> wrap ((unwrap oldrec) { selectedTab = newval }))
+_sectionSelected :: forall a b c. Newtype a { sectionSelected :: c | b} => Lens' a c
+_sectionSelected = lens (unwrap >>> _.sectionSelected) (\oldrec newval -> wrap ((unwrap oldrec) { sectionSelected = newval }))
 
 _nbListState :: forall a b c. Newtype a { nbListState :: c | b} => Lens' a c
 _nbListState = lens (unwrap >>> _.nbListState) (\oldrec newval -> wrap ((unwrap oldrec) { nbListState = newval }))
@@ -491,6 +491,11 @@ _payTotal = lens (unwrap >>> _.pay_total) (\oldrec newval -> wrap ((unwrap oldre
 
 _bank_Name :: forall a b c. Newtype a { bank_name :: c | b} => Lens' a c
 _bank_Name = lens (unwrap >>> _.bank_name) (\oldrec newval -> wrap ((unwrap oldrec) { bank_name = newval }))
+
+_upiViewState :: forall a b c. Newtype a { upiViewState :: c | b} => Lens' a c
+_upiViewState = lens (unwrap >>> _.upiViewState) (\oldrec newval -> wrap ((unwrap oldrec) { upiViewState = newval }))
+
+
 
 _cardProvider :: forall a b c. Newtype a { card_provider :: c | b} => Lens' a c
 _cardProvider = lens (unwrap >>> _.card_provider) (\oldrec newval -> wrap ((unwrap oldrec) { card_provider = newval }))

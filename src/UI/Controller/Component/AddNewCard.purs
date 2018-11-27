@@ -121,13 +121,13 @@ eval =
          CardNumberChanged cardNumber ->
               (\state -> state # _cvvFocusIndex .~ -1) <<< updateFocus CardNumber <<< updateCardNumberStatus <<< updateCardDetails <<< updateCardNumber cardNumber
 
-         CVVChanged newCvv -> 
+         CVVChanged newCvv ->
               (\state -> state # _cvvFocusIndex .~ (length $ state ^. _formState ^. _cvv ^. _value)) <<< updateCvvStatus <<< updateCvvValue newCvv
 
          ExpiryDateChanged date ->
               (\state -> state # _cvvFocusIndex .~ -1) <<< updateFocus ExpiryDate <<< updateExpiryDateStatus <<< updateExpiryDateValue date
 
-         Focus action bool -> 
+         Focus action bool ->
               if action == CVV then (\state -> state # _cvvFocusIndex .~ (length $ state ^. _formState ^. _cvv ^. _value)) else _cvvFocusIndex .~ -1
              {-- handleFocus action bool --}
 
@@ -246,7 +246,7 @@ overrides BtnPay push state =
      in [ onClick push $ const (SubmitCard cardMethod)
         ]
 
-overrides BtnText push state = 
+overrides BtnText push state =
     case state ^. _cardMethod of
          AddNewCard -> [
             text "Add card & Pay"

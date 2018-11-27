@@ -34,6 +34,7 @@ import UI.Utils
 import UI.View.Component.AddNewCard as AddNewCard
 import UI.View.Component.CardLayout as CardLayout
 import UI.View.Component.BillerInfo as BillerInfo
+import UI.View.Component.UpiView as UpiView
 
 import Validation (getCardIcon)
 
@@ -53,7 +54,8 @@ view
 view push ppState  =
     mainScrollView
         [ headingView
-        , paymentView push $ ppState ^. _uiState
+        , paymentView push ppState
+        , poweredByView
         ]
 
 
@@ -79,7 +81,7 @@ headingView =
 
 
 
-paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 paymentView push state =
     linearLayout
         [ height $ V 440
@@ -92,7 +94,7 @@ paymentView push state =
         ]
 
 
-tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 tabView push state =
     linearLayout
         [ height $ V 440
@@ -104,26 +106,30 @@ tabView push state =
               , text : "Wallets"
               , offer : false
               , tab : Wallets
+              , imageUrl : "tab_wallets"
               }
             , { image : "name"
               , text : "Cards"
               , offer : false
               , tab : Cards
+              , imageUrl : "tab_cards"
               }
             , { image : "name"
               , text : "NetBanking"
               , offer : false
               , tab : NetBanking
+              , imageUrl : "tab_net_banking"
               }
             , { image : "name"
               , text : "UPI"
               , offer : false
               , tab : UPI
+              , imageUrl : "tab_upi"
               }
             ]
 
 
-commonView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+commonView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 commonView push state =
     relativeLayout
         [ height MATCH_PARENT
@@ -140,79 +146,108 @@ commonView push state =
         ]
 
 
-walletsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+walletsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 walletsView push state =
-    linearLayout
-        [ height MATCH_PARENT
+    let implementation = overrides push state
+     in linearLayout
+        ([ height MATCH_PARENT
         , width MATCH_PARENT
-        ]
-        [ CardLayout.view push state
+        , orientation VERTICAL
+        ] <>> implementation (SectionOverride Wallets))
+        [ CardLayout.view push $ state ^. _uiState
+        , CardLayout.view push $ state ^. _uiState
         ]
 
-cardsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+cardsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 cardsView push state =
-    linearLayout
-        [ height MATCH_PARENT
+    let addNewCardState = state ^. (_uiState <<< _addNewCardState)
+        implementation = overrides push state
+     in linearLayout
+        ([ height MATCH_PARENT
         , width MATCH_PARENT
-        ]
-        [ CardLayout.view push state
+        , orientation VERTICAL
+        ] <>> implementation (SectionOverride Cards))
+        [ mapDom AddNewCard.view push addNewCardState AddNewCardAction []
         ]
 
-netBankingView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+netBankingView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 netBankingView push state =
-    linearLayout
-        [ height MATCH_PARENT
+    let implementation = overrides push state
+     in linearLayout
+        ([ height MATCH_PARENT
         , width MATCH_PARENT
-        ]
-        [ CardLayout.view push state
+        , orientation VERTICAL
+        ] <>> implementation (SectionOverride NetBanking))
+        [ CardLayout.view push $ state ^. _uiState
         ]
 
-upiView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+upiView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 upiView push state =
-    linearLayout
-        [ height MATCH_PARENT
+    let implementation = overrides push state
+        upiState = state ^. _uiState ^. _upiViewState
+     in linearLayout
+        ([ height MATCH_PARENT
         , width MATCH_PARENT
-        ]
-        [ CardLayout.view push state
+        , orientation VERTICAL
+        ] <>> implementation (SectionOverride UPI))
+        [ mapDom UpiView.view push upiState UpiViewAction []
         ]
 
-defaultView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
+defaultView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 defaultView push state =
-    linearLayout
-        [ height MATCH_PARENT
+    let implementation = overrides push state
+     in linearLayout
+        ([ height MATCH_PARENT
         , width MATCH_PARENT
-        ]
-        [ CardLayout.view push state
+        , orientation VERTICAL
+        ] <>> implementation (SectionOverride DefaultSection))
+        [ CardLayout.view push $ state ^. _uiState
         ]
 
 
 tabLayout
     :: forall r w
      . (PaymentPageUIAction  -> Effect Unit)
-    -> UIState
+    -> PaymentPageState
     -> { image :: String
        , text :: String
        , offer :: Boolean
-       , tab :: Tabs
+       , tab :: PaymentSection
+       , imageUrl :: String
        | r
        }
     -> PrestoDOM (Effect Unit) w
 tabLayout push state value =
-    linearLayout
-        [ height $ V 100
+    let implementation = overrides push state
+     in linearLayout
+        ([ height $ V 100
         , width $ V 334
         , orientation VERTICAL
-        , background $ if state ^. _selectedTab == value.tab
-                           then "#e9e9e9"
-                           else "#ffffff"
         , margin $ MarginBottom 10
-        , onClick push $ const (TabSelect value.tab)
-        ]
+        ] <>> implementation (SectionSelectionOverride value.tab))
         [ linearLayout
             [ height $ V 25
             , width MATCH_PARENT
+            , visibility $ if value.offer
+                              then VISIBLE
+                              else INVISIBLE
+            , orientation HORIZONTAL
             ]
-            []
+            [ imageView
+                [ height $ V 10
+                , width $ V 21
+                , margin $ MarginTop 10
+                , imageUrl "offer_banner"
+                ]
+            , textView
+                [ height $ V 12
+                , width $ V 34
+                , text "OFFER"
+                , textSize 10
+                , margin $ Margin 5 10 0 0
+                , color "#E60000"
+                ]
+            ]
         , linearLayout
             [ height $ V 50
             , width MATCH_PARENT
@@ -225,11 +260,18 @@ tabLayout push state value =
                 , width $ V 40
                 , gravity CENTER
                 ]
-                []
+                [ imageView
+                    [ height MATCH_PARENT
+                    , width MATCH_PARENT
+                    , gravity CENTER
+                    , imageUrl value.imageUrl
+                    ]
+                ]
             , textView
                 [ height $ V 28
                 , width $ V 133
                 , weight 1.0
+                , margin $ MarginLeft 30
                 , text value.text
                 , textSize 24
                 , color "#545758"
@@ -238,11 +280,12 @@ tabLayout push state value =
         ]
 
 
+
 mainScrollView
     :: forall w
      . Array (PrestoDOM (Effect Unit) w)
     -> PrestoDOM (Effect Unit) w
-mainScrollView childrens =
+mainScrollView children =
     linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
@@ -262,8 +305,38 @@ mainScrollView childrens =
                 , orientation VERTICAL
                 , padding $ PaddingHorizontal 66 56
                 ]
-                childrens
+                children
             ]
         ]
+
+
+poweredByView =
+    linearLayout
+        [ height $ V 150
+        , width $ V 1325
+        , orientation HORIZONTAL
+        , margin $ MarginTop 40
+        , gravity CENTER_VERTICAL
+        ]
+        ([ textView
+            [ height $ V 18
+            , width $ V 96
+            , textSize 16
+            , text "Powered by:"
+            , color "#9B9B9B"
+            ]
+        ]
+        <> ((\img ->
+                imageView
+                    [ height $ V 50
+                    , width $ V 150
+                    , gravity CENTER
+                    , margin $ Margin 30 50 0 50
+                    , weight 1.0
+                    , imageUrl img
+                    ]
+            ) <$> [ "p_norton", "p_visa", "p_master_card", "p_pci", "p_amex", "p_npci", "p_creator"]
+            )
+        )
 
 

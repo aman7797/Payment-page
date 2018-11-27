@@ -35,6 +35,7 @@ import Tracker.Tracker (trackEventMerchantV2, toString) as T
 import UI.Constant.FontStyle.Default as Font
 import UI.Controller.Component.AddNewCard (Action(..))
 import UI.Controller.Component.AddNewCard as AddNewCard
+import  UI.Controller.Component.UpiView  as UpiView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
 -- Types
@@ -52,7 +53,9 @@ isSnackBar (Popup err) = GONE
 
 
 newtype UIState = UIState
-    { selectedTab :: Tabs
+    { sectionSelected :: PaymentSection
+    , addNewCardState :: AddNewCard.State
+    , upiViewState :: UpiView.State
     }
 
 derive instance paymentPageStateNewtype :: Newtype PaymentPageState _
@@ -60,25 +63,27 @@ derive instance paymentPageStateNewtype :: Newtype PaymentPageState _
 derive instance uiStateNewtype :: Newtype UIState _
 
 
-data Tabs
+data PaymentSection
     = Wallets
     | Cards
     | NetBanking
     | UPI
-    | NoTabSelected
+    | DefaultSection
 
-derive instance genericTabs :: Generic Tabs _
+derive instance genericPaymentSection :: Generic PaymentSection _
 
-instance showTabs :: Show Tabs where
+instance showPaymentSection :: Show PaymentSection where
     show = genericShow
 
-instance eqTabs :: Eq Tabs where
+instance eqPaymentSection :: Eq PaymentSection where
     eq = genericEq
 -- UIActions
 
 data PaymentPageUIAction
   = BillerCard
-  | TabSelect Tabs
+  | SectionSelected PaymentSection
+  | AddNewCardAction AddNewCard.Action
+  | UpiViewAction UpiView.Action
 -- Exit Type
 
 data PaymentPageResponse
@@ -102,7 +107,9 @@ initialState ppInput = PaymentPageState
 
 defaultUIState :: PaymentPageInput -> UIState
 defaultUIState ppInput = UIState
-    { selectedTab  : Wallets
+    { sectionSelected  : UPI
+    , addNewCardState : AddNewCard.initialState { supportedMethods : [], cardMethod : AddNewCard.AddNewCard}
+    , upiViewState : UpiView.initialState
     }
 
 eval
@@ -111,7 +118,7 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval =
   case _ of
-       TabSelect tab -> continue <<<  (_uiState <<<  _selectedTab .~ tab)
+       SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab)
        _ -> continue
 
 
@@ -119,5 +126,22 @@ eval =
 
 
 data Overrides
-    = TabOverride
+    = SectionOverride PaymentSection
+    | SectionSelectionOverride  PaymentSection
+
+
+overrides :: (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> Overrides -> Props (Effect Unit)
+overrides push state =
+    case _ of
+        SectionSelectionOverride section ->
+            [ onClick push $ const $ SectionSelected section
+            , background $ if state ^. _uiState ^. _sectionSelected == section
+                           then "#e9e9e9"
+                           else "#ffffff"
+            ]
+        SectionOverride section ->
+            [ visibility $ if state ^. _uiState ^. _sectionSelected == section
+                              then VISIBLE
+                              else GONE
+            ]
 

@@ -14,8 +14,6 @@ import Engineering.Helpers.Commons (log)
 import Engineering.Helpers.Types.Accessor (_cardIssuer, _cardMethod, _cardNumber, _currentFocused, _cvv, _cvvFocusIndex, _formState, _name, _value)
 import JBridge (getKeyboardHeight)
 import PrestoDOM.Core (mapDom)
-import PrestoDOM.Properties.GetChildProps (background_p, cornerRadius_p, height_p, margin_p, orientation_p, root_p, visibility_p, width_p)
-import PrestoDOM.Properties.SetChildProps (height_c, margin_c, override_c, visibility_c, width_c)
 import PrestoDOM.Types.DomAttributes (Gravity(..), InputType(..), Length(..), Margin(..), Orientation(..), Padding(..), Visibility(..))
 import PrestoDOM.Utils ((<>>))
 import Simple.JSON (writeJSON)
@@ -41,247 +39,137 @@ view
 	-> Object.Object GenProp
 	-> PrestoDOM (Effect Unit) w
 view push state parent =
-    let getCvvValue = state ^. _formState ^. _cvv ^. _value
-        getCardNum = case state ^. _cardMethod of
-                         SavedCard a -> a ^. _cardNumber
-                         _ -> ""
-        getCardIssuer = case state ^. _cardMethod of
-                            SavedCard a -> a ^. _cardIssuer
-                            _ -> ""
-        getBankName = getCardIssuer <> " " <> ( drop ((length getCardNum) - 4) getCardNum )
-        getCvvFocusIndex = state ^. _cvvFocusIndex
-        cardHeight = (case state ^. _cardMethod of   
-                        SavedCard _ -> 250
-                        _ -> 339) + (getKeyboardHeight unit)
-     in linearLayout
-        ([ height_p MATCH_PARENT parent
-        , width_p MATCH_PARENT parent
-        , orientation_p VERTICAL parent
-        , background_p Color.a_B2000000 parent
-        , cornerRadius_p 0.00 parent
-        , root_p true parent
-        , margin_p (Margin 0 0 0 0) parent
-        , clickable true
-        , visibility_p VISIBLE parent
-        , alpha 0.0
-		, animation $ writeJSON $ [fadeOutAnim "ACFadePopDown", fadeInAnim "ACFadePopUp", setFadeOutAnim "FadeDefADDCard" ]
-        ] <> (overrides (S "Group") push state))
-        [ linearLayout
-            ([ weight 1.0
-            , width MATCH_PARENT
-            ] <>> overrides Space push state )
-            []
-        , linearLayout
-            ([ height $ V cardHeight
-            , width MATCH_PARENT
-            , orientation VERTICAL
-            , padding (Padding 0 40 0 0)
-            , background Color.a_FFFFFFFF
-            , cornerRadius 6.00
-            -- , translationY (toNumber cardHeight)
-			      , animation $ writeJSON $ [slideInBottomDelay "ACPopUp" cardHeight ,slideOutBottom "ACPopDown" cardHeight]
-            ])
-            [ linearLayout
-                ([ height $ V 221
-                , width MATCH_PARENT
-                , orientation VERTICAL
-                , background Color.a_FFFFFFFF
-                , padding (PaddingHorizontal 30 30)
-                , cornerRadius 6.00
-                , case state ^. _cardMethod of   
-                            SavedCard _ -> visibility GONE
-                            _ -> visibility VISIBLE
-                -- , animation $ writeJSON $ [slideInBottomDelay "ACPopUp" 318 ,slideOutBottom "ACPopDown" 318 , setSlideToBottom "SLIDEACPOP" 318 ]
-                ] <> overrides (S "AddCardGroup") push state )
-                [ linearLayout 
-                    [height $ V 18
-                    , width MATCH_PARENT
-                    , orientation HORIZONTAL
-                    ]
-                    [ linearLayout
-                            [
-                                height $ V 16
-                            ,	width MATCH_PARENT
-                            , orientation HORIZONTAL
-                            ] 
-                            [ textView
-                                ([ height $ V 16
-                                , width $ V 28
-                                , textSize FontSize.a_14
-                                , color FontColor.a_FF373B3B
-                                , letterSpacing 0.47
-                                , fontStyle Font.gILROYBOLD
-                                , text "add"
-                                , gravity LEFT
-                                ] <>> overrides AddCardLabelOne push state )
-                            , textView
-                                ([ height $ V 16
-                                , width $ V 90
-                                , textSize FontSize.a_14
-                                , color FontColor.a_FF373B3B
-                                , fontStyle Font.gILROYREGULAR
-                                , letterSpacing 0.47
-                                , text " debit card"
-                                , gravity LEFT
-                                ] <>> overrides AddCardLabelTwo push state )
-                            ]
-                    ]
-                , linearLayout
-                    [ height (V 20)
-                    , width MATCH_PARENT
-                    , margin (MarginTop 22)
-                    , orientation HORIZONTAL
-                    , gravity CENTER
-                    ]
-                    [ textView
-                        ([ height $ V 20
-                        , width MATCH_PARENT
-                        , text STR.cardNumberLabel8
-                        , textSize FontSize.a_12
-                        , letterSpacing 0.7
-                        , color FontColor.a_FF000000
-                        , fontStyle Font.gILROYREGULAR
-                        ] <>> overrides CardNumberLabel push state )
-                    ]
-                , linearLayout
-                    [ height $ V 29
-                    , width MATCH_PARENT
-                    , gravity CENTER_HORIZONTAL
-                    , margin (MarginTop 6)
-                    ]
-                    [ editField
-                        ([ height $ V 29
-                        , width MATCH_PARENT
-                        , padding $ PaddingTop 0
-                        , background "#00ffffff"
-                        , textSize FontSize.a_24
-                        , fontStyle Font.gILROYBOLD
-                        -- , becomeFirstResponder ""
-                        , letterSpacing 1.75
-                        , color FontColor.a_FF000000
-                        ] <>> overrides CardNumberEditField push state )
-                    ]
-                , linearLayout
-                    ([ height $ V 52
-                    , width $ V 270
-                    , orientation HORIZONTAL
-                    , margin (MarginTop 32)
-                    ] <> overrides (S "ExpiryAndCvv") push state )
-                    [ linearLayout
-                        ([ height $ V 52
-                        , width $ V 120
-                        , orientation VERTICAL
-                        ] <> overrides (S "ExpiryGroup") push state )
-                        [ textView
-                            ([ height $ V 20
-                            , text STR.expiryLabel10
-                            , textSize FontSize.a_12
-                            , width MATCH_PARENT
-                            , letterSpacing 0.7
-                            , color FontColor.a_FF000000
-                            , fontStyle Font.gILROYREGULAR
-                            ] <>> overrides ExpiryDateLabel push state )
-                        , linearLayout [
-                            weight 1.0
-                        ] []
-                        , editField
-                            ([ height $ V 29
-                            , width MATCH_PARENT
-                            , padding $ PaddingTop 0
-                            , background "#ffffff"
-                            , textSize FontSize.a_24
-                            , fontStyle Font.gILROYBOLD
-                            , letterSpacing 0.75
-                            , color FontColor.a_FF000000
-                            , gravity LEFT
-                            ] <>> overrides ExpiryDateEditField push state )
-                        ]
-                    , linearLayout
-                        ([ height $ V 52
-                        , width $ V 100
-                        , orientation VERTICAL
-                        , margin (MarginLeft 50)
-                        ] <> overrides (S "CvvGroup") push state )
-                        [ textView
-                            ([ height $ V 20
-                            , width MATCH_PARENT
-                            , margin (MarginBottom 2)
-                            , text STR.cvvLabel12
-                            , textSize FontSize.a_12
-                            , letterSpacing 0.7
-                            , color FontColor.a_FF000000
-                            , fontStyle Font.gILROYREGULAR
-                            ] <>> overrides CvvLabel push state )
-                        , linearLayout [
-                            weight 1.0
-                        ][]
-                        , relativeLayout
-                            [ height $ V 29
-                            , width MATCH_PARENT
-                            ]
-                            [  editText
-                                ([ height $ V 25
-                                , width MATCH_PARENT
-                                , hint STR.cvvText13
-                                , textSize FontSize.a_16
-                                , color FontColor.a_FF000000
-                                , gravity CENTER_VERTICAL
-                                , inputType Numeric
-                            ] {--<>> if (length (state ^. _formState ^. _cardNumber ^. _value) )== 16 then [becomeFirstResponder ""] else []--}
-                                <>> overrides CvvEditField push state )
-                            , linearLayout
-                                [ height MATCH_PARENT
-                                , width MATCH_PARENT
-                                , background Color.a_FFFFFFFF
-                                , clickable false
-                                , userInteraction false
-                                , gravity CENTER_VERTICAL
-                                ]
-                                [ linearLayout
-                                    [ height (V 14)
-                                    , width (V 14)
-                                    , background $ getCVVColor 0 $ state ^. _formState ^. _cvv ^. _value
-                                    , stroke $ "1," <> (getStrokeColor $ 0 == (state ^. _cvvFocusIndex)) --if state ^. _currentFocused /= CVV then getCVVColor 0 $ state ^. _formState ^. _cvv ^. _value else "#645645"
-                                    , cornerRadius 7.0
-                                    ] []
-                                , linearLayout
-                                    [ height (V 14)
-                                    , width (V 14)
-                                    , margin (MarginLeft 15)
-                                    , background $ getCVVColor 1 $ state ^. _formState ^. _cvv ^. _value
-                                    , stroke $ "1," <> (getStrokeColor $ 1 == (state ^. _cvvFocusIndex))
-                                    , cornerRadius 7.0
-                                    ] []
-                                , linearLayout
-                                    [ height (V 14)
-                                    , width (V 14)
-                                    , margin (MarginLeft 15)
-                                    , background $ getCVVColor 2 $ state ^. _formState ^. _cvv ^. _value
-                                    , stroke $ "1," <> (getStrokeColor $ 2 == (state ^. _cvvFocusIndex))
-                                    , cornerRadius 7.0
-                                    ] []
-                                ]
-                            ]
-                        ]
-                    ]
-                , linearLayout
-                    ([ height (V 41)
-                    , width (V 1)
-                    ] <> overrides (S "Space") push state )
-                    []
-                {-- , mapDom Keyboard.view push {keyState : "" } Key [] --}
-                ]
-                , proceedOrErrorPlace push state
+    let implementation = \a -> overrides a push state
+	 in mainView
+        [ editView
+            { hint : "Card Number"
+            , width : MATCH_PARENT
+            , weight : 0.0
+            , margin : MarginTop 30
+            }
+            (implementation CardNumberEditField)
+        , editView
+            { hint : "Name on the Card"
+            , width : MATCH_PARENT
+            , weight : 0.0
+            , margin : MarginTop 30
+            }
+            (implementation $ S "")
+        , horizontalView
+            [ editView
+                { hint : "Expiry(mm/yy)"
+                , width : V 100
+                , weight : 1.0
+                , margin : MarginTop 30
+                }
+                (implementation ExpiryDateEditField)
+            , editView
+                { hint : "CVV"
+                , width : V 100
+                , weight : 1.0
+                , margin : Margin 40 30 0 0
+                }
+                (implementation CvvEditField)
+            ]
+        , saveForLaterView
+        , horizontalView
+            [ editView
+                { hint : "Mobile Number"
+                , width : V 100
+                , weight : 1.0
+                , margin : Margin 0 30 40 0
+                }
+                (implementation $ S "")
+            , linearLayout [ height $ V 1, width $ V 100,  weight 1.0 ] []
+            ]
+        , payButton
+        ]
 
+                {-- overrides CardNumberLabel push state ) --}
+                {-- overrides ExpiryDateLabel push state ) --}
+                {-- overrides push state ) --}
+                {--  overrides CvvLabel push state ) --}
+                {-- overrides push state ) --}
+
+
+editView
+    :: forall w
+     . { hint :: String
+       , width :: Length
+       , weight :: Number
+       , margin :: Margin
+       }
+    -> Props (Effect Unit)
+    -> PrestoDOM (Effect Unit) w
+editView value implementation =
+    linearLayout
+        [ height $ V 60
+        , width value.width
+        , weight value.weight
+        , margin value.margin
+        , gravity CENTER_VERTICAL
+        , orientation HORIZONTAL
+        , stroke "1,#E9E9E9"
+        , gravity CENTER
+        ]
+        [ editText
+            ([ textSize 20
+            , height $ V 23
+            , width MATCH_PARENT
+            , hint value.hint
+            , margin $ MarginLeft 20
+            ] <>> implementation)
+        ]
+
+
+horizontalView children =
+    linearLayout
+        [ height $ V 60
+        , width MATCH_PARENT
+        , orientation HORIZONTAL
+        ]
+        children
+
+saveForLaterView :: forall w. PrestoDOM (Effect Unit) w
+saveForLaterView =
+    linearLayout
+        [ height $ V 24
+        , width $ V 300
+        , orientation HORIZONTAL
+        , gravity CENTER_VERTICAL
+        , margin $ MarginTop 60
+        ]
+        [ linearLayout
+            [ height $ V 18
+            , width $ V 18
+            , stroke "1,#666666"
+            ]
+            []
+        , textView
+            [ height $ V 18
+            , weight 1.0
+            , text "Save this card for faster payments"
+            , margin $ MarginLeft 8
+            , textSize 16
+            , gravity LEFT
             ]
         ]
-    
 
-    where
-          editField a =
-            case state ^. _cardMethod of
-                 AddNewCard -> editText (a <>> [inputType Numeric])
-                 SavedCard _ -> textView a
+mainView
+    :: forall w
+     . Array (PrestoDOM (Effect Unit) w)
+    -> PrestoDOM (Effect Unit) w
+mainView children =
+    linearLayout
+        [ height $ V 550
+        , width MATCH_PARENT
+        , padding $ PaddingHorizontal 30 30
+        , orientation VERTICAL
+        , background "#FFFFFF"
+        ]
+        children
+
+
 
 getCVVColor :: Int → String → String
 getCVVColor i st =
@@ -351,8 +239,8 @@ proceedOrErrorPlace push state =
                 , gravity CENTER
                 ] --  <>> overrides ErrorMsg push state )
             ]
-         _ -> 
-            linearLayout 
+         _ ->
+            linearLayout
             [height (V 46)
             , width (V 183)
             , orientation HORIZONTAL
@@ -363,3 +251,26 @@ proceedOrErrorPlace push state =
             , margin (Margin 30 0 0 22)
             , visibility VISIBLE
             ][]
+
+
+
+payButton :: forall w. PrestoDOM (Effect Unit) w
+payButton =
+    linearLayout
+        [ height $ V 60
+        , width $ V 300
+        , orientation HORIZONTAL
+        , gravity CENTER
+        , margin $ MarginTop 60
+        , background "#E9E9E9"
+        ]
+        [ textView
+            [ height $ V 23
+            , width MATCH_PARENT
+            , gravity CENTER
+            , text "Pay Securely"
+            ]
+        ]
+
+
+
