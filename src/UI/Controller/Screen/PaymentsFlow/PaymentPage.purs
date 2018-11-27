@@ -139,6 +139,7 @@ overrides push state =
                            then "#e9e9e9"
                            else "#ffffff"
             ]
+
         SectionOverride section ->
             [ visibility $ if state ^. _uiState ^. _sectionSelected == section
                               then VISIBLE

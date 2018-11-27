@@ -85,6 +85,7 @@ paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageSta
 paymentView push state =
     linearLayout
         [ height $ V 440
+        , weight 1.0
         , width MATCH_PARENT
         , orientation HORIZONTAL
         ]

@@ -9,7 +9,7 @@
   "dependencies": {
     "purescript-prelude": "^4.0.0",
     "purescript-foreign-generic": "^7.0.0",
-    "purescript-presto-dom": "https://bitbucket.org/juspay/purescript-presto-dom.git#compiler/0.12",
+    "purescript-presto-dom": "https://bitbucket.org/juspay/purescript-presto-dom.git#v0.5",
     "purescript-presto": "https://github.com/juspay/purescript-presto.git#presto-dom-v0.5",
     "purescript-behaviors": "^7.0.0",
     "purescript-profunctor-lenses": "^4.0.0",

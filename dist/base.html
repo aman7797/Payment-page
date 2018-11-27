@@ -1,0 +1,70 @@
+<html>
+
+<head>
+  <title>Presto UI</title>
+  <script src="./socket.js"></script>
+  <!-- <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' name='viewport' /> -->
+  <meta charset="utf-8" />
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900" rel="stylesheet">
+  <link href="./style.css" rel="stylesheet">
+
+  <style>
+  .shadow {
+    -webkit-box-shadow: 4px 9px 24px -14px rgba(0,0,0,0.17);
+  }
+  </style>
+  <script>
+      window.ORDER = {};
+
+        var JP = {
+            init: function (opts) {
+                var elem = opts.entry_point;
+                var order = opts.order_id;
+                var mid = opts.merchant_id;
+
+                if(true) {
+                    elem = document.getElementById( elem);
+                    var iframeUrl = 'http://localhost:8081/dist';
+
+                    elem.innerHTML = '<iframe width="100%" height="100%" src="' + iframeUrl + '"></iframe>';
+                }
+
+
+                window.onmessage = function (message) {
+                    console.log("Loading URL :: " + message.data.url);
+                }
+            }
+        };
+    </script>
+</head>
+<body>
+    <style>
+        * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        letter-spacing: 1.2;
+        }
+
+        input {
+        }
+
+        #content {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+    </style>
+    <div id="content"> </div>
+</body>
+<script>
+    JP.init({
+        entry_point: 'content',
+        order_id: 'my-irder1',
+        merchant_id: 'com.swiggy'
+    });
+
+</script>
+
+</html>
