@@ -4,5 +4,5 @@ exports["getEnv"] = function (unit) {
         return (window.__payload.environment)
     }
     else
-        return "prod";
+        return "sandbox";
 };

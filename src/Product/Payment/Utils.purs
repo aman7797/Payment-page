@@ -17,6 +17,25 @@ import Presto.Core.Flow (Flow)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
 import UI.Utils (os)
 
+{-- mkPaymentPageState :: SDKParams -> PaymentSourceResp -> PaymentPageState --}
+{-- mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput) --}
+
+{--     where --}
+
+{--         mkPPInput = --}
+{--           PaymentPageInput --}
+{--             { piInfo : paymentMethods --}
+{--             , customer : mkCustomer --}
+{--             , orderInfo : mkOrderInfo sdkParams --}
+{--             , sdk : sdkParams --}
+{--             } --}
+
+{--         mkCustomer = --}
+{--             { mobileNumber : Just (sdkParams ^. _customerMobile) --}
+{--             , id : Just (sdkParams ^. _customerId) --}
+{--             , clientId : sdkParams ^. _clientId --}
+{--             } --}
+
 mkPaymentPageState :: SDKParams -> PaymentPageState
 mkPaymentPageState sdkParams = (initialState mkPPInput)
 
@@ -38,6 +57,7 @@ mkPaymentPageState sdkParams = (initialState mkPPInput)
 
 
 
+
 mkOrderInfo :: SDKParams -> OrderInfo
 mkOrderInfo sdkParams =
  { amount : sdkParams ^. _amount
@@ -45,9 +65,9 @@ mkOrderInfo sdkParams =
  , orderToken : sdkParams ^. _orderToken
  , gateway : ""
  , merchantId : sdkParams ^. _merchantId
- , fullfilment : sdkParams ^. _fullfilment
- , preferedBanks : sdkParams ^. _preferedBanks
- , billerCardEditable : sdkParams ^. _billerCardEditable
+ {-- , fullfilment : sdkParams ^. _fullfilment --}
+ {-- , preferedBanks : sdkParams ^. _preferedBanks --}
+ {-- , billerCardEditable : sdkParams ^. _billerCardEditable --}
  }
 
 

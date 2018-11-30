@@ -12,6 +12,12 @@ const FRAME_DURATION = 16;
 
 exports.logit = function(x){console.log("LOGGING",x)}
 
+exports.logAny = function(a) {
+  console.log("@@@", a);
+
+  return a;
+}
+
 exports.getOs = function () {
   var userAgent = navigator.userAgent;
   if (!userAgent)

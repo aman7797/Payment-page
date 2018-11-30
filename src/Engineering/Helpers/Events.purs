@@ -61,35 +61,35 @@ makeGetUpiAppsEvent orderId push = \ev -> do
         _ <- startUPI' (getInstalledUPIAppsPayload (upiMethodPayload orderId)) push (trackHyperPayEvent' "response_from_upi")
         pure unit
 
-makeGetUpiEvent :: forall a. SDKParams -> Array SIM -> (a -> Effect Unit ) -> (DOM.Event → Effect Unit)
-makeGetUpiEvent sdkParams sims push = \ev -> do
-        _ <- flowToEff push fn
-        {-- _ <- startUPI' (getInstalledUPIAppsPayload (upiMethodPayload orderId)) push (trackHyperPayEvent' "response_from_upi") --}
-        pure unit
+{-- makeGetUpiEvent :: forall a. SDKParams -> Array SIM -> (a -> Effect Unit ) -> (DOM.Event → Effect Unit) --}
+{-- makeGetUpiEvent sdkParams sims push = \ev -> do --}
+{--         _ <- flowToEff push fn --}
+{--         {1-- _ <- startUPI' (getInstalledUPIAppsPayload (upiMethodPayload orderId)) push (trackHyperPayEvent' "response_from_upi") --1} --}
+{--         pure unit --}
 
-    where
-          fn = (upiOnboardingFlow sdkParams sims)
+{--     where --}
+{--           fn = (upiOnboardingFlow sdkParams sims) --}
 
 
 onFocus :: forall a. (a -> Effect Unit) -> (Boolean -> a) -> Prop (Effect Unit)
 onFocus push f = Handler (DOM.EventType "onFocus") (Just <<< (makeEvent (push <<< f <<< toBool)))
 
-lazyLoadList :: forall a. (a -> Effect Unit ) -> (Unit -> a) -> Prop (Effect Unit)
-lazyLoadList push f = Handler (DOM.EventType "lazyLoadList") (Just <<< fn)
-    where
-              fn = registerEvent "lazyLoadList" (makeLazyLoadEvent (push <<< f))
+{-- lazyLoadList :: forall a. (a -> Effect Unit ) -> (Unit -> a) -> Prop (Effect Unit) --}
+{-- lazyLoadList push f = Handler (DOM.EventType "lazyLoadList") (Just <<< fn) --}
+{--     where --}
+{--               fn = registerEvent "lazyLoadList" (makeLazyLoadEvent (push <<< f)) --}
 
 
-getUpiApps :: forall a b. String -> (a -> Effect Unit ) -> (b -> a) -> Prop (Effect Unit)
-getUpiApps orderId push f = Handler (DOM.EventType "getUpiApps") (Just <<< fn)
-	where
-		fn = registerEvent "getUpiApps" (makeGetUpiAppsEvent orderId (push <<< f))
+{-- getUpiApps :: forall a b. String -> (a -> Effect Unit ) -> (b -> a) -> Prop (Effect Unit) --}
+{-- getUpiApps orderId push f = Handler (DOM.EventType "getUpiApps") (Just <<< fn) --}
+{-- 	where --}
+{-- 		fn = registerEvent "getUpiApps" (makeGetUpiAppsEvent orderId (push <<< f)) --}
 
 
-getUpi :: forall a b. SDKParams -> Array SIM -> (a -> Effect Unit ) -> (b -> a) -> Prop (Effect Unit)
-getUpi sdkParams sims push f = Handler (DOM.EventType "getUpi") (Just <<< fn)
-	where
-		fn = registerEvent "getUpi" (makeGetUpiEvent sdkParams sims (push <<< f))
+{-- getUpi :: forall a b. SDKParams -> Array SIM -> (a -> Effect Unit ) -> (b -> a) -> Prop (Effect Unit) --}
+{-- getUpi sdkParams sims push f = Handler (DOM.EventType "getUpi") (Just <<< fn) --}
+{-- 	where --}
+{-- 		fn = registerEvent "getUpi" (makeGetUpiEvent sdkParams sims (push <<< f)) --}
 
 
 toBool :: String -> Boolean
@@ -154,98 +154,8 @@ generateVpa mobile = (S.drop 2 mobile) <> "d5d37924312@yesbank"
 getFlag :: String
 getFlag = if os == "ANDROID" then "1" else "001"
 
-type UPIFLOWSTATE =  {upiTab :: UPIState, sims :: Array SIM, token :: String, token' :: String, vpa :: String, banks :: Array Bank, mobile :: String, recpMob :: String, smsKey :: String, smsContent :: String}
 
-upiOnboardingFlow :: SDKParams -> Array SIM -> Flow UPIFLOWSTATE
-upiOnboardingFlow sdk sims = do
-  canShowUPI <- pure $ eligibleForUPI
-  if os == "IOS" || canShowUPI
-    then do
-      token' <- (liftFlow (UPI.getToken merchantId encKey getFlag))
-      token  <- if os == "ANDROID"
-        then
-          (liftFlow (UPI.getToken merchantId encKey ""))
-        else
-          pure token'
-      status <- UPIMap.checkDeviceId {token : token', tnxID : (sdk ^. _orderId), session_token : (sdk ^. _session_token), customerId : (sdk ^. _customerId), add1 : "", client_auth_token : (sdk ^. _orderToken)}
-      initialVal <-  doAff (makeAff (\cb -> (UPI.init (cb <<< Right) merchantId status.encryptedResp encKey)*> pure nonCanceler))
-      bnk <- UPIMap.getUPIBankList {token, tnxID : (sdk ^. _orderId), session_token : (sdk ^. _session_token), customerId : (sdk ^. _customerId), client_auth_token : (sdk ^. _orderToken)}
-      {-- (FetchSIMDetailsUPIResponse sims) <- fetchSIMDetails --}
-      let vpa = if (status.mobileNo /= "NA") then generateVpa status.mobileNo else "NA"
-      let ad = if status.add1 /= "I" then "D" else status.add1
-      let mobile = status.mobileNo
-      let banks = toBank <$> bnk.bankList
-      let default = {upiTab : Fresh sims, sims : sims, token, token', vpa, banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent }
-      case status.deviceStatus,status.simStatus of
-          "DR","SNM" -> do
-                  acc <- UPIMap.getAccountList {token, tnxID : (sdk ^. _orderId), session_token : (sdk ^. _session_token), customerId : (sdk ^. _customerId), reqFlag : "T", vpa , bankCode : "", client_auth_token : (sdk ^. _orderToken)}
-                  let accounts = toAccount acc
-                  _ <- saveS "juspay_cred_upi_accounts" $ unsafeJsonStringify accounts
-                  if length accounts /= 0
-                    then
-                        pure $ default {upiTab = Linked accounts}
-                    else
-                        pure $ default {upiTab = Bound banks}
-
-          "DR",_ -> do
-                --   update <- UPIMap.updateUser { token, tnxID : (sdk ^. _orderId), upType : "M", simChangeRefd : (sdk ^. _orderId) ,secretQuestion :"104" ,customerId : (sdk ^. _customerId), client_auth_token : (sdk ^. _orderToken), mob : status.mobileNo}
-                  pure $ default {upiTab = Fresh sims}
-
-          "DN","SNM" ->
-                  case status.add1 of
-                      "I" -> pure $ default {upiTab = Fresh sims}
-                      _ -> do
-                          update <- UPIMap.updateUser { token, tnxID : (sdk ^. _orderId), upType : ad, simChangeRefd : status.yblRef ,secretQuestion :"104" ,customerId : (sdk ^. _customerId), client_auth_token : (sdk ^. _orderToken), mob : status.mobileNo}
-                          pure $ default {upiTab = Fresh sims}
-
-          "DN","SNN" ->
-                  case status.smsStatus,os of
-                      "SS","ANDROID" ->
-                            pure $ default {upiTab =Bound banks}
-                      _,_ ->
-                            pure $ default {upiTab =Fresh sims}
-
-
-          _,_ -> pure $ default {upiTab =  Disabled}
-    else
-      pure {upiTab : Disabled, sims : [], token : "", token': "", vpa: "", banks :[], mobile : "", recpMob : "", smsKey : "", smsContent : "" }
-  -- -- pure $ default {upiTab = Fresh sims}
-  -- if status.deviceStatus == "DR"
-  --   then
-  --     if status.simStatus == "SNM"
-  --       then do
-  --         acc <- UPIMap.getAccountList {token, tnxID : (sdk ^. _orderId), session_token : (sdk ^. _session_token), customerId : (sdk ^. _customerId), reqFlag : "T", vpa , bankCode : "", client_auth_token : (sdk ^. _orderToken)}
-  --         let accounts = toAccount acc
-  --         if length accounts /= 0
-  --           then 
-  --             pure $ default {upiTab = Linked accounts} --, sims : sims, token, vpa , banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent}
-  --           else
-  --             pure $ default {upiTab = Bound banks} --, sims : sims, token, vpa , banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent}
-  --       else do 
-  --         update <- UPIMap.updateUser { token, tnxID : (sdk ^. _orderId), upType : "M", simChangeRefd : {--status.yblRef--}(sdk ^. _orderId) ,secretQuestion :"104" ,customerId : (sdk ^. _customerId), client_auth_token : (sdk ^. _orderToken), mob : status.mobileNo}
-  --         pure $ default {upiTab = Fresh sims} -- , sims : sims, token, vpa , banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent}
-  --   else 
-  --     if status.deviceStatus == "DN"
-  --       then
-  --         if status.simStatus == "SNN"
-  --           then
-  --             if status.smsStatus == "SS" && os == "ANDROID" 
-  --               then do
-  --                 pure $ default {upiTab =Bound banks} --, sims : sims, token, vpa , banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent}
-  --               else do
-  --                 pure $ default {upiTab =Fresh sims}--, sims : sims, token, vpa, banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent }
-  --             -- Will be removed 
-  --           else
-  --             if status.simStatus == "SNM"
-  --               then do
-  --                 update <- UPIMap.updateUser { token, tnxID : (sdk ^. _orderId), upType : ad, simChangeRefd : status.yblRef ,secretQuestion :"104" ,customerId : (sdk ^. _customerId), client_auth_token : (sdk ^. _orderToken), mob : status.mobileNo}
-  --                 pure $ default {upiTab = Fresh sims}--, sims : sims, token, vpa, banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent }
-  --               else 
-  --                  pure $ default {upiTab = Disabled}--, sims : sims, token, vpa, banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent }
-  --       else
-  --           pure $ default {upiTab =  Disabled}-- sims : sims, token, vpa, banks, mobile : status.mobileNo, recpMob : status.recpmob, smsKey : status.encKey, smsContent : status.smsContent }
-
-flowToEff :: forall a. ( a -> Effect Unit) -> Flow UPIFLOWSTATE  -> Effect Unit
+flowToEff :: forall a b. ( a -> Effect Unit) -> Flow b -> Effect Unit
 flowToEff push flow = do
    let runtime = Runtime uiRunner permissionRunner apiRunner
    let freeFlow = S.evalStateT (run runtime (exeFunction push flow))
@@ -270,6 +180,6 @@ flowToEff push flow = do
        _ <- callAPI' (cb <<< Left) (cb <<< Right) (mkNativeRequest request)
        pure $ nonCanceler)
 
-     exeFunction :: (a -> Effect Unit) -> Flow UPIFLOWSTATE  -> Flow Unit
+     exeFunction :: (a -> Effect Unit) -> Flow b -> Flow Unit
      exeFunction push' = (=<<) (\val -> doAff do (liftEffect) (push' $ U.unsafeCoerce val))
 

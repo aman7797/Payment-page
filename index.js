@@ -22,6 +22,22 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <https://www.gnu.org/licenses/agpl.html>.
 */
+function readQueryString () {
+  var obj = {};
+  if (location.href) {
+    const arr = location.href.split('?')[1].split('&');
+    for (var i=0; i < arr.length; i++) {
+      var t = arr[i].split('=');
+      obj[t[0]] = t[1];
+    }
+  }
+  return obj;
+}
+
+window.__payload = readQueryString();
+
+
+
 window.hyper_session_id = guid();
 window.hyper_pay_version = "1.0rc5_13";
 function guid() {
@@ -84,7 +100,8 @@ window["onEvent'"] = function(fnName,args,callback) {
 
 window.onBundleUpdate = function() {}
 
-window.__payload = {}
+
+
 window.DUIGatekeeper = {
   getSessionInfo: function getSessionInfo() {
     return JSON.stringify({});

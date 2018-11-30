@@ -60,14 +60,14 @@ view push state parent =
                 { hint : "Expiry(mm/yy)"
                 , width : V 100
                 , weight : 1.0
-                , margin : MarginTop 30
+                , margin : MarginLeft 0
                 }
                 (implementation ExpiryDateEditField)
             , editView
                 { hint : "CVV"
                 , width : V 100
                 , weight : 1.0
-                , margin : Margin 40 30 0 0
+                , margin : MarginLeft 40
                 }
                 (implementation CvvEditField)
             ]
@@ -77,12 +77,12 @@ view push state parent =
                 { hint : "Mobile Number"
                 , width : V 100
                 , weight : 1.0
-                , margin : Margin 0 30 40 0
+                , margin : Margin 0 0 40 0
                 }
                 (implementation $ S "")
             , linearLayout [ height $ V 1, width $ V 100,  weight 1.0 ] []
             ]
-        , payButton
+        , payButton push state
         ]
 
                 {-- overrides CardNumberLabel push state ) --}
@@ -127,6 +127,7 @@ horizontalView children =
         [ height $ V 60
         , width MATCH_PARENT
         , orientation HORIZONTAL
+        , margin $ MarginTop 30
         ]
         children
 
@@ -137,7 +138,7 @@ saveForLaterView =
         , width $ V 300
         , orientation HORIZONTAL
         , gravity CENTER_VERTICAL
-        , margin $ MarginTop 60
+        , margin $ MarginTop 30
         ]
         [ linearLayout
             [ height $ V 18
@@ -172,16 +173,16 @@ mainView children =
 
 
 
-payButton :: forall w. PrestoDOM (Effect Unit) w
-payButton =
+payButton :: forall w. (Action -> Effect Unit) -> State -> PrestoDOM (Effect Unit) w
+payButton push state =
     linearLayout
-        [ height $ V 60
+        ([ height $ V 60
         , width $ V 300
         , orientation HORIZONTAL
         , gravity CENTER
-        , margin $ MarginTop 60
+        , margin $ MarginTop 30
         , background "#E9E9E9"
-        ]
+        ] <>> overrides BtnPay push state)
         [ textView
             [ height $ V 23
             , width MATCH_PARENT

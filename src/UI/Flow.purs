@@ -20,7 +20,7 @@ showPaymentPage ppState = do
   _ <- liftFlowBT $ doAff do liftEffect $ setScreen "PaymentOptions"
   r <- liftFlowBT $ runScreen (PaymentPage.screen $ log "ppState in flow" ppState)
   case r of
-       (PaymentPageResponse state _ _) -> setOnWindow Constants.ppStateKey state
+       (PaymentPageResponse state _) -> setOnWindow Constants.ppStateKey state
        ScreenData state -> setOnWindow Constants.ppStateKey state
   pure r
 

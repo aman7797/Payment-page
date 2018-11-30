@@ -310,7 +310,8 @@ overrides CardNumberEditField push state =
     case state ^. _cardMethod of
          AddNewCard ->
             [ hint STR.cardNumberText9
-            , registerNewListener cardNumberHandler (getFieldTypeID CardNumber) push (CardNumberChanged)
+            {-- , registerNewListener cardNumberHandler (getFieldTypeID CardNumber) push (CardNumberChanged) --}
+            , onChange push (CardNumberChanged)
             -- , focusString -- if not getFocus state CardNumber then "true" else if state ^. _currentFocused == then "false" else ""
             , focus $ getFocus state CardNumber
             , onFocus push (Focus CardNumber)
@@ -340,7 +341,8 @@ overrides ExpiryDateLabel push state =
 overrides ExpiryDateEditField push state =
     case state ^. _cardMethod of
          AddNewCard ->
-            [ registerNewListener expiryHandler (getFieldTypeID ExpiryDate) push (ExpiryDateChanged)
+            {-- [ registerNewListener expiryHandler (getFieldTypeID ExpiryDate) push (ExpiryDateChanged) --}
+            [ onChange push ExpiryDateChanged
             -- , focusString $ show $ getFocus state ExpiryDate
             , focus $ getFocus state ExpiryDate
             , onFocus push (Focus ExpiryDate)

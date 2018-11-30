@@ -29,6 +29,8 @@ foreign import asyncDelay :: forall a. (a -> Effect Unit) -> a -> a -> Number ->
 
 foreign import loaderAfterRender :: String -> Unit
 
+foreign import logAny :: forall a. a -> a
+
 
 data FieldType = CardNumber | ExpiryDate | CVV | SavedCardCVV | NONE -- | Name | SavedForLater
 

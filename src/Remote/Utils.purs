@@ -172,7 +172,7 @@ mkPayReqCard (CardDetails state) orderId = do
         , name_on_card = Just state.nameOnCard
         , card_security_code = Just state.securityCode
         , save_to_locker = Just state.saveToLocker
-        , redirect_after_payment = false
+        , redirect_after_payment = true
         }
       )
   state.paymentMethod # defaultTxnReq "CARD" orderId >>> mapNewtype updateState 

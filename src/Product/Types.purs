@@ -183,9 +183,9 @@ type OrderInfo =
   , orderId     :: String
   , orderToken  :: String
   , merchantId  :: String
-  , fullfilment :: Array CreditCard
-  , preferedBanks       :: Array String
-  , billerCardEditable  :: String
+  {-- , fullfilment :: Array CreditCard --}
+  {-- , preferedBanks       :: Array String --}
+  {-- , billerCardEditable  :: String --}
   }
 
 type Customer =
@@ -234,11 +234,11 @@ newtype SDKParams = SDKParams
   , customerId :: String
   , clientId :: String
   , activityRecreated :: Boolean
-  , environment :: String
-  , fullfilment :: Array CreditCard
+  {-- , environment :: String --}
+  {-- , fullfilment :: Array CreditCard --}
   , preferedBanks :: Array String
-  , billerCardEditable :: String
-  , session_token :: String
+  {-- , billerCardEditable :: String --}
+  {-- , session_token :: String --}
   }
 
 newtype Carddetails = Carddetails

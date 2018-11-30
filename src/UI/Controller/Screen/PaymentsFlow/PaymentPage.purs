@@ -38,6 +38,8 @@ import UI.Controller.Component.AddNewCard as AddNewCard
 import  UI.Controller.Component.UpiView  as UpiView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
+import UI.Utils
+
 -- Types
 
 newtype PaymentPageState = PaymentPageState
@@ -87,13 +89,14 @@ data PaymentPageUIAction
 -- Exit Type
 
 data PaymentPageResponse
-    = PaymentPageResponse PaymentPageState (Array PayLaterResp) PaymentPageAction
+    = PaymentPageResponse PaymentPageState  PaymentPageAction
     | ScreenData PaymentPageState
 
 -- Exit Actions
 
 data PaymentPageAction
     = UserAborted
+    | PayUsing PaymentOption
 
 data ScrollType = SCROLL | HALT
 
@@ -118,11 +121,47 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval =
   case _ of
-       SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab)
-       _ -> continue
+    SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab)
+
+    AddNewCardAction (SubmitCard AddNewCard.AddNewCard)->
+        exitPP $ PayUsing <<< Card <<< mkCardDetails
+
+    AddNewCardAction (SubmitCard (AddNewCard.SavedCard card)) ->
+        exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card
 
 
+    AddNewCardAction cardAction ->
+        \ppState -> continue $ ppState # (_uiState <<< _addNewCardState) .~ (logAny $ AddNewCard.eval cardAction $ ppState ^. _uiState ^. _addNewCardState)
+    _ -> continue
 
+exitPP
+    :: (PaymentPageState -> PaymentPageAction)
+    -> PaymentPageState
+    -> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
+exitPP action ppState = exit $ PaymentPageResponse ppState (action ppState)
+
+
+mkCardDetails :: PaymentPageState -> CardDetails
+mkCardDetails ppState =
+    let addCardState = ppState ^. _uiState ^. _addNewCardState
+     in CardDetails
+        { cardNumber : addCardState ^. _formState ^. _cardNumber ^. _value
+        , expMonth   : show <<< getMonth $ addCardState ^. _formState ^. _expiryDate ^. _value
+        , expYear    : show <<< getYear $ addCardState ^. _formState ^. _expiryDate ^. _value
+        , nameOnCard : Default.nameOnCard
+        , securityCode : addCardState ^. _formState ^. _cvv ^. _value
+        , saveToLocker : addCardState ^. _formState ^. _savedForLater
+        , paymentMethod : addCardState ^. _formState ^. _cardNumber ^. _cardDetails ^. _card_type
+        }
+
+mkSavedCardDetails :: StoredCard -> PaymentPageState -> SavedCardDetails
+mkSavedCardDetails card ppState =
+    let cardState = ppState  ^. _uiState ^. _addNewCardState
+     in SavedCardDetails
+        { cvv : cardState ^. _formState ^. _cvv ^. _value
+        , cardToken : card ^. _cardToken
+        , cardType : card ^. _cardType
+        }
 
 
 data Overrides

@@ -11,85 +11,56 @@ const transformTxnResponse = function(successResponse, headers) {
 };
 
 const makeRequest = function(headersRaw, method, url, payload, success) {
-    if((url.includes("/sdk/v1/yesb/process") || url.includes("/v1/yes/callYesApis"))&& __OS == "ANDROID")
-    {
-        var headersConfig = {
-            headers: {
-            "Content-Type" : "application/json"
-            }
-            }
-            axios.post(url,JSON.parse(payload),headersConfig).then(function(response){
-            if(response.data.createdTime) response.data.createdTime = response.data.createdTime.toString();
-            console.log("Response is - from axios",response.data);
+      // window.tokenHash = window.tokenHash || JBridge.getMd5(__payload.sessionToken || "");
+      window.currentAPIUrl = url;
+
+      var successResponse = {};
+      var headers = {};
+      headers["Cache-Control"] = "no-cache";
+      // headers["x-jp-merchant-id"] = __payload.merchant_id;
+      headers["x-jp-session-id"] = window.hyper_session_id;
+
+      console.log("URL" , url);
+      console.log("METHOD" , method);
+      console.log("BODY",payload);
+      console.log("HEADERS",headersRaw);
+
+      var isSSLPinnedURL = false;
+
+      for(var i=0;i<headersRaw.length;i++){
+        headers[headersRaw[i].field] = headersRaw[i].value;
+      }
+      var callback = callbackMapper.map(function() {
+        if (arguments && arguments.length >= 3) {
             successResponse = {
-            status: "success",
-            response: JSON.parse(JSON.stringify(response.data) || "{}"),
-            code: 200
-            }
-            console.log(response);
-            success(JSON.stringify(response.data))();
-            }).catch(function (error){
-            success({
-            status: "failed",
-            response: "{}",
-            code: 50
-            })();
-            })
-            // JBridge.callApi(method, url, body,JSON.stringify(headers),false, callback);
-    }
-    else
-    {
-        // window.tokenHash = window.tokenHash || JBridge.getMd5(__payload.sessionToken || "");
-        window.currentAPIUrl = url;
-
-        var successResponse = {};
-        var headers = {};
-        headers["Cache-Control"] = "no-cache";
-        // headers["x-jp-merchant-id"] = __payload.merchant_id;
-        headers["x-jp-session-id"] = window.hyper_session_id;
-
-        console.log("URL" , url);
-        console.log("METHOD" , method);
-        console.log("BODY",payload);
-        console.log("HEADERS",headersRaw);
-
-        var isSSLPinnedURL = false;
-
-        for(var i=0;i<headersRaw.length;i++){
-          headers[headersRaw[i].field] = headersRaw[i].value;
-        }
-        var callback = callbackMapper.map(function() {
-          if (arguments && arguments.length >= 3) {
-              successResponse = {
-                    status: arguments[0],
-                    response: JSON.parse(atob(arguments[1]) || "{}"),
-                    code: parseInt(arguments[2])
-              };
-              successResponse = transformTxnResponse(successResponse, headers);
-              console.log("Response: ");
-              console.log(successResponse);
-              if(successResponse.status === "failure"){
-                    console.log("inside failure");
-                    successResponse.response = {error : true,
-                                                    errorMessage: "",
-                                                    userMessage: ""
-                                                  };
-                    console.log("Response: ");
-                    console.log(successResponse);
-                    success(JSON.stringify(successResponse))();
-                  }else
-                        success(JSON.stringify(successResponse.response))();
-            } else {
-                  success({
-                        status: "failed",
-                        response: "{}",
-                        code: 50
-                      })();
-                }
-          });
-          console.log("Enter CAll API")
-          JBridge.callAPI(method, url, getEncodedData(payload), getEncodedData(JSON.stringify(headers)), isSSLPinnedURL, callback);
-    }
+                  status: arguments[0],
+                  response: JSON.parse(atob(arguments[1]) || "{}"),
+                  code: parseInt(arguments[2])
+            };
+            successResponse = transformTxnResponse(successResponse, headers);
+            console.log("Response: ");
+            console.log(successResponse);
+            if(successResponse.status === "failure"){
+                  console.log("inside failure");
+                  successResponse.response = {error : true,
+                                                  errorMessage: "",
+                                                  userMessage: ""
+                                                };
+                  console.log("Response: ");
+                  console.log(successResponse);
+                  success(JSON.stringify(successResponse))();
+                }else
+                      success(JSON.stringify(successResponse.response))();
+          } else {
+                success({
+                      status: "failed",
+                      response: "{}",
+                      code: 50
+                    })();
+              }
+        });
+        console.log("Enter CAll API")
+        JBridge.callAPI(method, url, getEncodedData(payload), getEncodedData(JSON.stringify(headers)), isSSLPinnedURL, callback);
   }
 
 exports["showUI'"] = function(sc,screen) {
@@ -1205,7 +1176,10 @@ const callbackMapper = {
 }
 
 const getEncodedData = function(data) {
-    return  btoa(unescape(encodeURIComponent(data)));
+    if (window.__OS == "IOS")
+      return  btoa(unescape(encodeURIComponent(data)));
+    else
+      return data;
   }
 
 exports["onBackPress'"] = function(cb) {
