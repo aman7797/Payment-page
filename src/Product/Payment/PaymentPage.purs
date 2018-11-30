@@ -133,14 +133,14 @@ paymentPageFlow sdkParams optPPState = do
 
     ppState <- case optPPState of
         Nothing -> do
-            {-- paymentMethods <- Remote.getPaymentMethods --}
-            {--                     $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken --}
-            {--                                        , offers: "" --}
-            {--                                        , refresh : "" --} 
-            {--                                        } --}
+            paymentMethods <-
+                Remote.getPaymentMethods
+                        $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken
+                                           , offers: ""
+                                           , refresh : ""
+                                           }
             pure $ fromMaybe
-                        {-- (mkPaymentPageState sdkParams paymentMethods) --}
-                        (mkPaymentPageState sdkParams)
+                        (mkPaymentPageState sdkParams paymentMethods)
                         optPPState
         Just state -> pure state
 

@@ -48,7 +48,7 @@ readSDKParams payload = log "SDKParams" $ SDKParams
   {-- , itemCount  : fromMaybe (negate 1) $ IntUtil.fromString $ _getString "udf_itemCount" --}
   {-- , cashEnabled: (_getString "udf_cashDisabled") /= "true" --}
   , activityRecreated : (_getString "activity_recreated") == "true"
-  {-- , environment:    if _getString "environment" == "" then "sandbox" else _getString "environment" --}
+  , environment:    if _getString "environment" == "" then "sandbox" else _getString "environment"
   , preferedBanks : _getArrayBanks "preferedBanks"
   {-- , billerCardEditable : _getString "billerCardEditable" --}
   {-- , fullfilment: _getArrayFullfilment "fullfilment" --}

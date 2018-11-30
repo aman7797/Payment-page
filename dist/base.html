@@ -94,14 +94,24 @@
             password: ""
         };
 
+        var headers = {
+            version: "2018-07-01"
+        };
+
+        var config = { auth, headers };
+
+
         var params = new URLSearchParams();
         params.append('order_id', order_id);
         params.append('amount', '123.0');
-        axios.post('https://sandbox.juspay.in/orders', params, {auth}).then(({data, status}) => {
+        params.append('customer_id', '9438317998a');
+        params.append('customer_phone', '9438317998');
+        params.append('options.get_client_auth_token', 'true');
+        axios.post('https://sandbox.juspay.in/order/create', params, config).then(({data, status}) => {
             if (status != 200) {
                 return console.error("Order create failed");
             }
-            console.log('order created ', data, status);
+            console.warn('order created ', data, status);
             JP.init({
                 entry_point: 'content',
                 order_id,
@@ -109,8 +119,9 @@
                 merchant_id: 'Ashutosh',
                 customer_phone_number: '9438317998',
                 customer_id: '9438317998a',
+                sessionToken: data.juspay.client_auth_token,
                 environment: "sandbox",
-                integration: "redirect"
+                integration: "iframe"
             })
         });
     // }

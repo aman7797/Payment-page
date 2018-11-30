@@ -17,34 +17,15 @@ import Presto.Core.Flow (Flow)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
 import UI.Utils (os)
 
-{-- mkPaymentPageState :: SDKParams -> PaymentSourceResp -> PaymentPageState --}
-{-- mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput) --}
-
-{--     where --}
-
-{--         mkPPInput = --}
-{--           PaymentPageInput --}
-{--             { piInfo : paymentMethods --}
-{--             , customer : mkCustomer --}
-{--             , orderInfo : mkOrderInfo sdkParams --}
-{--             , sdk : sdkParams --}
-{--             } --}
-
-{--         mkCustomer = --}
-{--             { mobileNumber : Just (sdkParams ^. _customerMobile) --}
-{--             , id : Just (sdkParams ^. _customerId) --}
-{--             , clientId : sdkParams ^. _clientId --}
-{--             } --}
-
-mkPaymentPageState :: SDKParams -> PaymentPageState
-mkPaymentPageState sdkParams = (initialState mkPPInput)
+mkPaymentPageState :: SDKParams -> PaymentSourceResp -> PaymentPageState
+mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput)
 
     where
 
         mkPPInput =
           PaymentPageInput
-            {-- { piInfo : paymentMethods --}
-            { customer : mkCustomer
+            { piInfo : paymentMethods
+            , customer : mkCustomer
             , orderInfo : mkOrderInfo sdkParams
             , sdk : sdkParams
             }
@@ -54,7 +35,6 @@ mkPaymentPageState sdkParams = (initialState mkPPInput)
             , id : Just (sdkParams ^. _customerId)
             , clientId : sdkParams ^. _clientId
             }
-
 
 
 

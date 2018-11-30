@@ -125,7 +125,7 @@ newtype CallBack = CallBack { serial_no:: String
 
 newtype PaymentPageInput = PaymentPageInput
   { customer  :: Customer
-  {-- , piInfo    :: PaymentSourceResp --}
+  , piInfo    :: PaymentSourceResp
   , orderInfo :: OrderInfo
   {-- , upiInfo   :: UPIInfo --}
   , sdk :: SDKParams
@@ -234,7 +234,7 @@ newtype SDKParams = SDKParams
   , customerId :: String
   , clientId :: String
   , activityRecreated :: Boolean
-  {-- , environment :: String --}
+  , environment :: String
   {-- , fullfilment :: Array CreditCard --}
   , preferedBanks :: Array String
   {-- , billerCardEditable :: String --}
