@@ -68,6 +68,9 @@ swipeEnabled = prop (PropName "swipeEnable")
 becomeFirstResponder :: forall i. String -> Prop i
 becomeFirstResponder = prop (PropName "becomeFirstResponder")
 
+label :: forall i. String -> Prop i
+label = prop (PropName "label")
+
 -- | String
 placeHolder :: forall i. String -> Prop i
 placeHolder = prop (PropName "placeHolder")

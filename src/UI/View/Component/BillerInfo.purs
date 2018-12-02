@@ -48,6 +48,7 @@ labelText value marginTop =
         [ height $ V 26
         , width MATCH_PARENT
         , margin $ MarginTop marginTop
+        , fontStyle "Arial-Regular"
         , color "#9B9B9B"
         , gravity LEFT
         , text value
@@ -59,6 +60,7 @@ contentText value marginTop =
         [ height $ V 38
         , width MATCH_PARENT
         , margin $ MarginTop marginTop
+        , fontStyle "Arial-Regular"
         , color "#4A4D4E"
         , gravity LEFT
         , text value

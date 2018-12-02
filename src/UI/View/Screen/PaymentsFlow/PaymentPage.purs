@@ -72,8 +72,9 @@ headingView =
         [ textView
             [ height $ V 50
             , width MATCH_PARENT
-            , textSize 42
+            , textSize 40
             , color "#4A4D4E"
+            , fontStyle "Arial-Regular"
             , text "Choose Payment Mode"
             , gravity LEFT
             ]
@@ -225,6 +226,7 @@ tabLayout push state value =
         , width $ V 334
         , orientation VERTICAL
         , margin $ MarginBottom 10
+        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         ] <>> implementation (SectionSelectionOverride value.tab))
         [ linearLayout
             [ height $ V 25
@@ -245,6 +247,7 @@ tabLayout push state value =
                 , width $ V 34
                 , text "OFFER"
                 , textSize 10
+                , fontStyle "Arial-Regular"
                 , margin $ Margin 5 10 0 0
                 , color "#E60000"
                 ]
@@ -273,6 +276,7 @@ tabLayout push state value =
                 , width $ V 133
                 , weight 1.0
                 , margin $ MarginLeft 30
+                , fontStyle "Arial-Regular"
                 , text value.text
                 , textSize 24
                 , color "#545758"
@@ -290,13 +294,13 @@ mainScrollView children =
     linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
-        , background "#ff0000"
+        {-- , background "#ff0000" --}
         , gravity CENTER_HORIZONTAL
         ]
         [ scrollView
             [ height MATCH_PARENT
             , width $ V 1440
-            , background "#00ff00"
+            {-- , background "#00ff00" --}
             , gravity CENTER_HORIZONTAL
             ]
             [ linearLayout
@@ -323,6 +327,7 @@ poweredByView =
             [ height $ V 18
             , width $ V 96
             , textSize 16
+            , fontStyle "Arial-Regular"
             , text "Powered by:"
             , color "#9B9B9B"
             ]

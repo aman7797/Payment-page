@@ -44,6 +44,7 @@ view push state _ =
         , width MATCH_PARENT
         , orientation VERTICAL
         , padding $ Padding 30 22 30 0
+        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         , background "#FFFFFF"
         ]
         [ headingView
@@ -69,8 +70,9 @@ headingView =
             [ height MATCH_PARENT
             , width MATCH_PARENT
             , text "Enter your VPA"
-            , textSize 28
-            , color "#545758"
+            , fontStyle "Arial-Regular"
+            , textSize 24
+            , color "#363636"
             ]
         ]
 
@@ -118,6 +120,7 @@ contentText value =
         , width MATCH_PARENT
         , margin value.margin
         , color "#333333"
+        , fontStyle "Arial-Regular"
         , gravity LEFT
         , text value.text
         , textSize value.textSize
@@ -142,13 +145,15 @@ editView value implementation =
         , margin value.margin
         , gravity CENTER_VERTICAL
         , orientation HORIZONTAL
-        , stroke "1,#E9E9E9"
+        , stroke "2,#CCCCCC"
+        , cornerRadius 3.0
         , gravity CENTER
         ]
         [ editText
             ([ textSize 20
             , height $ V 23
             , width MATCH_PARENT
+            , fontStyle "Arial-Regular"
             , hint value.hint
             , margin $ MarginLeft 20
             ] <>> implementation)
@@ -170,6 +175,7 @@ payButton =
             [ height $ V 23
             , width MATCH_PARENT
             , gravity CENTER
+            , fontStyle "Arial-Regular"
             , text "Pay Securely"
             ]
         ]
