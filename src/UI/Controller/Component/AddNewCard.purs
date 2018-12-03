@@ -38,6 +38,7 @@ data Action
     | CardNumberChanged String
     | CVVChanged String
     | ExpiryDateChanged String
+    | NameChanged String
     | Focus FieldType Boolean
     {-- | Key Keyboard.Action --}
 
@@ -131,7 +132,7 @@ eval =
               if action == CVV then (\state -> state # _cvvFocusIndex .~ (length $ state ^. _formState ^. _cvv ^. _value)) else _cvvFocusIndex .~ -1
              {-- handleFocus action bool --}
 
-         {-- Key key -> identity --}
+         _ -> identity
 
 handleFocus :: FieldType -> Boolean -> State -> State
 handleFocus CardNumber bool state@(State st) =
@@ -229,6 +230,7 @@ data Overrides
     | CardImage
     | CardNumberLabel
     | CardNumberEditField
+    | NameEditField
     | ExpiryDateLabel
     | ExpiryDateEditField
     | CvvLabel
@@ -326,6 +328,13 @@ overrides CardNumberEditField push state =
              , letterSpacing 2.67
              ]
 
+overrides NameEditField push state =
+        [  onChange push (NameChanged)
+        {-- , focus $ getFocus state CardNumber --}
+        {-- , onFocus push (Focus CardNumber) --}
+        {-- , id $ getFieldTypeID CardNumber --}
+        {-- , pattern "^([0-9]| )+$,24" --}
+        ]
 -- EXP
 overrides ExpiryDateLabel push state =
     let expStatus = state ^. _formState ^. _expiryDate ^. _status

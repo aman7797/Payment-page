@@ -50,7 +50,7 @@ view push state parent =
             , weight : 0.0
             , margin : MarginTop 30
             }
-        , editField (implementation $ S "")
+        , editField (implementation NameEditField)
             { hint : "Name on the Card"
             , width : MATCH_PARENT
             , weight : 0.0
