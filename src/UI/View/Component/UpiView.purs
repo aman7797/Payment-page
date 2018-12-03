@@ -28,6 +28,7 @@ import UI.Constant.FontStyle.Default as FontStyle
 import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 
+import UI.View.Component.CommonView
 import UI.Controller.Component.UpiView
 
 import UI.Utils
@@ -47,33 +48,19 @@ view push state _ =
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         , background "#FFFFFF"
         ]
-        [ headingView
-        , editView
+        [ headingView {text : "Enter your VPA"}
+        , editField (overrides push state UPIeditOverride)
             { hint : "123456@UPI"
             , width: MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
             }
-            (overrides push state UPIeditOverride)
         , infoView
-        , payButton
-        ]
-
-
-headingView =
-    linearLayout
-        [ height $ V 33
-        , width $ V 200
-        , orientation HORIZONTAL
-        ]
-        [ textView
-            [ height MATCH_PARENT
-            , width MATCH_PARENT
-            , text "Enter your VPA"
-            , fontStyle "Arial-Regular"
-            , textSize 24
-            , color "#363636"
-            ]
+        , buttonView (overrides push state BtnPay)
+            { width : V 300
+            , margin : MarginTop 30
+            , text : "Pay Securely"
+            }
         ]
 
 
@@ -125,60 +112,5 @@ contentText value =
         , text value.text
         , textSize value.textSize
         ]
-
-
-
-editView
-    :: forall w
-     . { hint :: String
-       , width :: Length
-       , weight :: Number
-       , margin :: Margin
-       }
-    -> Props (Effect Unit)
-    -> PrestoDOM (Effect Unit) w
-editView value implementation =
-    linearLayout
-        [ height $ V 60
-        , width value.width
-        , weight value.weight
-        , margin value.margin
-        , gravity CENTER_VERTICAL
-        , orientation HORIZONTAL
-        , stroke "2,#CCCCCC"
-        , cornerRadius 3.0
-        , gravity CENTER
-        ]
-        [ editText
-            ([ textSize 20
-            , height $ V 23
-            , width MATCH_PARENT
-            , fontStyle "Arial-Regular"
-            , hint value.hint
-            , margin $ MarginLeft 20
-            ] <>> implementation)
-        ]
-
-
-
-payButton :: forall w. PrestoDOM (Effect Unit) w
-payButton =
-    linearLayout
-        [ height $ V 60
-        , width $ V 300
-        , orientation HORIZONTAL
-        , gravity CENTER
-        , margin $ MarginTop 30
-        , background "#E9E9E9"
-        ]
-        [ textView
-            [ height $ V 23
-            , width MATCH_PARENT
-            , gravity CENTER
-            , fontStyle "Arial-Regular"
-            , text "Pay Securely"
-            ]
-        ]
-
 
 

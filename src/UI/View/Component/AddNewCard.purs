@@ -8,10 +8,10 @@ import Foreign.Object as Object
 import Data.String (length)
 import Effect (Effect)
 import Engineering.Helpers.Types.Accessor (_cardMethod, _cvv, _cvvFocusIndex, _formState, _value)
-import PrestoDOM 
+import PrestoDOM
 import Data.String (length, drop)
 import Engineering.Helpers.Commons (log)
-import Engineering.Helpers.Types.Accessor (_cardIssuer, _cardMethod, _cardNumber, _currentFocused, _cvv, _cvvFocusIndex, _formState, _name, _value)
+import Engineering.Helpers.Types.Accessor (_cardIssuer, _cardMethod, _cardNumber, _currentFocused, _cvv, _cvvFocusIndex, _formState, _name, _value, _proceedButtonState)
 import JBridge (getKeyboardHeight)
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Types.DomAttributes (Gravity(..), InputType(..), Length(..), Margin(..), Orientation(..), Padding(..), Visibility(..))
@@ -24,6 +24,7 @@ import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Controller.Component.AddNewCard (Action, Method(..), Overrides(..), State, getCardStatus, overrides)
+import UI.View.Component.CommonView
 import UI.Utils
 import Validation (ValidationState(..))
 
@@ -40,41 +41,38 @@ view
 	-> PrestoDOM (Effect Unit) w
 view push state parent =
     let implementation = \a -> overrides a push state
+        cardMethod = state ^. _cardMethod
 	 in mainView
-        [ headingView
-        , editView
+        [ headingView {text : "Add New Card"}
+        , editField (implementation CardNumberEditField)
             { hint : "Card Number"
             , width : MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
             }
-            (implementation CardNumberEditField)
-        , editView
+        , editField (implementation $ S "")
             { hint : "Name on the Card"
             , width : MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
             }
-            (implementation $ S "")
         , horizontalView
-            [ editView
+            [ editField (implementation ExpiryDateEditField)
                 { hint : "Expiry(mm/yy)"
                 , width : V 100
                 , weight : 1.0
                 , margin : MarginLeft 0
                 }
-                (implementation ExpiryDateEditField)
-            , editView
+            , editField (implementation CvvEditField)
                 { hint : "CVV"
                 , width : V 100
                 , weight : 1.0
                 , margin : MarginLeft 40
                 }
-                (implementation CvvEditField)
             ]
         , saveForLaterView
         {-- , horizontalView --}
-        {--     [ editView --}
+        {--     [ editField --}
         {--         { hint : "Mobile Number" --}
         {--         , width : V 100 --}
         {--         , weight : 1.0 --}
@@ -83,7 +81,11 @@ view push state parent =
         {--         (implementation $ S "") --}
         {--     , linearLayout [ height $ V 1, width $ V 100,  weight 1.0 ] [] --}
         {--     ] --}
-        , payButton push state
+        , buttonView (implementation BtnPay)
+            { width : V 300
+            , margin : MarginTop 30
+            , text : "Pay Securely"
+            }
         ]
 
                 {-- overrides CardNumberLabel push state ) --}
@@ -91,56 +93,6 @@ view push state parent =
                 {-- overrides push state ) --}
                 {--  overrides CvvLabel push state ) --}
                 {-- overrides push state ) --}
-
---- common
-headingView =
-    linearLayout
-        [ height $ V 33
-        , width $ V 200
-        , orientation HORIZONTAL
-        , margin $ MarginTop 40
-        ]
-        [ textView
-            [ height MATCH_PARENT
-            , width MATCH_PARENT
-            , text "Add New Card"
-            , fontStyle "Arial-Regular"
-            , textSize 24
-            , color "#363636"
-            ]
-        ]
-
-
-editView
-    :: forall w
-     . { hint :: String
-       , width :: Length
-       , weight :: Number
-       , margin :: Margin
-       }
-    -> Props (Effect Unit)
-    -> PrestoDOM (Effect Unit) w
-editView value implementation =
-    linearLayout
-        [ height $ V 60
-        , width value.width
-        , weight value.weight
-        , margin value.margin
-        , gravity CENTER_VERTICAL
-        , orientation HORIZONTAL
-        , stroke "2,#CCCCCC"
-        , cornerRadius 3.0
-        , gravity CENTER
-        ]
-        [ editText
-            ([ textSize 20
-            , height $ V 25
-            , width MATCH_PARENT
-            {-- , hint value.hint --}
-            , label value.hint
-            , margin $ Margin 20 0 0 0
-            ] <>> implementation)
-        ]
 
 
 horizontalView children =
@@ -186,38 +138,14 @@ mainView
     -> PrestoDOM (Effect Unit) w
 mainView children =
     linearLayout
-        [ height $ V 550
+        [ height $ V 516
         , width MATCH_PARENT
-        , padding $ PaddingHorizontal 30 30
+        , padding $ Padding 30 40 30 0
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         , orientation VERTICAL
         , background "#FFFFFF"
         ]
         children
-
-
-
---- common
-payButton :: forall w. (Action -> Effect Unit) -> State -> PrestoDOM (Effect Unit) w
-payButton push state =
-    linearLayout
-        ([ height $ V 60
-        , width $ V 300
-        , orientation HORIZONTAL
-        , gravity CENTER
-        , margin $ MarginTop 30
-        , background "#1BB3E8"
-        , cornerRadius 8.0
-        ] <>> overrides BtnPay push state)
-        [ textView
-            [ height $ V 22
-            , width MATCH_PARENT
-            , gravity CENTER
-            , text "Pay Securely"
-            , textSize 20
-            , color "#ffffff"
-            ]
-        ]
 
 
 

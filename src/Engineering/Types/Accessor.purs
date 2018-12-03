@@ -311,6 +311,9 @@ _scroll = lens (unwrap >>> _.scroll) (\oldrec newval -> wrap ((unwrap oldrec) { 
 _billerCard :: forall a b c. Newtype a { billerCard :: c | b} => Lens' a c
 _billerCard = lens (unwrap >>> _.billerCard) (\oldrec newval -> wrap ((unwrap oldrec) { billerCard = newval }))
 
+_proceedButtonState :: forall a b c. Newtype a { proceedButtonState :: c | b} => Lens' a c
+_proceedButtonState = lens (unwrap >>> _.proceedButtonState) (\oldrec newval -> wrap ((unwrap oldrec) { proceedButtonState = newval }))
+
 _supportedMethods :: forall a b c. Newtype a { supportedMethods :: c | b} => Lens' a c
 _supportedMethods = lens (unwrap >>> _.supportedMethods) (\oldrec newval -> wrap ((unwrap oldrec) { supportedMethods = newval }))
 

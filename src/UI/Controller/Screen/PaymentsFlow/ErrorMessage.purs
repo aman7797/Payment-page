@@ -10,18 +10,16 @@ import Engineering.Helpers.Utils (setDelay)
 import PrestoDOM (continueWithCmd, onBackPressed)
 import PrestoDOM.Types.Core (Eval, Props)
 import PrestoDOM.Utils (exit)
-import UI.Controller.Component.Button as Button
 
 data ScreenInput = NetworkError | ErrorMessage String | ToastMessage String
 
 type ScreenOutput = Action
 
-data Action = Retry | UserAbort | Button1Action Button.Action | ExitAnimation Action
+data Action = Retry | UserAbort  | ExitAnimation Action
 
 newtype GenericErrorState = GenericErrorState {
   error :: String
 , typ :: ErrorType
-, button1State :: Button.State
 }
 
 data ErrorType = Error | Toast 
@@ -41,7 +39,6 @@ initialState input = GenericErrorState
     , typ : case input of
                 ToastMessage _ -> Toast
                 _ -> Error
-    , button1State : Button.initialState
     }
 
 derive instance genericErrorStateNewtype :: Newtype GenericErrorState _
@@ -51,7 +48,6 @@ eval :: Action -> GenericErrorState -> Eval Action ScreenOutput GenericErrorStat
 eval (ExitAnimation act) state = exit act
 eval Retry state = continueWithCmd state [ runScrenAnimations state Retry ]
 eval UserAbort state = continueWithCmd state [ runScrenAnimations state UserAbort ]
-eval (Button1Action action) state = continueWithCmd state [ runScrenAnimations state Retry ]
 
 runScrenAnimations :: GenericErrorState -> Action → Effect Action
 runScrenAnimations (GenericErrorState state) action = do

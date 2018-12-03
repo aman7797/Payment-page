@@ -21,6 +21,7 @@ import UI.Utils (FieldType(..), os, getFieldTypeID)
 
 data Action
     = Submit
+    | VPAchanged String
 
 
 
@@ -40,9 +41,11 @@ initialState = State $
 
 data Overrides
     = UPIeditOverride
+    | BtnPay
 
 
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
 overrides push state =
     case _ of
-         UPIeditOverride -> []
+         UPIeditOverride -> [ onChange push VPAchanged ]
+         _ -> []

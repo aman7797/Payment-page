@@ -21,7 +21,6 @@ import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
 import UI.Utils (bringToFront, os)
-import UI.View.Component.Button as Button
 
 
 screen :: ScreenInput -> Screen Action GenericErrorState ScreenOutput

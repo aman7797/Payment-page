@@ -14,7 +14,6 @@ import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Controller.Screen.PaymentsFlow.GenericError (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
-import UI.View.Component.Button as Button
 import UI.Utils (bringToFront)
 
 
@@ -89,12 +88,11 @@ view push state =
 				, lineHeight "22px"
 				, gravity LEFT
 				] <> overrides "ErrorHelpText" push state )
-			, (mapDom Button.view push (state ^. _button1State) Button1Action 
-				[ height_c $ V 46
-				, width_c $ V 204
-				, margin_c (MarginTop 30)
-				, override_c "t_btnText" "RETRY WITH DEBIT CARD"
-				])
+			{-- , (Button.view (push <<< Button1Action ) (state ^. _button1State) --}
+                {-- {  width : V 204 --}
+			{-- 	, margin : MarginTop 30 --}
+			{-- 	, text : "RETRY WITH DEBIT CARD" --}
+                {-- }) --}
 			]
 		]
 

@@ -86,7 +86,6 @@ handleGenericError headers req apiConfig errorType= do
   case action of
     ErrorMessageC.Retry -> mkRestClientCall headers req (defaultConfig apiConfig.noOfRetries)
     ErrorMessageC.UserAbort ->  if apiConfig.shouldExitScreenWhileBackPress then (pure <<< Left) (Err.ExitApp "ApiFailed") else (pure <<< Left) (Err.ApiFailure Constants.userAbortedErrorResponse)
-    (ErrorMessageC.Button1Action _) -> mkRestClientCall headers req (defaultConfig apiConfig.noOfRetries)
     ErrorMessageC.ExitAnimation _ -> if apiConfig.shouldExitScreenWhileBackPress then (pure <<< Left) (Err.ExitApp "ApiFailed") else (pure <<< Left) (Err.ApiFailure Constants.userAbortedErrorResponse)
 
 mkFakeRestClientCall :: forall a b. Encode a => Decode b => RestEndpoint a b => Headers -> a -> Int -> FlowBT PaymentPageError (Either PaymentPageError b)
