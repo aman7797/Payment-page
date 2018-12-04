@@ -35,6 +35,7 @@ import UI.View.Component.AddNewCard as AddNewCard
 import UI.View.Component.CardLayout as CardLayout
 import UI.View.Component.BillerInfo as BillerInfo
 import UI.View.Component.UpiView as UpiView
+import UI.View.Component.TabLayout as TabLayout
 
 import UI.Helpers.SingleSelectRadio as Radio
 
@@ -47,7 +48,7 @@ screen ppState =
 	, eval
     }
 
-
+--- 1244  |  1020
 view
 	:: forall w
 	. (PaymentPageUIAction -> Effect Unit)
@@ -93,7 +94,7 @@ paymentPageView push state =
         , orientation HORIZONTAL
         ]
         [ paymentView push state
-        , BillerInfo.view
+        {-- , BillerInfo.view --}
         ]
 
 paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
@@ -101,7 +102,7 @@ paymentView push state =
     linearLayout
         [ height $ V 440
         , weight 1.0
-        , width $ V 860
+        , width $ V 868
         , orientation HORIZONTAL
         ]
         [ tabView push state
@@ -118,7 +119,7 @@ tabView push state =
         , width $ V 334
         , orientation VERTICAL
         ]
-        $ Radio.singleSelectRadio (push <<< SectionSelected) radioState tabLayout tabSelectionTheme
+        $ Radio.singleSelectRadio (push <<< SectionSelected) radioState TabLayout.view tabSelectionTheme
             [ { image : "name"
               , text : "Wallets"
               , offer : false
@@ -150,7 +151,7 @@ commonView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageStat
 commonView push state =
     relativeLayout
         [ height MATCH_PARENT
-        , width $ V 334
+        , width $ V 564
         , weight 1.0
         , orientation VERTICAL
         , padding $ PaddingHorizontal 32 32
@@ -223,82 +224,6 @@ defaultView push state =
 
 
 
-tabLayout
-    :: forall r w
-     . { image :: String
-       , text :: String
-       , offer :: Boolean
-       , tab :: PaymentSection
-       , imageUrl :: String
-       | r
-       }
-    -> Props (Effect Unit)
-    -> PrestoDOM (Effect Unit) w
-tabLayout value selectionTheme =
-     linearLayout
-        ([ height $ V 100
-        , width $ V 334
-        , orientation VERTICAL
-        , margin $ MarginBottom 10
-        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
-        ] <>> selectionTheme)
-        [ linearLayout
-            [ height $ V 25
-            , width MATCH_PARENT
-            , visibility $ if value.offer
-                              then VISIBLE
-                              else INVISIBLE
-            , orientation HORIZONTAL
-            ]
-            [ imageView
-                [ height $ V 10
-                , width $ V 21
-                , margin $ MarginTop 10
-                , imageUrl "offer_banner"
-                ]
-            , textView
-                [ height $ V 12
-                , width $ V 34
-                , text "OFFER"
-                , textSize 10
-                , fontStyle "Arial-Regular"
-                , margin $ Margin 5 10 0 0
-                , color "#E60000"
-                ]
-            ]
-        , linearLayout
-            [ height $ V 50
-            , width MATCH_PARENT
-            , orientation HORIZONTAL
-            , padding $ PaddingLeft 30
-            , gravity $ CENTER_VERTICAL
-            ]
-            [ linearLayout
-                [ height $ V 30
-                , width $ V 40
-                , gravity CENTER
-                ]
-                [ imageView
-                    [ height MATCH_PARENT
-                    , width MATCH_PARENT
-                    , gravity CENTER
-                    , imageUrl value.imageUrl
-                    ]
-                ]
-            , textView
-                [ height $ V 28
-                , width $ V 133
-                , weight 1.0
-                , margin $ MarginLeft 30
-                , fontStyle "Arial-Regular"
-                , text value.text
-                , textSize 24
-                , color "#545758"
-                ]
-            ]
-        ]
-
-
 
 mainScrollView
     :: forall w
@@ -311,7 +236,7 @@ mainScrollView push children =
         , width MATCH_PARENT
         {-- , background "#ff0000" --}
         , gravity CENTER_HORIZONTAL
-        , onResize push (const Resized)
+        , onResize push (Resized)
         ]
         [ scrollView
             [ height MATCH_PARENT

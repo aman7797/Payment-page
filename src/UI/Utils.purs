@@ -31,6 +31,7 @@ foreign import loaderAfterRender :: String -> Unit
 
 foreign import logAny :: forall a. a -> a
 
+foreign import getScreenWidth :: Effect Int
 
 data FieldType = CardNumber | ExpiryDate | CVV | SavedCardCVV | NONE -- | Name | SavedForLater
 
@@ -45,6 +46,41 @@ getFieldTypeID =
          CVV        -> "987654323"
          SavedCardCVV -> "987654329"
          NONE       -> "987654320" -- replace with text field selection condition
+
+
+data RenderType
+    = DesktopFit    -- c >= 1440
+    | DesktopNormal -- [1244, 1440)
+    | DesktopSmall  -- [1020, 1244)
+    | MobileLarge   -- [564, 1020)
+    | MobileSmall   -- c < 564
+
+-- | Test whether a value is between a minimum (inclusive) and a maximum (exclusive).
+-- | For example:
+-- |
+-- | ``` purescript
+-- | let f = between 0 10
+-- | f 0    == true
+-- | f (-5) == false
+-- | f 5    == true
+-- | f 9   == false
+-- | f 10   == false
+-- | f 15   == false
+-- | ```
+betweenROpen :: forall a. Ord a => a -> a -> a -> Boolean
+betweenROpen low hi x
+  | x < low = false
+  | x >= hi = false
+  | true = true
+
+getRenderType :: Int -> RenderType
+getRenderType c
+    | c >= 1440                = DesktopFit
+    | betweenROpen 1244 1440 c = DesktopNormal
+    | betweenROpen 1020 1244 c = DesktopSmall
+    | betweenROpen  564 1020 c = MobileLarge
+    | true                     = MobileSmall
+
 
 
 resetText :: Array String -> Effect Unit

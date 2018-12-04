@@ -17,8 +17,8 @@ import Presto.Core.Flow (Flow)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
 import UI.Utils (os)
 
-mkPaymentPageState :: SDKParams -> PaymentSourceResp -> PaymentPageState
-mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput)
+mkPaymentPageState :: SDKParams -> PaymentSourceResp -> Int -> PaymentPageState
+mkPaymentPageState sdkParams paymentMethods width = (initialState mkPPInput)
 
     where
 
@@ -28,6 +28,7 @@ mkPaymentPageState sdkParams paymentMethods = (initialState mkPPInput)
             , customer : mkCustomer
             , orderInfo : mkOrderInfo sdkParams
             , sdk : sdkParams
+            , screenWidth : width
             }
 
         mkCustomer =

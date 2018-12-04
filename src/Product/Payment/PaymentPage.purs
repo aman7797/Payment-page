@@ -49,7 +49,7 @@ import UI.Controller.Component.AddNewCard as A
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 import UI.Flow as UI
-import UI.Utils (logit, os)
+import UI.Utils (logit, os, getScreenWidth)
 import UI.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
 import UI.View.Screen.PaymentsFlow.Loader as Loader
 import UI.View.Screen.PaymentsFlow.Toast as Toast
@@ -133,6 +133,7 @@ paymentPageFlow sdkParams optPPState = do
 
     ppState <- case optPPState of
         Nothing -> do
+            screenWidth <- liftFlowBT $ doAff do liftEffect $ getScreenWidth
             paymentMethods <-
                 Remote.getPaymentMethods
                         $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken
@@ -140,7 +141,7 @@ paymentPageFlow sdkParams optPPState = do
                                            , refresh : ""
                                            }
             pure $ fromMaybe
-                        (mkPaymentPageState sdkParams paymentMethods)
+                        (mkPaymentPageState sdkParams paymentMethods screenWidth)
                         optPPState
         Just state -> pure state
 

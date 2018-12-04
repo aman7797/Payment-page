@@ -129,6 +129,7 @@ newtype PaymentPageInput = PaymentPageInput
   , orderInfo :: OrderInfo
   {-- , upiInfo   :: UPIInfo --}
   , sdk :: SDKParams
+  , screenWidth :: Int
   }
 
 data PaymentMethod

@@ -360,6 +360,12 @@ _currentOverlay = lens (unwrap >>> _.currentOverlay) (\oldrec newval -> wrap ((u
 _sections :: forall a b c. Newtype a { sections :: c | b} => Lens' a c
 _sections = lens (unwrap >>> _.sections) (\oldrec newval -> wrap ((unwrap oldrec) { sections = newval }))
 
+_screenWidth :: forall a b c. Newtype a { screenWidth :: c | b} => Lens' a c
+_screenWidth = lens (unwrap >>> _.screenWidth) (\oldrec newval -> wrap ((unwrap oldrec) { screenWidth = newval }))
+
+_renderType :: forall a b c. Newtype a { renderType :: c | b} => Lens' a c
+_renderType = lens (unwrap >>> _.renderType) (\oldrec newval -> wrap ((unwrap oldrec) { renderType = newval }))
+
 
 
 _sectionSelected :: forall a b c. Newtype a { sectionSelected :: c | b} => Lens' a c

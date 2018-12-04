@@ -60,6 +60,7 @@ newtype UIState = UIState
     , sections :: Array PaymentSection
     , addNewCardState :: AddNewCard.State
     , upiViewState :: UpiView.State
+    , renderType :: RenderType
     }
 
 derive instance paymentPageStateNewtype :: Newtype PaymentPageState _
@@ -89,7 +90,7 @@ data PaymentPageUIAction
   | SectionSelected (Radio.RadioSelected)
   | AddNewCardAction AddNewCard.Action
   | UpiViewAction UpiView.Action
-  | Resized
+  | Resized Int
 -- Exit Type
 
 data PaymentPageResponse
@@ -114,10 +115,12 @@ initialState ppInput = PaymentPageState
 
 defaultUIState :: PaymentPageInput -> UIState
 defaultUIState ppInput = UIState
-    { sectionSelected  : Radio.defaultState Radio.NothingSelected
+    {-- { sectionSelected  : Radio.defaultState Radio.NothingSelected --}
+    { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 1
     , sections : [ Wallets, Cards, NetBanking, UPI]
     , addNewCardState : AddNewCard.initialState { supportedMethods : [], cardMethod : AddNewCard.AddNewCard}
     , upiViewState : UpiView.initialState
+    , renderType : getRenderType $ ppInput ^. _screenWidth
     }
 
 eval
@@ -141,7 +144,7 @@ eval =
     AddNewCardAction cardAction ->
         continue <<< (_uiState <<< _addNewCardState %~ AddNewCard.eval cardAction)
 
-    Resized -> continue <<< logAny
+    Resized width -> continue <<< (_uiState <<< _renderType .~ getRenderType width)
 
     _ -> continue
 

@@ -18,6 +18,10 @@ exports.logAny = function(a) {
   return a;
 }
 
+exports.getScreenWidth = function () {
+  return (window.innerWidth ? window.innerWidth : 0);
+}
+
 exports.getOs = function () {
   var userAgent = navigator.userAgent;
   if (!userAgent)
