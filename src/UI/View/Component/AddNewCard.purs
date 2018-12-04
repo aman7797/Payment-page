@@ -24,7 +24,7 @@ import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Controller.Component.AddNewCard (Action, Method(..), Overrides(..), State, getCardStatus, overrides)
-import UI.View.Component.CommonView
+import UI.Helpers.CommonView
 import UI.Utils
 import Validation (ValidationState(..))
 

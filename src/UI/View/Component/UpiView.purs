@@ -28,7 +28,7 @@ import UI.Constant.FontStyle.Default as FontStyle
 import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 
-import UI.View.Component.CommonView
+import UI.Helpers.CommonView
 import UI.Controller.Component.UpiView
 
 import UI.Utils

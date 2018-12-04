@@ -1,4 +1,4 @@
-module UI.View.Component.CommonView where
+module UI.Helpers.CommonView where
 
 import Effect (Effect)
 import Prelude

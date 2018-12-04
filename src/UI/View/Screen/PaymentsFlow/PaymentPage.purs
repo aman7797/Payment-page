@@ -52,9 +52,9 @@ view
 	-> PaymentPageState
 	-> PrestoDOM (Effect Unit) w
 view push ppState  =
-    mainScrollView
+    mainScrollView push
         [ headingView
-        , paymentView push ppState
+        , paymentPageView push ppState
         , poweredByView
         ]
 
@@ -82,18 +82,30 @@ headingView =
 
 
 
-paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
-paymentView push state =
+paymentPageView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
+paymentPageView push state =
     linearLayout
         [ height $ V 440
         , weight 1.0
         , width MATCH_PARENT
         , orientation HORIZONTAL
         ]
-        [ tabView push state
-        , commonView push state
+        [ paymentView push state
         , BillerInfo.view
         ]
+
+paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
+paymentView push state =
+    linearLayout
+        [ height $ V 440
+        , weight 1.0
+        , width $ V 860
+        , orientation HORIZONTAL
+        ]
+        [ tabView push state
+        , commonView push state
+        ]
+
 
 
 tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
@@ -288,24 +300,28 @@ tabLayout push state value =
 
 mainScrollView
     :: forall w
-     . Array (PrestoDOM (Effect Unit) w)
+     . (PaymentPageUIAction  -> Effect Unit)
+    -> Array (PrestoDOM (Effect Unit) w)
     -> PrestoDOM (Effect Unit) w
-mainScrollView children =
+mainScrollView push children =
     linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
         {-- , background "#ff0000" --}
         , gravity CENTER_HORIZONTAL
+        , onResize push (const Resized)
         ]
         [ scrollView
             [ height MATCH_PARENT
-            , width $ V 1440
+            {-- , width $ V 1440 --}
+            , width MATCH_PARENT
             {-- , background "#00ff00" --}
             , gravity CENTER_HORIZONTAL
             ]
             [ linearLayout
                 [ height $ V 950
-                , width $ V 1440
+                {-- , width $ V 1440 --}
+                , width MATCH_PARENT
                 , background "#FAFAFA"
                 , orientation VERTICAL
                 , padding $ PaddingHorizontal 66 56
@@ -318,7 +334,8 @@ mainScrollView children =
 poweredByView =
     linearLayout
         [ height $ V 150
-        , width $ V 1325
+        {-- , width $ V 1325 --}
+        , width MATCH_PARENT
         , orientation HORIZONTAL
         , margin $ MarginTop 40
         , gravity CENTER_VERTICAL

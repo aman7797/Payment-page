@@ -86,6 +86,7 @@ data PaymentPageUIAction
   | SectionSelected PaymentSection
   | AddNewCardAction AddNewCard.Action
   | UpiViewAction UpiView.Action
+  | Resized
 -- Exit Type
 
 data PaymentPageResponse
@@ -132,6 +133,9 @@ eval =
 
     AddNewCardAction cardAction ->
         \ppState -> continue $ ppState # (_uiState <<< _addNewCardState) .~ (logAny $ AddNewCard.eval cardAction $ ppState ^. _uiState ^. _addNewCardState)
+
+    Resized -> continue <<< logAny
+
     _ -> continue
 
 exitPP

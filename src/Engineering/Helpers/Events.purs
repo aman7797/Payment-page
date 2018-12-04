@@ -74,6 +74,10 @@ makeGetUpiAppsEvent orderId push = \ev -> do
 onFocus :: forall a. (a -> Effect Unit) -> (Boolean -> a) -> Prop (Effect Unit)
 onFocus push f = Handler (DOM.EventType "onFocus") (Just <<< (makeEvent (push <<< f <<< toBool)))
 
+onResize :: forall a. (a -> Effect Unit) -> (Boolean -> a) -> Prop (Effect Unit)
+onResize push f = Handler (DOM.EventType "onResize") (Just <<< (makeEvent (push <<< f)))
+
+
 {-- lazyLoadList :: forall a. (a -> Effect Unit ) -> (Unit -> a) -> Prop (Effect Unit) --}
 {-- lazyLoadList push f = Handler (DOM.EventType "lazyLoadList") (Just <<< fn) --}
 {--     where --}
