@@ -357,6 +357,10 @@ _formState = lens (unwrap >>> _.formState) (\oldrec newval -> wrap ((unwrap oldr
 _currentOverlay :: forall a b c. Newtype a { currentOverlay :: c | b} => Lens' a c
 _currentOverlay = lens (unwrap >>> _.currentOverlay) (\oldrec newval -> wrap ((unwrap oldrec) { currentOverlay = newval }))
 
+_sections :: forall a b c. Newtype a { sections :: c | b} => Lens' a c
+_sections = lens (unwrap >>> _.sections) (\oldrec newval -> wrap ((unwrap oldrec) { sections = newval }))
+
+
 
 _sectionSelected :: forall a b c. Newtype a { sectionSelected :: c | b} => Lens' a c
 _sectionSelected = lens (unwrap >>> _.sectionSelected) (\oldrec newval -> wrap ((unwrap oldrec) { sectionSelected = newval }))

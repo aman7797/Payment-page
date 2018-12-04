@@ -38,6 +38,7 @@ import UI.Controller.Component.AddNewCard as AddNewCard
 import  UI.Controller.Component.UpiView  as UpiView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
+import UI.Helpers.SingleSelectRadio as Radio
 import UI.Utils
 
 -- Types
@@ -55,7 +56,8 @@ isSnackBar (Popup err) = GONE
 
 
 newtype UIState = UIState
-    { sectionSelected :: PaymentSection
+    { sectionSelected :: Radio.State
+    , sections :: Array PaymentSection
     , addNewCardState :: AddNewCard.State
     , upiViewState :: UpiView.State
     }
@@ -83,7 +85,8 @@ instance eqPaymentSection :: Eq PaymentSection where
 
 data PaymentPageUIAction
   = BillerCard
-  | SectionSelected PaymentSection
+  {-- | SectionSelected PaymentSection --}
+  | SectionSelected (Radio.RadioSelected)
   | AddNewCardAction AddNewCard.Action
   | UpiViewAction UpiView.Action
   | Resized
@@ -111,7 +114,8 @@ initialState ppInput = PaymentPageState
 
 defaultUIState :: PaymentPageInput -> UIState
 defaultUIState ppInput = UIState
-    { sectionSelected  : UPI
+    { sectionSelected  : Radio.defaultState Radio.NothingSelected
+    , sections : [ Wallets, Cards, NetBanking, UPI]
     , addNewCardState : AddNewCard.initialState { supportedMethods : [], cardMethod : AddNewCard.AddNewCard}
     , upiViewState : UpiView.initialState
     }
@@ -122,7 +126,10 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval =
   case _ of
-    SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab)
+    {-- SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab) --}
+
+    SectionSelected action ->
+        continue <<< (_uiState <<< _sectionSelected %~ Radio.eval action)
 
     AddNewCardAction (SubmitCard AddNewCard.AddNewCard)->
         exitPP $ PayUsing <<< Card <<< mkCardDetails
@@ -132,7 +139,7 @@ eval =
 
 
     AddNewCardAction cardAction ->
-        \ppState -> continue $ ppState # (_uiState <<< _addNewCardState) .~ (logAny $ AddNewCard.eval cardAction $ ppState ^. _uiState ^. _addNewCardState)
+        continue <<< (_uiState <<< _addNewCardState %~ AddNewCard.eval cardAction)
 
     Resized -> continue <<< logAny
 
@@ -168,24 +175,41 @@ mkSavedCardDetails card ppState =
         }
 
 
+tabSelectionTheme :: Radio.SingleSelectTheme
+tabSelectionTheme =
+    { selected : [ background "#e9e9e9"
+                 ]
+    , unselected : [ background "#ffffff"
+                 ]
+    }
+
 data Overrides
     = SectionOverride PaymentSection
-    | SectionSelectionOverride  PaymentSection
+    | SectionSelectionOverride PaymentSection
 
 
 overrides :: (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> Overrides -> Props (Effect Unit)
 overrides push state =
-    case _ of
-        SectionSelectionOverride section ->
-            [ onClick push $ const $ SectionSelected section
-            , background $ if state ^. _uiState ^. _sectionSelected == section
-                           then "#e9e9e9"
-                           else "#ffffff"
-            ]
+    let uiState = state ^. _uiState
+     in case _ of
+    {--     SectionSelectionOverride section -> --}
+    {--         [ onClick push $ const $ SectionSelected section --}
+    {--         , background $ if state ^. _uiState ^. _sectionSelected == section --}
+    {--                        then "#e9e9e9" --}
+    {--                        else "#ffffff" --}
+    {--         ] --}
 
         SectionOverride section ->
-            [ visibility $ if state ^. _uiState ^. _sectionSelected == section
+            let sections = uiState ^. _sections
+                currSection = case uiState ^. _sectionSelected ^. _currentSelected of
+                                Radio.RadioSelected i -> fromMaybe
+                                                             DefaultSection
+                                                             (sections !! i)
+                                Radio.NothingSelected -> DefaultSection
+             in [ visibility $ if section == currSection
                               then VISIBLE
                               else GONE
-            ]
+                ]
+
+        _ -> []
 

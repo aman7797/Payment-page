@@ -36,6 +36,8 @@ import UI.View.Component.CardLayout as CardLayout
 import UI.View.Component.BillerInfo as BillerInfo
 import UI.View.Component.UpiView as UpiView
 
+import UI.Helpers.SingleSelectRadio as Radio
+
 import Validation (getCardIcon)
 
 screen :: PaymentPageState -> Screen PaymentPageUIAction PaymentPageState PaymentPageResponse
@@ -110,12 +112,13 @@ paymentView push state =
 
 tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 tabView push state =
-    linearLayout
+    let radioState = state ^. _uiState ^. _sectionSelected
+     in linearLayout
         [ height $ V 440
         , width $ V 334
         , orientation VERTICAL
         ]
-        $ tabLayout push state <$>
+        $ Radio.singleSelectRadio (push <<< SectionSelected) radioState tabLayout tabSelectionTheme
             [ { image : "name"
               , text : "Wallets"
               , offer : false
@@ -219,27 +222,26 @@ defaultView push state =
         ]
 
 
+
 tabLayout
     :: forall r w
-     . (PaymentPageUIAction  -> Effect Unit)
-    -> PaymentPageState
-    -> { image :: String
+     . { image :: String
        , text :: String
        , offer :: Boolean
        , tab :: PaymentSection
        , imageUrl :: String
        | r
        }
+    -> Props (Effect Unit)
     -> PrestoDOM (Effect Unit) w
-tabLayout push state value =
-    let implementation = overrides push state
-     in linearLayout
+tabLayout value selectionTheme =
+     linearLayout
         ([ height $ V 100
         , width $ V 334
         , orientation VERTICAL
         , margin $ MarginBottom 10
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
-        ] <>> implementation (SectionSelectionOverride value.tab))
+        ] <>> selectionTheme)
         [ linearLayout
             [ height $ V 25
             , width MATCH_PARENT

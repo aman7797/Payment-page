@@ -120,13 +120,13 @@ eval =
          HideCardOverLay -> identity
 
          CardNumberChanged cardNumber ->
-              (\state -> state # _cvvFocusIndex .~ -1) <<< updateFocus CardNumber <<< updateCardNumberStatus <<< updateCardDetails <<< updateCardNumber cardNumber
+              (_cvvFocusIndex .~ -1) <<< updateFocus CardNumber <<< updateCardNumberStatus <<< updateCardDetails <<< updateCardNumber cardNumber
 
          CVVChanged newCvv ->
               (\state -> state # _cvvFocusIndex .~ (length $ state ^. _formState ^. _cvv ^. _value)) <<< updateCvvStatus <<< updateCvvValue newCvv
 
          ExpiryDateChanged date ->
-              (\state -> state # _cvvFocusIndex .~ -1) <<< updateFocus ExpiryDate <<< updateExpiryDateStatus <<< updateExpiryDateValue date
+              (_cvvFocusIndex .~ -1) <<< updateFocus ExpiryDate <<< updateExpiryDateStatus <<< updateExpiryDateValue date
 
          Focus action bool ->
               if action == CVV then (\state -> state # _cvvFocusIndex .~ (length $ state ^. _formState ^. _cvv ^. _value)) else _cvvFocusIndex .~ -1
