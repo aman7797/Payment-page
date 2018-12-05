@@ -5,6 +5,8 @@ import Prelude
 import Data.Array (mapWithIndex)
 import Data.Lens ((.~), (^.))
 import Data.Newtype (class Newtype)
+import Data.Ord ( class Ord, compare)
+import Data.Ordering (Ordering(..))
 import Effect (Effect)
 import Halogen.VDom.Types (VDom(..))
 import Engineering.Helpers.Types.Accessor
@@ -21,6 +23,8 @@ import UI.Constant.Str.Default as STR
 type SingleSelectTheme =
     { selected :: Props (Effect Unit)
     , unselected :: Props (Effect Unit)
+    , lessThanOrEq :: Props (Effect Unit)
+    , greaterThan :: Props (Effect Unit)
     }
 
 data RadioSelected
@@ -31,6 +35,12 @@ instance eqRadioSelected :: Eq RadioSelected where
     eq (RadioSelected a) (RadioSelected b) = a == b
     eq NothingSelected NothingSelected = true
     eq _ _ = false
+
+instance ordRadioSelected :: Ord RadioSelected where
+    compare (RadioSelected a) (RadioSelected b) = compare a b
+    compare NothingSelected NothingSelected = EQ
+    compare NothingSelected (RadioSelected _) = LT
+    compare (RadioSelected _) NothingSelected = GT
 
 newtype State = State
     { currentSelected :: RadioSelected
@@ -56,21 +66,24 @@ singleSelectRadio
      . (RadioSelected -> Effect Unit)
     -> State
     -> (a -> Props (Effect Unit) -> PrestoDOM (Effect Unit) w)
-    -> SingleSelectTheme
+    -> (RadioSelected -> SingleSelectTheme)
     -> Array a
     -> Array (PrestoDOM (Effect Unit) w)
-singleSelectRadio push state view theme =
-    mapWithIndex
-        (\i a ->
-            let selectionTheme = if state ^. _currentSelected == RadioSelected i
-                                    then theme.selected
-                                    else theme.unselected
-             in case view a selectionTheme of
-                     Elem ns eName props child ->
-                        let newProps = props <>> implementation push i
-                         in Elem ns eName newProps child
-                     _ -> view a theme.unselected
-        )
+singleSelectRadio push state view themeFn =
+    let currentSelected = state ^. _currentSelected
+     in mapWithIndex
+            (\i a ->
+                let theme = themeFn (RadioSelected i)
+                    selectionTheme = case compare (RadioSelected i) currentSelected of
+                                         GT -> theme.unselected <> theme.greaterThan
+                                         EQ -> theme.selected <> theme.lessThanOrEq
+                                         LT -> theme.unselected <> theme.lessThanOrEq
+                 in case view a selectionTheme of
+                         Elem ns eName props child ->
+                            let newProps = props <>> implementation push i
+                             in Elem ns eName newProps child
+                         v -> v
+            )
 
 implementation
     :: (RadioSelected -> Effect Unit)

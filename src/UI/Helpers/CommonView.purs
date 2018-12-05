@@ -102,5 +102,12 @@ editField implementation value =
         ]
 
 
-
+weightLayout :: forall w. PrestoDOM (Effect Unit) w
+weightLayout =
+    linearLayout
+        [ height $ V 1
+        , weight 1.0
+        , width $ V 1
+        ]
+        []
 

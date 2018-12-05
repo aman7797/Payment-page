@@ -18,6 +18,7 @@ import Engineering.Helpers.Types.Accessor
 import PrestoDOM
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Utils ((<>>))
+import PrestoDOM.Elements.Keyed as Keyed
 
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
@@ -38,6 +39,7 @@ import UI.View.Component.UpiView as UpiView
 import UI.View.Component.TabLayout as TabLayout
 
 import UI.Helpers.SingleSelectRadio as Radio
+import UI.Config as Config
 
 import Validation (getCardIcon)
 
@@ -55,7 +57,8 @@ view
 	-> PaymentPageState
 	-> PrestoDOM (Effect Unit) w
 view push ppState  =
-    mainScrollView push
+    let renderType = logAny $ ppState ^. _uiState ^. _renderType
+     in mainScrollView push renderType
         [ headingView
         , paymentPageView push ppState
         , poweredByView
@@ -87,39 +90,46 @@ headingView =
 
 paymentPageView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 paymentPageView push state =
-    linearLayout
-        [ height $ V 440
-        , weight 1.0
-        , width MATCH_PARENT
-        , orientation HORIZONTAL
-        ]
-        [ paymentView push state
-        {-- , BillerInfo.view --}
-        ]
+    let renderType = state ^. _uiState ^. _renderType
+        {-- config = Config.paymentPageViewConfig --}
+     in linearLayout
+            [ height $ V 1440
+            , width MATCH_PARENT
+            , orientation $ Config.paymentPageViewOrientation renderType
+            ]
+            $ Config.getPaymentPageView renderType
+                (paymentView push state)
+                (BillerInfo.view state)
 
 paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 paymentView push state =
-    linearLayout
-        [ height $ V 440
-        , weight 1.0
-        , width $ V 868
-        , orientation HORIZONTAL
-        ]
-        [ tabView push state
-        , commonView push state
-        ]
+    let renderType = state ^. _uiState ^. _renderType
+     in linearLayout
+            [ height MATCH_PARENT
+            , width MATCH_PARENT
+            , orientation $ Config.paymentViewOrientation renderType
+            {-- , orientation HORIZONTAL --}
+            ]
+            [ tabView push state
+            , commonView push state
+            ]
 
 
 
 tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 tabView push state =
     let radioState = state ^. _uiState ^. _sectionSelected
-     in linearLayout
+        renderType = state ^. _uiState ^. _renderType
+     in relativeLayout
         [ height $ V 440
-        , width $ V 334
+        , width $ Config.tabViewWidth renderType -- $ V 334
         , orientation VERTICAL
         ]
-        $ Radio.singleSelectRadio (push <<< SectionSelected) radioState TabLayout.view tabSelectionTheme
+        $ Radio.singleSelectRadio
+            (push <<< SectionSelected)
+            radioState
+            (TabLayout.view renderType)
+            (Config.tabSelectionTheme renderType $ radioState ^. _currentSelected)
             [ { image : "name"
               , text : "Wallets"
               , offer : false
@@ -149,12 +159,15 @@ tabView push state =
 
 commonView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 commonView push state =
-    relativeLayout
+    let renderType = state ^. _uiState ^. _renderType
+        currentSelected = state ^. _uiState ^. _sectionSelected ^. _currentSelected
+     in relativeLayout
         [ height MATCH_PARENT
         , width $ V 564
         , weight 1.0
         , orientation VERTICAL
         , padding $ PaddingHorizontal 32 32
+        , translationY $ Config.commonViewPosition renderType currentSelected
         ]
         [ walletsView push state
         , cardsView push state
@@ -228,9 +241,10 @@ defaultView push state =
 mainScrollView
     :: forall w
      . (PaymentPageUIAction  -> Effect Unit)
+    -> RenderType
     -> Array (PrestoDOM (Effect Unit) w)
     -> PrestoDOM (Effect Unit) w
-mainScrollView push children =
+mainScrollView push renderType children =
     linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
@@ -242,16 +256,17 @@ mainScrollView push children =
             [ height MATCH_PARENT
             {-- , width $ V 1440 --}
             , width MATCH_PARENT
+            , background "#FAFAFA"
             {-- , background "#00ff00" --}
             , gravity CENTER_HORIZONTAL
             ]
             [ linearLayout
-                [ height $ V 950
+                [ height MATCH_PARENT
+                {-- [ height $ V 950 --}
                 {-- , width $ V 1440 --}
-                , width MATCH_PARENT
-                , background "#FAFAFA"
+                , width $ Config.mainViewWidth renderType
                 , orientation VERTICAL
-                , padding $ PaddingHorizontal 66 56
+                , padding $ PaddingHorizontal 60 60
                 ]
                 children
             ]

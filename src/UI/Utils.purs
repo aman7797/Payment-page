@@ -48,12 +48,15 @@ getFieldTypeID =
          NONE       -> "987654320" -- replace with text field selection condition
 
 
+data DeviceSize
+    = Small
+    | Normal
+    | Large
+    | Fit
+
 data RenderType
-    = DesktopFit    -- c >= 1440
-    | DesktopNormal -- [1244, 1440)
-    | DesktopSmall  -- [1020, 1244)
-    | MobileLarge   -- [564, 1020)
-    | MobileSmall   -- c < 564
+    = Desktop DeviceSize    -- c >= 1440
+    | Mobile DeviceSize   -- c < 564
 
 -- | Test whether a value is between a minimum (inclusive) and a maximum (exclusive).
 -- | For example:
@@ -74,12 +77,12 @@ betweenROpen low hi x
   | true = true
 
 getRenderType :: Int -> RenderType
-getRenderType c
-    | c >= 1440                = DesktopFit
-    | betweenROpen 1244 1440 c = DesktopNormal
-    | betweenROpen 1020 1244 c = DesktopSmall
-    | betweenROpen  564 1020 c = MobileLarge
-    | true                     = MobileSmall
+getRenderType c                                 -- | View   | Font
+    | c >= 1440                = Desktop Fit     -- | Large  | Large
+    | betweenROpen 1244 1440 c = Desktop Normal  -- | Large  | Large
+    | betweenROpen 1020 1244 c = Desktop Small   -- | Medium | Large
+    | betweenROpen  564 1020 c = Mobile Large    -- | Small  | Large
+    | true                     = Mobile Small    -- | Small  | Small
 
 
 

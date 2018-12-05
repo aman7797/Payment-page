@@ -178,14 +178,6 @@ mkSavedCardDetails card ppState =
         }
 
 
-tabSelectionTheme :: Radio.SingleSelectTheme
-tabSelectionTheme =
-    { selected : [ background "#e9e9e9"
-                 ]
-    , unselected : [ background "#ffffff"
-                 ]
-    }
-
 data Overrides
     = SectionOverride PaymentSection
     | SectionSelectionOverride PaymentSection

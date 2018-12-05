@@ -28,13 +28,15 @@ import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
+import UI.Config as Config
 import UI.Utils
 
 
 
 view
     :: forall r w
-     . { image :: String
+     . RenderType
+    -> { image :: String
        , text :: String
        , offer :: Boolean
        , tab :: PaymentSection
@@ -43,13 +45,13 @@ view
        }
     -> Props (Effect Unit)
     -> PrestoDOM (Effect Unit) w
-view value selectionTheme =
+view renderType value selectionTheme =
      linearLayout
         ([ height $ V 100
-        , width $ V 334
+        , width $ Config.tabViewWidth renderType-- $ V 334
         , orientation VERTICAL
         , margin $ MarginBottom 10
-        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
+        {-- , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0 --}
         ] <>> selectionTheme)
         [ linearLayout
             [ height $ V 25
@@ -96,8 +98,8 @@ view value selectionTheme =
                 ]
             , textView
                 [ height $ V 28
-                , width $ V 133
-                , weight 1.0
+                , width $ V 294
+                {-- , weight 1.0 --}
                 , margin $ MarginLeft 30
                 , fontStyle "Arial-Regular"
                 , text value.text

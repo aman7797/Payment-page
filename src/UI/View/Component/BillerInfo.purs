@@ -13,6 +13,7 @@ import Data.Lens
 import Engineering.Helpers.Commons
 import Engineering.Helpers.Events
 
+import Engineering.Helpers.Types.Accessor
 import PrestoDOM
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Utils ((<>>))
@@ -26,28 +27,48 @@ import UI.Constant.FontStyle.Default as Font
 import UI.Constant.FontStyle.Default as FontStyle
 import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
+import UI.Controller.Screen.PaymentsFlow.PaymentPage
+
+import UI.Helpers.CommonView
+import UI.Config as Config
 
 import UI.Utils
 
-view :: forall w. PrestoDOM (Effect Unit) w
-view =
-    linearLayout
-        [ height $ V 184
-        , width $ V 224
-        , orientation VERTICAL
+view :: forall w. PaymentPageState -> PrestoDOM (Effect Unit) w
+view state =
+    let renderType = state ^. _uiState ^. _renderType
+        config = Config.billerViewConfig renderType
+     in linearLayout
+        [ height config.height
+        , width config.width
+        , orientation config.orientation
         ]
-        [ labelText "Mobile No:" 0
-        , contentText "9438317998" 8
-        , labelText "Amount:" 40
-        , contentText "300.00" 8
+        [ verticalView
+            [ labelText "Mobile No:" $ MarginTop 0
+            , contentText "9438317998" $ MarginVertical 8 40
+            ]
+        , weightLayout
+        , verticalView
+            [ labelText "Amount:" $ MarginTop 0
+            , contentText "₹ 300.00" $ MarginVertical 8 40
+            ]
         ]
 
+    where
+        verticalView child =
+            linearLayout
+                [ height $ V 72
+                , width $ V 224
+                , orientation VERTICAL
+                ]
+                child
 
-labelText value marginTop =
+
+labelText value marginVal =
     textView
         [ height $ V 26
         , width MATCH_PARENT
-        , margin $ MarginTop marginTop
+        , margin marginVal
         , fontStyle "Arial-Regular"
         , color "#9B9B9B"
         , gravity LEFT
@@ -55,11 +76,11 @@ labelText value marginTop =
         , textSize 22
         ]
 
-contentText value marginTop =
+contentText value marginVal =
     textView
         [ height $ V 38
         , width MATCH_PARENT
-        , margin $ MarginTop marginTop
+        , margin marginVal
         , fontStyle "Arial-Regular"
         , color "#4A4D4E"
         , gravity LEFT
