@@ -68,14 +68,40 @@ paymentViewOrientation =
          Mobile _ -> VERTICAL
 
 
-commonViewPosition :: RenderType -> RadioSelected -> Number
-commonViewPosition =
+commonViewConfig
+    :: RenderType
+    -> RadioSelected
+    -> { translationY :: Number
+       , margin :: Margin
+       , height :: Length
+       }
+commonViewConfig =
     case _, _ of
-         Mobile _, RadioSelected 0 -> 100.0
-         Mobile _, RadioSelected 1 -> 210.0
-         Mobile _, RadioSelected 2 -> 320.0
-         Mobile _, RadioSelected _ -> 430.0
-         _, _ -> 0.0
+         Mobile _, RadioSelected 0 ->
+             { translationY : 100.0
+             , margin : MarginHorizontal 0 0
+             , height : V 300
+             }
+         Mobile _, RadioSelected 1 ->
+             { translationY : 210.0
+             , margin : MarginHorizontal 0 0
+             , height : V 516
+             }
+         Mobile _, RadioSelected 2 ->
+             { translationY : 320.0
+             , margin : MarginHorizontal 0 0
+             , height : V 300
+             }
+         Mobile _, RadioSelected _ ->
+             { translationY : 430.0
+             , margin : MarginHorizontal 0 0
+             , height : V 330
+             }
+         _, _ ->
+             { translationY : 0.0
+             , margin : MarginHorizontal 366 32
+             , height : V 300
+             }
 
 
 

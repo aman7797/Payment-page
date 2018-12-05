@@ -61,7 +61,7 @@ view push ppState  =
      in mainScrollView push renderType
         [ headingView
         , paymentPageView push ppState
-        , poweredByView
+        {-- , poweredByView --}
         ]
 
 
@@ -104,10 +104,10 @@ paymentPageView push state =
 paymentView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 paymentView push state =
     let renderType = state ^. _uiState ^. _renderType
-     in linearLayout
+     in relativeLayout
             [ height MATCH_PARENT
             , width MATCH_PARENT
-            , orientation $ Config.paymentViewOrientation renderType
+            {-- , orientation $ Config.paymentViewOrientation renderType --}
             {-- , orientation HORIZONTAL --}
             ]
             [ tabView push state
@@ -122,7 +122,7 @@ tabView push state =
         renderType = state ^. _uiState ^. _renderType
      in relativeLayout
         [ height $ V 440
-        , width $ Config.tabViewWidth renderType -- $ V 334
+        , width $ logAny $ Config.tabViewWidth renderType -- $ V 334
         , orientation VERTICAL
         ]
         $ Radio.singleSelectRadio
@@ -161,13 +161,15 @@ commonView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageStat
 commonView push state =
     let renderType = state ^. _uiState ^. _renderType
         currentSelected = state ^. _uiState ^. _sectionSelected ^. _currentSelected
+        config = Config.commonViewConfig renderType currentSelected
      in relativeLayout
-        [ height MATCH_PARENT
-        , width $ V 564
-        , weight 1.0
+        [ height config.height
+        , width MATCH_PARENT-- $ V 564
+        {-- , weight 1.0 --}
         , orientation VERTICAL
-        , padding $ PaddingHorizontal 32 32
-        , translationY $ Config.commonViewPosition renderType currentSelected
+        {-- , padding $ PaddingHorizontal 32 32 --}
+        , margin config.margin
+        , translationY config.translationY
         ]
         [ walletsView push state
         , cardsView push state
@@ -264,7 +266,7 @@ mainScrollView push renderType children =
                 [ height MATCH_PARENT
                 {-- [ height $ V 950 --}
                 {-- , width $ V 1440 --}
-                , width $ Config.mainViewWidth renderType
+                , width $ logAny $ Config.mainViewWidth renderType
                 , orientation VERTICAL
                 , padding $ PaddingHorizontal 60 60
                 ]
