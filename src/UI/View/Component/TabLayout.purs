@@ -48,10 +48,10 @@ view
 view renderType value selectionTheme =
      linearLayout
         ([ height $ V 100
-        , width $ Config.tabViewWidth renderType-- $ V 334
+        , width MATCH_PARENT
         , orientation VERTICAL
         , margin $ MarginBottom 10
-        {-- , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0 --}
+        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         ] <>> selectionTheme)
         [ linearLayout
             [ height $ V 25

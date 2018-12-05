@@ -61,7 +61,7 @@ view push ppState  =
      in mainScrollView push renderType
         [ headingView
         , paymentPageView push ppState
-        {-- , poweredByView --}
+        , poweredByView
         ]
 
 

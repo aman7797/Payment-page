@@ -59,13 +59,13 @@ billerViewConfig =
              }
 
 
-paymentViewOrientation
-    :: RenderType
-    -> Orientation
-paymentViewOrientation =
-    case _ of
-         Desktop _ -> HORIZONTAL
-         Mobile _ -> VERTICAL
+{-- paymentViewOrientation --}
+{--     :: RenderType --}
+{--     -> Orientation --}
+{-- paymentViewOrientation = --}
+{--     case _ of --}
+{--          Desktop _ -> HORIZONTAL --}
+{--          Mobile _ -> VERTICAL --}
 
 
 commonViewConfig
