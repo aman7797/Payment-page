@@ -17,15 +17,15 @@ mainViewWidth =
         Desktop Fit -> V 1440
         _ -> MATCH_PARENT
 
-getPaymentPageView  :: forall v. RenderType -> v -> v -> Array v
+{-- getPaymentPageView  :: forall v. RenderType -> v -> v -> Array v --}
 getPaymentPageView rT pV bV =
     case rT of
-         Desktop Fit -> [ pV, bV ]
-         Desktop Normal -> [ pV, bV ]
-         _ -> [ bV, pV ]
-         {-- Desktop Fit -> [ Tuple "paymentPageV1" pV, Tuple "paymentPageV2" bV ] --}
-         {-- Desktop Normal -> [ Tuple "paymentPageV1" pV, Tuple "paymentPageV2" bV ] --}
-         {-- _ -> [ Tuple "paymentPageV2" bV, Tuple "paymentPageV1" pV ] --}
+         {-- Desktop Fit -> [ pV, bV ] --}
+         {-- Desktop Normal -> [ pV, bV ] --}
+         {-- _ -> [ bV, pV ] --}
+         Desktop Fit -> [ Tuple "paymentPageV1" pV, Tuple "paymentPageV2" bV ]
+         Desktop Normal -> [ Tuple "paymentPageV1" pV, Tuple "paymentPageV2" bV ]
+         _ -> [ Tuple "paymentPageV2" bV, Tuple "paymentPageV1" pV ]
 
 paymentPageViewOrientation :: RenderType -> Orientation
 paymentPageViewOrientation =

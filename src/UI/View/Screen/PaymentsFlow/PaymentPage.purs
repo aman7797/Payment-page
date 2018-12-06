@@ -92,7 +92,7 @@ paymentPageView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPag
 paymentPageView push state =
     let renderType = state ^. _uiState ^. _renderType
         {-- config = Config.paymentPageViewConfig --}
-     in linearLayout
+     in Keyed.linearLayout
             [ height $ V 1440
             , width MATCH_PARENT
             , orientation $ Config.paymentPageViewOrientation renderType
@@ -266,7 +266,7 @@ mainScrollView push renderType children =
                 [ height MATCH_PARENT
                 {-- [ height $ V 950 --}
                 {-- , width $ V 1440 --}
-                , width $ logAny $ Config.mainViewWidth renderType
+                , width $ Config.mainViewWidth renderType
                 , orientation VERTICAL
                 , padding $ PaddingHorizontal 60 60
                 ]
