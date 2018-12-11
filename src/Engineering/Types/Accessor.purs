@@ -508,6 +508,8 @@ _bank_Name = lens (unwrap >>> _.bank_name) (\oldrec newval -> wrap ((unwrap oldr
 _upiViewState :: forall a b c. Newtype a { upiViewState :: c | b} => Lens' a c
 _upiViewState = lens (unwrap >>> _.upiViewState) (\oldrec newval -> wrap ((unwrap oldrec) { upiViewState = newval }))
 
+_cardsViewState :: forall a b c. Newtype a { cardsViewState :: c | b} => Lens' a c
+_cardsViewState = lens (unwrap >>> _.cardsViewState) (\oldrec newval -> wrap ((unwrap oldrec) { cardsViewState = newval }))
 
 
 _cardProvider :: forall a b c. Newtype a { card_provider :: c | b} => Lens' a c

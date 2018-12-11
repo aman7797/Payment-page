@@ -37,12 +37,13 @@ view
 	:: forall w
 	. (Action -> Effect Unit)
 	-> State
-	-> Object.Object GenProp
+    ->  { visibility :: Visibility
+        }
 	-> PrestoDOM (Effect Unit) w
 view push state parent =
     let implementation = \a -> overrides a push state
         cardMethod = state ^. _cardMethod
-	 in mainView
+	 in mainView parent.visibility
         [ headingView {text : "Add New Card"}
         , editField (implementation CardNumberEditField)
             { hint : "Card Number"
@@ -134,14 +135,16 @@ saveForLaterView =
 
 mainView
     :: forall w
-     . Array (PrestoDOM (Effect Unit) w)
+     . Visibility
+    -> Array (PrestoDOM (Effect Unit) w)
     -> PrestoDOM (Effect Unit) w
-mainView children =
+mainView vis children =
     linearLayout
         [ height $ V 516
         , width MATCH_PARENT
         , padding $ Padding 30 40 30 0
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
+        , visibility vis
         , orientation VERTICAL
         , background "#FFFFFF"
         ]

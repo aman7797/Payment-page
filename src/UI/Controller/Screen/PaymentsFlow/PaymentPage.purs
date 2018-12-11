@@ -35,6 +35,7 @@ import Tracker.Tracker (trackEventMerchantV2, toString) as T
 import UI.Constant.FontStyle.Default as Font
 import UI.Controller.Component.AddNewCard (Action(..))
 import UI.Controller.Component.AddNewCard as AddNewCard
+import UI.Controller.Component.CardsView as CardsView
 import  UI.Controller.Component.UpiView  as UpiView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
@@ -58,7 +59,7 @@ isSnackBar (Popup err) = GONE
 newtype UIState = UIState
     { sectionSelected :: Radio.State
     , sections :: Array PaymentSection
-    , addNewCardState :: AddNewCard.State
+    , cardsViewState :: CardsView.State
     , upiViewState :: UpiView.State
     , renderType :: RenderType
     }
@@ -88,7 +89,7 @@ data PaymentPageUIAction
   = BillerCard
   {-- | SectionSelected PaymentSection --}
   | SectionSelected (Radio.RadioSelected)
-  | AddNewCardAction AddNewCard.Action
+  | CardsViewAction CardsView.Action
   | UpiViewAction UpiView.Action
   | Resized Int
 -- Exit Type
@@ -118,7 +119,7 @@ defaultUIState ppInput = UIState
     {-- { sectionSelected  : Radio.defaultState Radio.NothingSelected --}
     { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 1
     , sections : [ Wallets, Cards, NetBanking, UPI]
-    , addNewCardState : AddNewCard.initialState { supportedMethods : [], cardMethod : AddNewCard.AddNewCard}
+    , cardsViewState : CardsView.initialState $ ppInput ^. _piInfo ^. _cards
     , upiViewState : UpiView.initialState
     , renderType : getRenderType $ ppInput ^. _screenWidth
     }
@@ -129,20 +130,20 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval =
   case _ of
-    {-- SectionSelected tab -> continue <<<  (_uiState <<<  _sectionSelected .~ tab) --}
+    CardsViewAction (CardsView.AddNewCardAction (SubmitCard AddNewCard.AddNewCard)) ->
+        exitPP $ PayUsing <<< Card <<< mkCardDetails
+
+    {-- AddNewCardAction (SubmitCard (AddNewCard.SavedCard card)) -> --}
+    {--     exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card --}
+
+    CardsViewAction (CardsView.SubmitSavedCard card) ->
+        exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card
+
+    CardsViewAction cardAction ->
+        continue <<< (_uiState <<< _cardsViewState %~ CardsView.eval cardAction)
 
     SectionSelected action ->
         continue <<< (_uiState <<< _sectionSelected %~ Radio.eval action)
-
-    AddNewCardAction (SubmitCard AddNewCard.AddNewCard)->
-        exitPP $ PayUsing <<< Card <<< mkCardDetails
-
-    AddNewCardAction (SubmitCard (AddNewCard.SavedCard card)) ->
-        exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card
-
-
-    AddNewCardAction cardAction ->
-        continue <<< (_uiState <<< _addNewCardState %~ AddNewCard.eval cardAction)
 
     Resized width -> continue <<< (_uiState <<< _renderType .~ getRenderType width)
 
@@ -157,7 +158,7 @@ exitPP action ppState = exit $ PaymentPageResponse ppState (action ppState)
 
 mkCardDetails :: PaymentPageState -> CardDetails
 mkCardDetails ppState =
-    let addCardState = ppState ^. _uiState ^. _addNewCardState
+    let addCardState = logAny $ ppState ^. _uiState ^. _cardsViewState ^. _addNewCardState
      in CardDetails
         { cardNumber : addCardState ^. _formState ^. _cardNumber ^. _value
         , expMonth   : show <<< getMonth $ addCardState ^. _formState ^. _expiryDate ^. _value
@@ -170,7 +171,7 @@ mkCardDetails ppState =
 
 mkSavedCardDetails :: StoredCard -> PaymentPageState -> SavedCardDetails
 mkSavedCardDetails card ppState =
-    let cardState = ppState  ^. _uiState ^. _addNewCardState
+    let cardState = ppState  ^. _uiState ^. _cardsViewState ^. _addNewCardState
      in SavedCardDetails
         { cvv : cardState ^. _formState ^. _cvv ^. _value
         , cardToken : card ^. _cardToken
