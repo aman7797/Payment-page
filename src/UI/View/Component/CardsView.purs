@@ -47,6 +47,8 @@ view push state _ =
     let addNewCardState = state ^. _addNewCardState
         implementation = overrides push state
         sectionSelected = state ^. _sectionSelected
+        storedCards = state ^. _storedCards
+        storedCardsNull = null storedCards
      in linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
@@ -55,25 +57,41 @@ view push state _ =
         [ expandButton
             { implementation : implementation $ SectionSelectionOverride SavedCard
             , text : "Saved Cards"
+            , visibility : case storedCardsNull, sectionSelected of
+                                false, AddNewCard -> VISIBLE
+                                _, _ -> GONE
+            }
+        , savedCardsView push state
+            { visibility : case sectionSelected of
+                                SavedCard -> VISIBLE
+                                _ -> GONE
+            }
+        , expandButton
+            { implementation : implementation $ SectionSelectionOverride AddNewCard
+            , text : "Add New Cards"
             , visibility : case sectionSelected of
-                                AddNewCard -> VISIBLE
+                                SavedCard -> VISIBLE
                                 _ -> GONE
             }
         , AddNewCard.view (push <<< AddNewCardAction) addNewCardState
             { visibility : case sectionSelected of
-                                SavedCard -> VISIBLE
+                                AddNewCard -> VISIBLE
                                 _ -> GONE
             }
         ]
 
 
-savedCardsView push state =
+savedCardsView push state props =
     let radioState = state ^. _sectionSelected
+        storedCards = state ^. _storedCards
      in linearLayout
-        [ height $ V 120
+        [ height $ V $ 120 * (length storedCards)
         , width MATCH_PARENT
         , orientation HORIZONTAL
         , gravity CENTER_VERTICAL
+        , background "#effaff"
+        , visibility props.visibility
+        , margin $ MarginBottom 10
         ]
         []
         {-- $ Radio.singleSelectRadio --}

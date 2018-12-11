@@ -2,6 +2,8 @@ module UI.Controller.Component.CardsView where
 
 import Prelude
 
+
+import Data.Array (null)
 import Data.Lens (Lens', _1, (%~), (.~), (^.))
 import Data.Newtype (class Newtype)
 import Data.String as S
@@ -45,11 +47,13 @@ derive instance stateNewtype :: Newtype State _
 
 
 initialState :: Array StoredCard -> State
-initialState cards = State $
-    { sectionSelected : SavedCard
-    , storedCards : cards
-    , addNewCardState : AddNewCard.defaultState []
-    }
+initialState cards =
+    let storedCardsNull = null cards
+     in State $
+            { sectionSelected : if storedCardsNull then AddNewCard else SavedCard
+            , storedCards : cards
+            , addNewCardState : AddNewCard.defaultState []
+            }
 
 eval :: Action -> State -> State
 eval =
