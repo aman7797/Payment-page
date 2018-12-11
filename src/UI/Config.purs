@@ -6,6 +6,7 @@ import Data.Tuple
 import UI.Utils
 
 import PrestoDOM
+import Data.Ord ( class Ord, compare)
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Utils ((<>>))
 import UI.Helpers.SingleSelectRadio
@@ -105,33 +106,33 @@ commonViewConfig =
 
 
 
-tabSelectionTheme :: RenderType -> RadioSelected -> RadioSelected -> SingleSelectTheme
-tabSelectionTheme rT curr s =
-	let baseTrans = case rT, s of
-                        _, RadioSelected 0 -> 0.0
-                        _, RadioSelected 1 -> 110.0
-                        _, RadioSelected 2 -> 220.0
-                        _, RadioSelected _ -> 330.0
-                        _, _ -> 0.0
-	    extra = case rT, curr of
+tabSelectionTheme :: RenderType -> RadioSelected -> Int -> { background :: String, translationY :: Number}
+tabSelectionTheme rT selected curr =
+	let baseTrans = case rT, curr of
+                        _, 0 -> 0.0
+                        _, 1 -> 110.0
+                        _, 2 -> 220.0
+                        _, _ -> 330.0
+	    extra = case rT, selected of
                         Mobile _, RadioSelected 0 -> 300.0
                         Mobile _, RadioSelected 1 -> 516.0
                         Mobile _, RadioSelected 2 -> 300.0
                         Mobile _, RadioSelected _ -> 330.0
                         _, _ -> 0.0
-     in { selected :
-            [ background "#e9e9e9"
-            ]
-        , unselected :
-            [ background "#ffffff"
-            ]
-        , lessThanOrEq :
-            [ translationY baseTrans
-            ]
-        , greaterThan :
-            [ translationY $ baseTrans + extra
-            ]
-        }
+     in case compare selected (RadioSelected curr) of
+             GT ->
+                 { background : "#ffffff"
+                 , translationY : baseTrans + extra
+                 }
+             EQ ->
+                 { background : "#e9e9e9"
+                 , translationY : baseTrans
+                 }
+             LT ->
+                 { background : "#ffffff"
+                 , translationY : baseTrans
+                 }
+
 
 tabViewWidth :: RenderType -> Length
 tabViewWidth =
@@ -148,19 +149,24 @@ tabLayoutWidth =
 
 
 
-cardSelectionTheme :: RadioSelected -> RadioSelected -> SingleSelectTheme
-cardSelectionTheme curr s =
-	{ selected :
-        [ background "#e9e9e9"
-        ]
-    , unselected :
-        [ background "#ffffff"
-        ]
-    , lessThanOrEq :
-        [ -- translationY baseTrans
-        ]
-    , greaterThan :
-        [ -- translationY $ baseTrans + extra
-        ]
-    }
+cardSelectionTheme
+    :: RadioSelected
+    -> Int
+    -> { background :: String
+       , visibility :: Visibility
+       , height :: Length
+       }
+cardSelectionTheme selected curr =
+    case compare selected (RadioSelected curr) of
+         EQ ->
+            { background : "#FF1BB3E8"
+            , visibility : VISIBLE
+            , height : V 221
+            }
+         _ ->
+            { background : "#331BB3E8"
+            , visibility : GONE
+            , height : V 120
+            }
+
 

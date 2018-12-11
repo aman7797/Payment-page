@@ -20,12 +20,12 @@ import UI.Constant.Str.Default as STR
 
 
 
-type SingleSelectTheme =
-    { selected :: Props (Effect Unit)
-    , unselected :: Props (Effect Unit)
-    , lessThanOrEq :: Props (Effect Unit)
-    , greaterThan :: Props (Effect Unit)
-    }
+{-- type SingleSelectTheme = --}
+{--     { selected :: Props (Effect Unit) --}
+{--     , unselected :: Props (Effect Unit) --}
+{--     , lessThanOrEq :: Props (Effect Unit) --}
+{--     , greaterThan :: Props (Effect Unit) --}
+{--     } --}
 
 data RadioSelected
     = RadioSelected Int
@@ -65,24 +65,18 @@ singleSelectRadio
     :: forall w a
      . (RadioSelected -> Effect Unit)
     -> State
-    -> (a -> Props (Effect Unit) -> PrestoDOM (Effect Unit) w)
-    -> (RadioSelected -> SingleSelectTheme)
+    -> (RadioSelected -> Int -> a -> PrestoDOM (Effect Unit) w)
     -> Array a
     -> Array (PrestoDOM (Effect Unit) w)
-singleSelectRadio push state view themeFn =
+singleSelectRadio push state view =
     let currentSelected = state ^. _currentSelected
      in mapWithIndex
             (\i a ->
-                let theme = themeFn (RadioSelected i)
-                    selectionTheme = case compare (RadioSelected i) currentSelected of
-                                         GT -> theme.unselected <> theme.greaterThan
-                                         EQ -> theme.selected <> theme.lessThanOrEq
-                                         LT -> theme.unselected <> theme.lessThanOrEq
-                 in case view a selectionTheme of
-                         Elem ns eName props child ->
-                            let newProps = props <>> implementation push i
-                             in Elem ns eName newProps child
-                         v -> v
+                case view currentSelected i a of
+                     Elem ns eName props child ->
+                        let newProps = props <>> implementation push i
+                         in Elem ns eName newProps child
+                     v -> v
             )
 
 implementation

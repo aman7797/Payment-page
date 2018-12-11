@@ -98,7 +98,17 @@ newtype RedirectWallet = RedirectWallet
 
 -- data ExternalPaymentOption = UPISDK
 
-data PaymentOption =  NB Bank | Card CardDetails | SavedCard SavedCardDetails | WalletPayment Wallet | WalletRedirect RedirectWallet | COD | AmazonPayWallet | UPISDK Account | UPI String | SavedUpi
+data PaymentOption
+    =  NB Bank
+    | Card CardDetails
+    | SavedCard SavedCardDetails
+    | WalletPayment Wallet
+    | WalletRedirect RedirectWallet
+    | COD
+    | AmazonPayWallet
+    | UPISDK Account
+    | UPI String
+    | SavedUpi
 
 data WalletType = SDK String | API String
 

@@ -25,7 +25,7 @@ import UI.Helpers.SingleSelectRadio as Radio
 
 
 data Action
-    = SubmitNetBanking BankAccount
+    = SubmitNetBanking
     | NetBankSelected Radio.RadioSelected
 
 
@@ -47,7 +47,10 @@ initialState nb = State $
 eval :: Action -> State -> State
 eval =
     case _ of
-         SubmitNetBanking _ -> identity
+         SubmitNetBanking -> identity
+
+         NetBankSelected action ->
+             _nbSelected %~ Radio.eval action
 
          _ -> identity
 
@@ -61,15 +64,15 @@ eval =
 
 
 data Overrides
-    = SectionSelectionOverride
-    | BtnPay
+    = ShowAllOverride
+    | ProceedToPay
 
 
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
 overrides push state =
     case _ of
-         {-- SectionSelectionOverride section -> --}
-         {--     [ onClick push (const $ SectionSelected section) --}
-         {--     ] --}
+         ProceedToPay ->
+             [ onClick push (const SubmitNetBanking)
+             ]
 
          _ -> []

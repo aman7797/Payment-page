@@ -43,8 +43,7 @@ view
 	-> Object.Object GenProp
 	-> PrestoDOM (Effect Unit) w
 view push state _ =
-    let implementation = overrides push state
-     in linearLayout
+    linearLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
         , orientation VERTICAL
@@ -56,6 +55,8 @@ view push state _ =
 savedCardsView push state@(State st) =
     let radioState = st.nbSelected
         netBankList = st.netBankList
+        currentSelected = radioState ^. _currentSelected
+        proceedImpl = overrides push state ProceedToPay
      in linearLayout
         [ height $ V 600
         , width MATCH_PARENT
@@ -65,8 +66,7 @@ savedCardsView push state@(State st) =
         $ Radio.singleSelectRadio
             (push <<< NetBankSelected)
             radioState
-            (CardLayout.view)
-            (Config.cardSelectionTheme $ radioState ^. _currentSelected)
+            (CardLayout.view proceedImpl)
             ( nbInfo <$> take 5 netBankList )
 
     where

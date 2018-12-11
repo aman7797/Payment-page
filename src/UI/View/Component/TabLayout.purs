@@ -28,6 +28,7 @@ import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
+import UI.Helpers.SingleSelectRadio (RadioSelected(..))
 import UI.Config as Config
 import UI.Utils
 
@@ -36,6 +37,8 @@ import UI.Utils
 view
     :: forall r w
      . RenderType
+    -> RadioSelected
+    -> Int
     -> { image :: String
        , text :: String
        , offer :: Boolean
@@ -43,16 +46,18 @@ view
        , imageUrl :: String
        | r
        }
-    -> Props (Effect Unit)
     -> PrestoDOM (Effect Unit) w
-view renderType value selectionTheme =
-     linearLayout
-        ([ height $ V 100
+view renderType selected currIndex value =
+    let config = Config.tabSelectionTheme renderType selected currIndex
+     in linearLayout
+        [ height $ V 100
         , width MATCH_PARENT
         , orientation VERTICAL
         , margin $ MarginBottom 10
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
-        ] <>> selectionTheme)
+        , background config.background
+        , translationY config.translationY
+        ]
         [ linearLayout
             [ height $ V 25
             , width MATCH_PARENT

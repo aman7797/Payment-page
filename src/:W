@@ -206,7 +206,7 @@ mkSavedCardDetails card ppState =
         }
 
 mkNetBankingDetails :: BankAccount -> Bank
-mkNetBankingDetails bank = logAny $
+mkNetBankingDetails bank =
     Bank
         { name : bank ^. _bankName
         , code  : bank ^. _bankCode

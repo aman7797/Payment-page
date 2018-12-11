@@ -27,36 +27,41 @@ import UI.Constant.FontStyle.Default as FontStyle
 import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
+import UI.Helpers.SingleSelectRadio (RadioSelected(..))
+import UI.Helpers.CommonView
 
+import UI.Config as Config
 import UI.Utils
 
 view
     :: forall r w
-     . { piName :: String
+     . Props (Effect Unit)
+    -> RadioSelected
+    -> Int
+    -> { piName :: String
        , offer :: String
        , imageUrl :: String
        | r
        }
-    -> Props (Effect Unit)
     -> PrestoDOM (Effect Unit) w
-view value impl =
-    linearLayout
-        [ height $ V 120
-        , width MATCH_PARENT
-        , orientation HORIZONTAL
-        , gravity CENTER_VERTICAL
-        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
-        , background "#ffffff"
-        , padding $ PaddingLeft 35
-        , margin $ MarginBottom 10
-        ]
-        [ radioButton
-        , piInfoView value
-        , offerView value
-        , nextView
-        ]
+view proceedImpl selected currIndex value =
+    let config = logAny $ Config.cardSelectionTheme selected currIndex
+     in mainView config
+            [ linearLayout
+                [ height MATCH_PARENT
+                , width MATCH_PARENT
+                , orientation HORIZONTAL
+                , gravity CENTER_VERTICAL
+                ]
+                [ radioButton config
+                , piInfoView value
+                , offerView value
+                , nextView
+                ]
+            , expandedView proceedImpl config
+            ]
 
-radioButton =
+radioButton config =
     linearLayout
         [ height $ V 20
         , width $ V 20
@@ -72,7 +77,7 @@ radioButton =
             [ linearLayout
                 [ height $ V 10
                 , width $ V 10
-                , background "#1BB3E8"
+                , background config.background
                 , cornerRadius 50.0
                 , gravity CENTER
                 ]
@@ -139,4 +144,30 @@ nextView =
             , gravity CENTER
             ]
         ]
+
+expandedView impl config =
+    linearLayout
+        [ height $ V 101
+        , width MATCH_PARENT
+        , visibility config.visibility
+        ]
+        [ buttonView
+            impl
+            { width : V 300
+            , text : "Pay Securely"
+            , margin : MarginTop 10
+            }
+        ]
+
+mainView config child =
+    linearLayout
+        [ height config.height
+        , width MATCH_PARENT
+        , orientation VERTICAL
+        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
+        , background "#ffffff"
+        , padding $ PaddingLeft 35
+        , margin $ MarginBottom 10
+        ]
+        child
 

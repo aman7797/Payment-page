@@ -131,7 +131,6 @@ tabView push state =
             (push <<< SectionSelected)
             radioState
             (TabLayout.view renderType)
-            (Config.tabSelectionTheme renderType $ radioState ^. _currentSelected)
             [ { image : "name"
               , text : "Wallets"
               , offer : false
