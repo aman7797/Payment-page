@@ -30,8 +30,16 @@ import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Utils
 
-view :: forall w. (PaymentPageUIAction  -> Effect Unit) -> UIState -> PrestoDOM (Effect Unit) w
-view push state =
+view
+    :: forall r w
+     . { piName :: String
+       , offer :: String
+       , imageUrl :: String
+       | r
+       }
+    -> Props (Effect Unit)
+    -> PrestoDOM (Effect Unit) w
+view value impl =
     linearLayout
         [ height $ V 120
         , width MATCH_PARENT
@@ -39,15 +47,40 @@ view push state =
         , gravity CENTER_VERTICAL
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         , background "#ffffff"
+        , padding $ PaddingLeft 35
         , margin $ MarginBottom 10
         ]
-        [ piInfoView
-        , offerView
+        [ radioButton
+        , piInfoView value
+        , offerView value
         , nextView
         ]
 
+radioButton =
+    linearLayout
+        [ height $ V 20
+        , width $ V 20
+        , gravity CENTER
+        ]
+        [ linearLayout
+            [ height $ MATCH_PARENT
+            , width $ MATCH_PARENT
+            , stroke "2,#80979797"
+            , cornerRadius 50.0
+            , gravity CENTER
+            ]
+            [ linearLayout
+                [ height $ V 10
+                , width $ V 10
+                , background "#1BB3E8"
+                , cornerRadius 50.0
+                , gravity CENTER
+                ]
+                []
+            ]
+        ]
 
-piInfoView =
+piInfoView value =
     linearLayout
         [ height $ V 120
         , width $ V 140
@@ -56,15 +89,15 @@ piInfoView =
         , gravity CENTER_HORIZONTAL
         ]
         [ imageView
-            [ height $ V 68
-            , width MATCH_PARENT
+            [ height $ V 50
+            , width $ V 50
             , background "#ff0000"
             , gravity CENTER
             ]
         , textView
             [ height $ V 17
             , width MATCH_PARENT
-            , text "Amazon Pay"
+            , text value.piName
             , fontStyle "Arial-Regular"
             , textSize 14
             , color "#545758"
@@ -72,7 +105,7 @@ piInfoView =
             ]
         ]
 
-offerView =
+offerView value =
     linearLayout
         [ height $ V 18
         , width $ V 150
@@ -84,7 +117,7 @@ offerView =
             [ height $ V 18
             , width MATCH_PARENT
             , weight 1.0
-            , text "Rs 10 cash back"
+            , text value.offer
             , fontStyle "Arial-Regular"
             , textSize 16
             , color "#E60000"

@@ -511,6 +511,19 @@ _upiViewState = lens (unwrap >>> _.upiViewState) (\oldrec newval -> wrap ((unwra
 _cardsViewState :: forall a b c. Newtype a { cardsViewState :: c | b} => Lens' a c
 _cardsViewState = lens (unwrap >>> _.cardsViewState) (\oldrec newval -> wrap ((unwrap oldrec) { cardsViewState = newval }))
 
+_netBankingState :: forall a b c. Newtype a { netBankingState :: c | b} => Lens' a c
+_netBankingState = lens (unwrap >>> _.netBankingState) (\oldrec newval -> wrap ((unwrap oldrec) { netBankingState = newval }))
+
+
+_nbSelected :: forall a b c. Newtype a { nbSelected :: c | b} => Lens' a c
+_nbSelected = lens (unwrap >>> _.nbSelected) (\oldrec newval -> wrap ((unwrap oldrec) { nbSelected = newval }))
+
+_netBankList :: forall a b c. Newtype a { netBankList :: c | b} => Lens' a c
+_netBankList = lens (unwrap >>> _.netBankList) (\oldrec newval -> wrap ((unwrap oldrec) { netBankList = newval }))
+
+_netBankingViewState :: forall a b c. Newtype a { netBankingViewState :: c | b} => Lens' a c
+_netBankingViewState = lens (unwrap >>> _.netBankingViewState) (\oldrec newval -> wrap ((unwrap oldrec) { netBankingViewState = newval }))
+
 
 _cardProvider :: forall a b c. Newtype a { card_provider :: c | b} => Lens' a c
 _cardProvider = lens (unwrap >>> _.card_provider) (\oldrec newval -> wrap ((unwrap oldrec) { card_provider = newval }))

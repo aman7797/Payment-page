@@ -48,7 +48,7 @@ initialState :: Array StoredCard -> State
 initialState cards = State $
     { sectionSelected : SavedCard
     , storedCards : cards
-    , addNewCardState : AddNewCard.initialState { supportedMethods : [], cardMethod : AddNewCard.AddNewCard}
+    , addNewCardState : AddNewCard.defaultState []
     }
 
 eval :: Action -> State -> State

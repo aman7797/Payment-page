@@ -37,6 +37,7 @@ import UI.Controller.Component.AddNewCard (Action(..))
 import UI.Controller.Component.AddNewCard as AddNewCard
 import UI.Controller.Component.CardsView as CardsView
 import  UI.Controller.Component.UpiView  as UpiView
+import UI.Controller.Component.NetBankingView as NetBankingView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
 import UI.Helpers.SingleSelectRadio as Radio
@@ -61,6 +62,7 @@ newtype UIState = UIState
     , sections :: Array PaymentSection
     , cardsViewState :: CardsView.State
     , upiViewState :: UpiView.State
+    , netBankingViewState :: NetBankingView.State
     , renderType :: RenderType
     }
 
@@ -91,6 +93,7 @@ data PaymentPageUIAction
   | SectionSelected (Radio.RadioSelected)
   | CardsViewAction CardsView.Action
   | UpiViewAction UpiView.Action
+  | NetBankingViewAction  NetBankingView.Action
   | Resized Int
 -- Exit Type
 
@@ -120,6 +123,7 @@ defaultUIState ppInput = UIState
     { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 1
     , sections : [ Wallets, Cards, NetBanking, UPI]
     , cardsViewState : CardsView.initialState $ ppInput ^. _piInfo ^. _cards
+    , netBankingViewState : NetBankingView.initialState $ getBankList ppInput
     , upiViewState : UpiView.initialState
     , renderType : getRenderType $ ppInput ^. _screenWidth
     }
@@ -208,4 +212,25 @@ overrides push state =
                 ]
 
         _ -> []
+
+
+
+getBankList :: PaymentPageInput -> Array BankAccount
+getBankList ppInput =
+    sort <<< map mkBank <<< filter getNB $ ppInput ^. _piInfo ^. _merchantPaymentMethods
+    where
+          mkBank pm = BankAccount
+                        { bankCode : pm  ^. _paymentMethod
+                        , bankName : pm ^. _description,maskedAccountNumber: ""
+                        , mpinSet:true,referenceId:pm  ^. _paymentMethod
+                        , regRefId : ""
+                        , accountHolderName : ""
+                        , register: true
+                        , ifsc : ""
+                        {-- , iin : getNbIin $ pm  ^. _paymentMethod --}
+                        }
+
+          getNB pm = (pm ^. _paymentMethodType) == "NB"
+
+
 

@@ -146,3 +146,21 @@ tabLayoutWidth =
          Desktop _ -> V 334
          Mobile _ -> V 800
 
+
+
+cardSelectionTheme :: RadioSelected -> RadioSelected -> SingleSelectTheme
+cardSelectionTheme curr s =
+	{ selected :
+        [ background "#e9e9e9"
+        ]
+    , unselected :
+        [ background "#ffffff"
+        ]
+    , lessThanOrEq :
+        [ -- translationY baseTrans
+        ]
+    , greaterThan :
+        [ -- translationY $ baseTrans + extra
+        ]
+    }
+

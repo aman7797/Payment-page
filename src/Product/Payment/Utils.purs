@@ -3,15 +3,16 @@ module Product.Payment.Utils where
 import Prelude
 
 import Control.Monad.Except (runExcept)
+import Data.Array
 import Data.Lens ((^.))
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 
 import Foreign.Generic (decodeJSON)
-import Engineering.Helpers.Types.Accessor (_amount, _billerCardEditable, _clientId, _customerId, _customerMobile, _fullfilment, _merchantId, _orderId, _orderToken, _preferedBanks)
-import Engineering.Helpers.Commons (liftFlow)
+import Engineering.Helpers.Types.Accessor
+import Engineering.Helpers.Commons
 import Engineering.Helpers.Utils (getSimOperators')
-import Product.Types (FetchSIMDetailsUPIResponse(..), OrderInfo, PaymentPageInput(..), SDKParams, SIM(..), UPIInfo(..), UPIState)
+import Product.Types
 import Remote.Types (PaymentSourceResp)
 import Presto.Core.Flow (Flow)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
@@ -60,4 +61,25 @@ fetchSIMDetails = do
         Right (simOperators :: FetchSIMDetailsUPIResponse) -> pure simOperators
         Left err ->  if os == "IOS" then pure $ FetchSIMDetailsUPIResponse [ SIM { slotId: 0, carrierName : "", simId : "1234567"  } ] else pure $ FetchSIMDetailsUPIResponse []
           --(BackT <<< ExceptT) $ Left <$> pure (Err.UPIFlowError $ BindDeviceErr $ GetOperatorFailure $ (ErrorData {status:"FAILURE",errorCode:"SIM_CARD_NOT_AVAILABLE",errorMessage:"SIM card(s) not available"}))
+
+getBankList :: PaymentPageInput -> Array BankAccount
+getBankList ppInput =
+    sort <<< map mkBank <<< filter getNB $ ppInput ^. _piInfo ^. _merchantPaymentMethods
+    where
+          mkBank pm = BankAccount
+                        { bankCode : pm  ^. _paymentMethod
+                        , bankName : pm ^. _description,maskedAccountNumber: ""
+                        , mpinSet:true,referenceId:pm  ^. _paymentMethod
+                        , regRefId : ""
+                        , accountHolderName : ""
+                        , register: true
+                        , ifsc : ""
+                        {-- , iin : getNbIin $ pm  ^. _paymentMethod --}
+                        }
+
+          getNB pm = (pm ^. _paymentMethodType) == "NB"
+
+
+
+
 
