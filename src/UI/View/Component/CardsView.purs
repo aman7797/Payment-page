@@ -32,7 +32,7 @@ import UI.Constant.Type (FontColor, FontStyle)
 import UI.Helpers.CommonView
 import UI.Controller.Component.CardsView
 
-import UI.View.Component.TabLayout as TabLayout
+import UI.View.Component.CardLayout2 as CardLayout2
 import UI.Helpers.SingleSelectRadio as Radio
 import UI.View.Component.AddNewCard as AddNewCard
 import UI.Utils
@@ -81,8 +81,10 @@ view push state _ =
         ]
 
 
-savedCardsView push state props =
-    let radioState = state ^. _sectionSelected
+savedCardsView push state value =
+    let radioState = state ^. _savedCardSelected
+        currentSelected = radioState ^. _currentSelected
+        proceedImpl = overrides push state ProceedToPay
         storedCards = state ^. _storedCards
      in linearLayout
         [ height $ V $ 120 * (length storedCards)
@@ -90,14 +92,23 @@ savedCardsView push state props =
         , orientation HORIZONTAL
         , gravity CENTER_VERTICAL
         , background "#effaff"
-        , visibility props.visibility
+        , visibility value.visibility
         , margin $ MarginBottom 10
         ]
-        []
-        {-- $ Radio.singleSelectRadio --}
-        {--     (push <<< SectionSelected) --}
-        {--     radioState --}
-        {--     (TabLayout.view renderType) --}
+        $ Radio.singleSelectRadio
+            (push <<< SavedCardSelected)
+            radioState
+            (CardLayout2.view proceedImpl)
+            ( storedCardInfo <$> storedCards)
+
+    where
+          storedCardInfo card =
+              { cardName : card ^. _cardBrand <> " " <> card ^. _cardType <> " " <> card ^. _cardIssuer
+              , cardNumber : card ^. _cardNumber
+              , expiryDate : card ^. _cardExpMonth <> "/" <> card ^. _cardExpYear
+              , offer : ""
+              , imageUrl : ""
+              }
 
 
 expandButton config =

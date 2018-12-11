@@ -21,13 +21,15 @@ import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)
 
 import UI.Controller.Component.AddNewCard as AddNewCard
+import UI.Helpers.SingleSelectRadio as Radio
 
 
 
 
 data Action
-    = SubmitSavedCard StoredCard
+    = SubmitSavedCard
     | AddNewCardAction AddNewCard.Action
+    | SavedCardSelected Radio.RadioSelected
     | SectionSelected Section
 
 
@@ -40,6 +42,7 @@ newtype State = State
     { sectionSelected :: Section
     , storedCards :: Array StoredCard
     , addNewCardState :: AddNewCard.State
+    , savedCardSelected :: Radio.State
     }
 
 
@@ -53,12 +56,13 @@ initialState cards =
             { sectionSelected : if storedCardsNull then AddNewCard else SavedCard
             , storedCards : cards
             , addNewCardState : AddNewCard.defaultState []
+            , savedCardSelected : Radio.defaultState Radio.NothingSelected
             }
 
 eval :: Action -> State -> State
 eval =
     case _ of
-         SubmitSavedCard _ -> identity
+         SubmitSavedCard -> identity
 
          AddNewCardAction cardAction ->
             _addNewCardState %~ AddNewCard.eval cardAction
@@ -66,12 +70,17 @@ eval =
          SectionSelected section ->
              _sectionSelected .~ section
 
+         SavedCardSelected action ->
+             _savedCardSelected %~ Radio.eval action
+
+         _ -> identity
+
 
 
 
 data Overrides
     = SectionSelectionOverride Section
-    | BtnPay
+    | ProceedToPay
 
 
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
@@ -79,6 +88,10 @@ overrides push state =
     case _ of
          SectionSelectionOverride section ->
              [ onClick push (const $ SectionSelected section)
+             ]
+
+         ProceedToPay ->
+             [ onClick push (const SubmitSavedCard)
              ]
 
          _ -> []

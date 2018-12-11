@@ -141,8 +141,19 @@ eval =
     {-- AddNewCardAction (SubmitCard (AddNewCard.SavedCard card)) -> --}
     {--     exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card --}
 
-    CardsViewAction (CardsView.SubmitSavedCard card) ->
-        exitPP $ PayUsing <<< SavedCard <<< mkSavedCardDetails card
+    CardsViewAction CardsView.SubmitSavedCard ->
+        let getExitAction = \ppState ->
+            let cardsViewState = ppState ^. _uiState ^. _cardsViewState
+                currentSelected  = cardsViewState ^. _savedCardSelected ^. _currentSelected
+                storedCards = cardsViewState ^. _storedCards
+             in case currentSelected of
+                                Radio.RadioSelected ind ->
+                                    maybe
+                                        UserAborted
+                                        (PayUsing <<< SavedCard <<< mkSavedCardDetails ppState)
+                                        (storedCards !! ind)
+                                _ -> UserAborted -- Remove this and pass error
+         in exitPP getExitAction
 
     NetBankingViewAction NetBankingView.SubmitNetBanking ->
         let getExitAction = \ppState ->
@@ -196,8 +207,8 @@ mkCardDetails ppState =
         , paymentMethod : addCardState ^. _formState ^. _cardNumber ^. _cardDetails ^. _card_type
         }
 
-mkSavedCardDetails :: StoredCard -> PaymentPageState -> SavedCardDetails
-mkSavedCardDetails card ppState =
+mkSavedCardDetails :: PaymentPageState -> StoredCard -> SavedCardDetails
+mkSavedCardDetails ppState card =
     let cardState = ppState  ^. _uiState ^. _cardsViewState ^. _addNewCardState
      in SavedCardDetails
         { cvv : cardState ^. _formState ^. _cvv ^. _value

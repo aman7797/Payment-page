@@ -524,6 +524,9 @@ _netBankList = lens (unwrap >>> _.netBankList) (\oldrec newval -> wrap ((unwrap 
 _netBankingViewState :: forall a b c. Newtype a { netBankingViewState :: c | b} => Lens' a c
 _netBankingViewState = lens (unwrap >>> _.netBankingViewState) (\oldrec newval -> wrap ((unwrap oldrec) { netBankingViewState = newval }))
 
+_savedCardSelected :: forall a b c. Newtype a { savedCardSelected :: c | b} => Lens' a c
+_savedCardSelected = lens (unwrap >>> _.savedCardSelected) (\oldrec newval -> wrap ((unwrap oldrec) { savedCardSelected = newval }))
+
 
 _cardProvider :: forall a b c. Newtype a { card_provider :: c | b} => Lens' a c
 _cardProvider = lens (unwrap >>> _.card_provider) (\oldrec newval -> wrap ((unwrap oldrec) { card_provider = newval }))
