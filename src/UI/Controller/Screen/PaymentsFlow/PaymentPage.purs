@@ -75,7 +75,7 @@ data PaymentSection
     = Wallets
     | Cards
     | NetBanking
-    | UPI
+    | UPISection
     | DefaultSection
 
 derive instance genericPaymentSection :: Generic PaymentSection _
@@ -121,7 +121,7 @@ defaultUIState :: PaymentPageInput -> UIState
 defaultUIState ppInput = UIState
     {-- { sectionSelected  : Radio.defaultState Radio.NothingSelected --}
     { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 1
-    , sections : [ Wallets, Cards, NetBanking, UPI]
+    , sections : [ Wallets, Cards, NetBanking, UPISection]
     , cardsViewState : CardsView.initialState $ ppInput ^. _piInfo ^. _cards
     , netBankingViewState : NetBankingView.initialState $ getBankList ppInput
     , upiViewState : UpiView.initialState

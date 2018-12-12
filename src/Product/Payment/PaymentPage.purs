@@ -41,7 +41,7 @@ import Remote.Accessors (_status, _payment)
 import Remote.Backend (mkPayment, checkOrderStatus, getPaymentMethods) as Remote
 import Remote.Config (encKey, merchantId)
 import Remote.Types -- (InitiateTxnResp(..), PaymentSourceReq(PaymentSourceReq))
-import Remote.Utils (mkPayReqCard, mkPayReqNB, mkPayReqSavedCard, mkPayReqUPI)
+import Remote.Utils (mkPayReqCard, mkPayReqNB, mkPayReqSavedCard, mkPayReqUpiCollect)
 import Tracker.Tracker (toString) as T
 import Tracker.Tracker (trackEventMerchant)
 import Type.Data.Boolean (kind Boolean)
@@ -174,8 +174,9 @@ paymentPageFlow sdkParams optPPState = do
           in
           case paymentOption of
             NB bank             -> mkPayReqNB bank order_id        # processPayment >>= \_ -> processExit paymentOption
-            Card cd             -> mkPayReqCard cd  order_id       # processPayment >>= \_ -> processExit paymentOption
+            Card cd             -> mkPayReqCard cd order_id        # processPayment >>= \_ -> processExit paymentOption
             SavedCard scd       -> mkPayReqSavedCard scd order_id  # processPayment >>= \_ -> processExit paymentOption
+            UPI vpa             -> mkPayReqUpiCollect vpa order_id # processPayment >>= \_ -> processExit paymentOption
             {-- SavedUpi vpaAccount -> mkPayReqUPI order_id            # processPayment >>= \_ -> processExit paymentOption --}
             _                   -> BackT $ throwError $ Err.ExitApp "Unable to process"
 

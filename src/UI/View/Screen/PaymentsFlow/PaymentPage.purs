@@ -152,7 +152,7 @@ tabView push state =
             , { image : "name"
               , text : "UPI"
               , offer : false
-              , tab : UPI
+              , tab : UPISection
               , imageUrl : "tab_upi"
               }
             ]
@@ -223,7 +223,7 @@ upiView push state =
         ([ height MATCH_PARENT
         , width MATCH_PARENT
         , orientation VERTICAL
-        ] <>> implementation (SectionOverride UPI))
+        ] <>> implementation (SectionOverride UPISection))
         [ mapDom UpiView.view push upiState UpiViewAction []
         ]
 

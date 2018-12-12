@@ -176,6 +176,17 @@ mkPayReqCard (CardDetails state) orderId = do
       )
   state.paymentMethod # defaultTxnReq "CARD" orderId >>> mapNewtype updateState 
 
+mkPayReqUpiCollect :: String -> String -> InitiateTxnReq
+mkPayReqUpiCollect vpa orderId = do
+  let updateState = (\cardData ->
+        cardData
+        { txn_type = Just "UPI_COLLECT"
+        , upi_vpa = Just vpa
+        , redirect_after_payment = true
+        }
+      )
+  mapNewtype updateState $ defaultTxnReq "UPI" orderId "UPI"
+
 mkPayReqSavedCard :: SavedCardDetails -> String -> InitiateTxnReq
 mkPayReqSavedCard (SavedCardDetails cardData) orderId = do
     let updateState = (\state ->
