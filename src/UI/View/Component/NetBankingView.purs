@@ -72,8 +72,9 @@ savedCardsView push state@(State st) =
     where
           nbInfo = \bankAcc -> { piName : bankAcc ^. _bankName
                          , offer : ""
-                         , imageUrl : ""
+                         , imageUrl : baseUrl <> "ic_bank_" <> (bankAcc ^. _iin)
                          }
+          baseUrl = "https://d2pv62lkmtdxww.cloudfront.net/banks/Images/"
 
 
 expandButton config =

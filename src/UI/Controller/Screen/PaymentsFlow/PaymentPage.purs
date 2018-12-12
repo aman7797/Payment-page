@@ -16,7 +16,7 @@ import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Generic.Rep.Eq (genericEq)
 import Effect (Effect)
-import Engineering.Helpers.Commons (dpToPx, log, startAnim)
+import Engineering.Helpers.Commons (dpToPx, log, startAnim, getNbIin)
 import Engineering.Helpers.Utils (setDelay)
 import Engineering.Helpers.Types.Accessor
 import JBridge (requestKeyboardShow, requestKeyboardHide)
@@ -268,7 +268,7 @@ getBankList ppInput =
                         , accountHolderName : ""
                         , register: true
                         , ifsc : ""
-                        {-- , iin : getNbIin $ pm  ^. _paymentMethod --}
+                        , iin : getNbIin $ pm  ^. _paymentMethod
                         }
 
           getNB pm = (pm ^. _paymentMethodType) == "NB"

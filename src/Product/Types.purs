@@ -293,17 +293,19 @@ newtype Account = Account {
   , ifsc :: String
 }
 
-newtype BankAccount = BankAccount {
-  bankCode :: String
-  , bankName :: String
-  , maskedAccountNumber :: String
-  , mpinSet :: Boolean
-  , referenceId :: String
-  , regRefId :: String
-  , accountHolderName :: String
-  , register :: Boolean
-  , ifsc :: String
-}
+newtype BankAccount = BankAccount
+    { bankCode :: String
+    , bankName :: String
+    , maskedAccountNumber :: String
+    , mpinSet :: Boolean
+    , referenceId :: String
+    , regRefId :: String
+    , accountHolderName :: String
+    , register :: Boolean
+    , ifsc :: String
+    , iin :: String
+    }
+
 instance eqBankAccount :: Eq BankAccount where
   eq (BankAccount a) (BankAccount b) = a.referenceId == b.referenceId
 

@@ -87,22 +87,25 @@ radioButton config =
 
 piInfoView value =
     linearLayout
-        [ height $ V 120
+        [ height MATCH_PARENT
         , width $ V 140
         , orientation VERTICAL
         , padding $ Padding 24 24 24 0
         , gravity CENTER_HORIZONTAL
+        , margin $ MarginTop 11
         ]
         [ imageView
-            [ height $ V 50
-            , width $ V 50
-            , background "#ff0000"
+            [ height $ V 36
+            , width $ V 86
             , gravity CENTER
+            , imageUrl value.imageUrl
+            , margin $ Margin 7 7 7 7
             ]
         , textView
             [ height $ V 17
             , width MATCH_PARENT
             , text value.piName
+            {-- , margin $ MarginTop 5 --}
             , fontStyle "Arial-Regular"
             , textSize 14
             , color "#545758"
@@ -140,7 +143,6 @@ nextView =
         [ imageView
             [ height MATCH_PARENT
             , width MATCH_PARENT
-            , background "#ff0000"
             , gravity CENTER
             ]
         ]

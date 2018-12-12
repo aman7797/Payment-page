@@ -74,7 +74,7 @@ getBankList ppInput =
                         , accountHolderName : ""
                         , register: true
                         , ifsc : ""
-                        {-- , iin : getNbIin $ pm  ^. _paymentMethod --}
+                        , iin : getNbIin $ pm  ^. _paymentMethod
                         }
 
           getNB pm = (pm ^. _paymentMethodType) == "NB"
