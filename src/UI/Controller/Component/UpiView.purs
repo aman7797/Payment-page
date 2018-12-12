@@ -20,14 +20,14 @@ import UI.Utils (FieldType(..), os, getFieldTypeID)
 
 
 data Action
-    = Submit
+    = SubmitUpiCollect
     | VPAchanged String
 
 
 
 
 newtype State = State
-    { dummy :: String
+    { vpa :: String
     }
 
 
@@ -36,8 +36,19 @@ derive instance stateNewtype :: Newtype State _
 
 initialState :: State
 initialState = State $
-    { dummy : "dummy"
+    { vpa : ""
     }
+
+eval :: Action -> State -> State
+eval =
+    case _ of
+         SubmitUpiCollect -> identity
+
+         VPAchanged vpa ->
+             _vpa .~ vpa
+
+
+
 
 data Overrides
     = UPIeditOverride

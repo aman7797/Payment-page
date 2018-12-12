@@ -169,6 +169,8 @@ eval =
                                 _ -> UserAborted -- Remove this and pass error
          in exitPP getExitAction
 
+    UpiViewAction UpiView.SubmitUpiCollect ->
+        exitPP $ PayUsing <<< UPI <<< mkUpiCollectDetails
 
     -- component
     CardsViewAction cardAction ->
@@ -223,6 +225,12 @@ mkNetBankingDetails bank = logAny $
         , code  : bank ^. _bankCode
         , ifsc: bank ^. _ifsc
         }
+
+mkUpiCollectDetails :: PaymentPageState -> String
+mkUpiCollectDetails ppState =
+    ppState ^. _uiState ^. _upiViewState ^. _vpa
+
+
 
 data Overrides
     = SectionOverride PaymentSection
