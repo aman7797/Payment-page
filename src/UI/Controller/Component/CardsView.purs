@@ -31,6 +31,7 @@ data Action
     | AddNewCardAction AddNewCard.Action
     | SavedCardSelected Radio.RadioSelected
     | SectionSelected Section
+    | CvvChanged String
 
 
 data Section
@@ -42,6 +43,7 @@ newtype State = State
     { sectionSelected :: Section
     , storedCards :: Array StoredCard
     , addNewCardState :: AddNewCard.State
+    , cvv :: String
     , savedCardSelected :: Radio.State
     }
 
@@ -57,6 +59,7 @@ initialState cards =
             , storedCards : cards
             , addNewCardState : AddNewCard.defaultState []
             , savedCardSelected : Radio.defaultState Radio.NothingSelected
+            , cvv : ""
             }
 
 eval :: Action -> State -> State
@@ -73,6 +76,9 @@ eval =
          SavedCardSelected action ->
              _savedCardSelected %~ Radio.eval action
 
+         CvvChanged str ->
+             _cvv .~ str
+
          _ -> identity
 
 
@@ -81,6 +87,7 @@ eval =
 data Overrides
     = SectionSelectionOverride Section
     | ProceedToPay
+    | CvvEditField
 
 
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
@@ -92,6 +99,10 @@ overrides push state =
 
          ProceedToPay ->
              [ onClick push (const SubmitSavedCard)
+             ]
+
+         CvvEditField ->
+             [ onChange push CvvChanged
              ]
 
          _ -> []

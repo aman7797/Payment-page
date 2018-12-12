@@ -6,6 +6,7 @@ import Data.Array
 import Data.Lens
 import Data.Maybe
 import Data.Newtype
+import Data.String.CodePoints as String
 import Foreign.Object as Object
 import Data.String.CodePoints as S
 import Effect
@@ -85,27 +86,27 @@ savedCardsView push state value =
     let radioState = state ^. _savedCardSelected
         currentSelected = radioState ^. _currentSelected
         proceedImpl = overrides push state ProceedToPay
+        cvvImpl = overrides push state CvvEditField
         storedCards = state ^. _storedCards
      in linearLayout
-        [ height $ V $ 120 * (length storedCards)
+        [ height $ V $ 120 * (length storedCards) + 240
         , width MATCH_PARENT
-        , orientation HORIZONTAL
-        , gravity CENTER_VERTICAL
+        , orientation VERTICAL
         , background "#effaff"
         , visibility value.visibility
-        , margin $ MarginBottom 10
+        {-- , margin $ MarginBottom 10 --}
         ]
         $ Radio.singleSelectRadio
             (push <<< SavedCardSelected)
             radioState
-            (CardLayout2.view proceedImpl)
+            (CardLayout2.view proceedImpl cvvImpl)
             ( storedCardInfo <$> storedCards)
 
     where
           storedCardInfo card =
               { cardName : card ^. _cardBrand <> " " <> card ^. _cardType <> " " <> card ^. _cardIssuer
               , cardNumber : card ^. _cardNumber
-              , expiryDate : card ^. _cardExpMonth <> "/" <> card ^. _cardExpYear
+              , expiryDate : card ^. _cardExpMonth <> "/" <> (String.drop 2 $ card ^. _cardExpYear)
               , offer : ""
               , imageUrl : ""
               }

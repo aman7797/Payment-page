@@ -77,6 +77,7 @@ editField
        , width :: Length
        , weight :: Number
        , margin :: Margin
+       , inputType :: InputType
        }
     -> PrestoDOM (Effect Unit) w
 editField implementation value =
@@ -98,6 +99,7 @@ editField implementation value =
             {-- , hint value.hint --}
             , label value.hint
             , margin $ Margin 20 0 0 0
+            , inputType value.inputType
             ] <>> implementation)
         ]
 

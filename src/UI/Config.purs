@@ -148,7 +148,6 @@ tabLayoutWidth =
          Mobile _ -> V 800
 
 
-
 cardSelectionTheme
     :: RadioSelected
     -> Int
@@ -162,6 +161,26 @@ cardSelectionTheme selected curr =
             { background : "#FF1BB3E8"
             , visibility : VISIBLE
             , height : V 221
+            }
+         _ ->
+            { background : "#331BB3E8"
+            , visibility : GONE
+            , height : V 120
+            }
+
+cardSelectionTheme2
+    :: RadioSelected
+    -> Int
+    -> { background :: String
+       , visibility :: Visibility
+       , height :: Length
+       }
+cardSelectionTheme2 selected curr =
+    case compare selected (RadioSelected curr) of
+         EQ ->
+            { background : "#FF1BB3E8"
+            , visibility : VISIBLE
+            , height : V 356
             }
          _ ->
             { background : "#331BB3E8"

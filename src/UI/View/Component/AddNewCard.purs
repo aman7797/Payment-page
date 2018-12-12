@@ -50,12 +50,14 @@ view push state parent =
             , width : MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
+            , inputType : Numeric
             }
         , editField (implementation NameEditField)
             { hint : "Name on the Card"
             , width : MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
+            , inputType : TypeText
             }
         , horizontalView
             [ editField (implementation ExpiryDateEditField)
@@ -63,12 +65,14 @@ view push state parent =
                 , width : V 100
                 , weight : 1.0
                 , margin : MarginLeft 0
+                , inputType : TypeText
                 }
             , editField (implementation CvvEditField)
                 { hint : "CVV"
                 , width : V 100
                 , weight : 1.0
                 , margin : MarginLeft 40
+                , inputType : NumericPassword
                 }
             ]
         , saveForLaterView

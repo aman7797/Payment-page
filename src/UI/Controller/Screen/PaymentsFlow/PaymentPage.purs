@@ -209,9 +209,9 @@ mkCardDetails ppState =
 
 mkSavedCardDetails :: PaymentPageState -> StoredCard -> SavedCardDetails
 mkSavedCardDetails ppState card =
-    let cardState = ppState  ^. _uiState ^. _cardsViewState ^. _addNewCardState
+    let cvv = logAny $ ppState  ^. _uiState ^. _cardsViewState ^. _cvv
      in SavedCardDetails
-        { cvv : cardState ^. _formState ^. _cvv ^. _value
+        { cvv
         , cardToken : card ^. _cardToken
         , cardType : card ^. _cardType
         }

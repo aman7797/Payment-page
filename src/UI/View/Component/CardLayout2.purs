@@ -36,6 +36,7 @@ import UI.Utils
 view
     :: forall r w
      . Props (Effect Unit)
+    -> Props (Effect Unit)
     -> RadioSelected
     -> Int
     -> { cardName :: String
@@ -46,8 +47,8 @@ view
        | r
        }
     -> PrestoDOM (Effect Unit) w
-view proceedImpl selected currIndex value =
-    let config = logAny $ Config.cardSelectionTheme selected currIndex
+view proceedImpl cvvImpl selected currIndex value =
+    let config = Config.cardSelectionTheme2 selected currIndex
      in mainView config
             [ linearLayout
                 [ height MATCH_PARENT
@@ -61,7 +62,7 @@ view proceedImpl selected currIndex value =
                 , otherDetailsView value
                 , actionView value
                 ]
-            , expandedView proceedImpl config
+            , expandedView proceedImpl cvvImpl config
             ]
 
 radioButton config =
@@ -93,7 +94,7 @@ iconView value =
         [ height $ V 60
         , width $ V 100
         , orientation VERTICAL
-        , padding $ Padding 24 24 24 0
+        {-- , padding $ Padding 24 24 24 0 --}
         , gravity CENTER_HORIZONTAL
         ]
         [ imageView
@@ -144,7 +145,7 @@ detailsView value =
 otherDetailsView value =
     linearLayout
         [ height $ V 47
-        , width $ V 56
+        , width $ V 58
         , orientation VERTICAL
         {-- , gravity CENTER_HORIZONTAL --}
         ]
@@ -162,7 +163,7 @@ otherDetailsView value =
             , width MATCH_PARENT
             , text value.expiryDate
             , fontStyle "Arial-Regular"
-            , textSize 22
+            , textSize 20
             , color "#363636"
             {-- , gravity CENTER --}
             ]
@@ -170,30 +171,39 @@ otherDetailsView value =
 
 actionView value =
     linearLayout
-        [ height $ V 20
-        , width $ V 12
-        , margin $ MarginRight 30
+        [ height $ V 26
+        , width $ V 26
+        , margin $ MarginHorizontal 35 35
         , gravity CENTER
         ]
         [ imageView
             [ height MATCH_PARENT
             , width MATCH_PARENT
             , gravity CENTER
-            , imageUrl value.imageUrl
+            , imageUrl "ic_delete"
             ]
         ]
 
-expandedView impl config =
+expandedView impl cvvImpl config =
     linearLayout
-        [ height $ V 101
+        [ height $ V 236
         , width MATCH_PARENT
+        , orientation VERTICAL
         , visibility config.visibility
         ]
-        [ buttonView
+        [ editField
+            cvvImpl
+            { hint : "CVV"
+            , width : V 300
+            , weight : 0.0
+            , margin : MarginTop 40
+            , inputType : NumericPassword
+            }
+        , buttonView
             impl
             { width : V 300
             , text : "Pay Securely"
-            , margin : MarginTop 10
+            , margin : MarginTop 40
             }
         ]
 

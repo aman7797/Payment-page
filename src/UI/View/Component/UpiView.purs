@@ -54,6 +54,7 @@ view push state _ =
             , width: MATCH_PARENT
             , weight : 0.0
             , margin : MarginTop 30
+            , inputType : TypeText
             }
         , infoView
         , buttonView (overrides push state BtnPay)
