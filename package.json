@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "presto-ui": "git+https://bitbucket.org/juspay/presto-ui",
+    "presto-ui": "git+https://bitbucket.org/juspay/presto-ui#web",
     "purs-loader": "^3.2.0",
     "ramda": "^0.23.0",
     "simple-card-validator": "https://bitbucket.org/juspay/simple-card-validator"
