@@ -118,14 +118,21 @@ saveForLaterView =
         , gravity CENTER_VERTICAL
         , margin $ MarginTop 30
         ]
-        [ checkBox
-            [ height $ V 16
-            , width $ V 16
+        [ linearLayout
+            [ height $ V 18
+            , width $ V 18
             , cornerRadius 3.0
-            , checked true
+            {-- , checked true --}
             , stroke "2,#363636"
+            , gravity CENTER
             ]
-            {-- [] --}
+            [ imageView
+                [ height $ V 10
+                , width $ V 10
+                , gravity CENTER
+                , imageUrl "check"
+                ]
+            ]
         , textView
             [ height $ V 17
             , weight 1.0

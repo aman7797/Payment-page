@@ -94,14 +94,15 @@ iconView value =
         [ height $ V 60
         , width $ V 100
         , orientation VERTICAL
-        {-- , padding $ Padding 24 24 24 0 --}
+        , padding $ Padding 5 5 5 5
+        , margin $ MarginLeft 20
         , gravity CENTER_HORIZONTAL
         ]
         [ imageView
-            [ height $ V 50
-            , width $ V 50
-            , background "#ff0000"
+            [ height MATCH_PARENT
+            , width MATCH_PARENT
             , gravity CENTER
+            , imageUrl value.imageUrl
             ]
         {-- , textView --}
         {--     [ height $ V 17 --}
@@ -120,6 +121,7 @@ detailsView value =
         , width $ V 150
         , weight 1.0
         , orientation VERTICAL
+        , margin $ MarginLeft 25
         {-- , gravity CENTER_HORIZONTAL --}
         ]
         [ textView

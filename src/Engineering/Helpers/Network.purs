@@ -10,10 +10,15 @@ import Data.Either (Either(..), either)
 import Foreign (Foreign, readString, typeOf)
 import Foreign.Class (class Encode, encode)
 import Foreign.Generic (decodeJSON)
+import Foreign.Class (class Encode, encode)
+import Foreign.Generic (decodeJSON)
+import Foreign.Generic.Class (class GenericEncode)
 import Foreign.Index (readProp)
+import Data.Generic.Rep (class Generic)
 import Foreign.Keys (keys)
 import Data.List (List(..), fromFoldable)
 import Data.Tuple (Tuple(..))
+import Presto.Core.Utils.Encoding (defaultEncodeJSON)
 import UI.Utils (logit)
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -27,21 +32,22 @@ import Engineering.Helpers.Commons (AffSuccess)
 foreign import jsonStringify :: forall a. a -> String
 foreign import backPressHandler' :: AffSuccess String ->  Effect Unit
 
-urlEncodedMakeRequest :: forall req. Encode req
-                      => Method
-                      -> URL
-                      -> Headers
-                      -> req
-                      -> Request
-urlEncodedMakeRequest method u (Headers headers) req = Request
-  {   method
-    , url : let urlQuery = urlEncode req
-            in if urlQuery == ""
-                then u
-                else u <> "?" <> urlQuery
+urlEncodedMakeRequest
+    :: forall r2 req
+     . Encode req
+    => Generic req r2
+    => GenericEncode r2
+    => Method
+    -> URL
+    -> Headers
+    -> req
+    -> Request
+urlEncodedMakeRequest method url (Headers headers) req = Request
+    { method
+    , url
     , headers : Headers (Header "Content-Type" "application/x-www-form-urlencoded"
                 : headers)
-    , payload: ""
+    , payload: defaultEncodeJSON req
   }
 
 toKeyVals :: forall req. Encode req => req -> Array (Tuple String String)

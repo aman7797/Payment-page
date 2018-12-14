@@ -37,6 +37,7 @@ import UI.View.Component.CardLayout2 as CardLayout2
 import UI.Helpers.SingleSelectRadio as Radio
 import UI.View.Component.AddNewCard as AddNewCard
 import UI.Utils
+import Validation
 
 view
 	:: forall w
@@ -88,11 +89,15 @@ savedCardsView push state value =
         proceedImpl = overrides push state ProceedToPay
         cvvImpl = overrides push state CvvEditField
         storedCards = state ^. _storedCards
+        storedCardLength = (length storedCards)
+        unselectedHeight = 120 * storedCardLength
+        savedCardHeight = case currentSelected of
+                               Radio.NothingSelected -> V $ unselectedHeight + 10
+                               _ -> V $ unselectedHeight + 250
      in linearLayout
-        [ height $ V $ 120 * (length storedCards) + 240
+        [ height savedCardHeight
         , width MATCH_PARENT
         , orientation VERTICAL
-        , background "#effaff"
         , visibility value.visibility
         {-- , margin $ MarginBottom 10 --}
         ]
@@ -108,33 +113,67 @@ savedCardsView push state value =
               , cardNumber : card ^. _cardNumber
               , expiryDate : card ^. _cardExpMonth <> "/" <> (String.drop 2 $ card ^. _cardExpYear)
               , offer : ""
-              , imageUrl : ""
+              , imageUrl : getCardIcon $ logAny $ card ^. _cardType
               }
 
-
+---- helpers
 expandButton config =
     linearLayout
         ([ height $ V 120
         , width MATCH_PARENT
         , orientation HORIZONTAL
         , gravity CENTER_VERTICAL
-        , padding $ PaddingHorizontal 35 33
+        , padding $ PaddingHorizontal 75 35
         , margin $ MarginBottom 10
         , visibility config.visibility
         , background "#FFFFFF"
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         ] <>> config.implementation)
-        [ textView
-            [ height $ V 28
-            , textSize 24
+        [ iconView { imageUrl : "ic_add_card"}
+        , textView
+            [ height $ V 24
+            , width $ V 150
+            , weight 1.0
+            , textSize 20
+            , margin $ MarginLeft 25
             , text config.text
             , fontStyle "Arial-Regular"
+            , color "#363636"
+            ]
+        {-- , weightLayout --}
+        , actionView
+        ]
+
+
+iconView value =
+    linearLayout
+        [ height $ V 60
+        , width $ V 100
+        , orientation VERTICAL
+        , gravity CENTER
+        ]
+        [ imageView
+            [ height $ V 32
+            , width $ V 46
+            , gravity CENTER
+            , imageUrl value.imageUrl
             ]
         ]
 
 
-
-
-
+actionView =
+    linearLayout
+        [ height $ V 26
+        , width $ V 26
+        , margin $ MarginHorizontal 35 0
+        , gravity CENTER
+        ]
+        [ imageView
+            [ height MATCH_PARENT
+            , width MATCH_PARENT
+            , gravity CENTER
+            , imageUrl "ic_forward_arrow"
+            ]
+        ]
 
 
