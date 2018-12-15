@@ -96,6 +96,7 @@ editField implementation value =
             ([ textSize 20
             , height $ V 25
             , width MATCH_PARENT
+            , letterSpacing 1.2
             {-- , hint value.hint --}
             , label value.hint
             , margin $ Margin 20 0 0 0
