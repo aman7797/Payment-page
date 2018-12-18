@@ -38,6 +38,7 @@ import UI.View.Component.BillerInfo as BillerInfo
 import UI.View.Component.UpiView as UpiView
 import UI.View.Component.CardsView as CardsView
 import UI.View.Component.NetBankingView as NetBankingView
+import UI.View.Component.WalletsView as WalletsView
 import UI.View.Component.TabLayout as TabLayout
 
 import UI.Helpers.SingleSelectRadio as Radio
@@ -183,12 +184,13 @@ commonView push state =
 walletsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w
 walletsView push state =
     let implementation = overrides push state
+        nbViewState = state ^. _uiState ^. _walletsViewState
      in linearLayout
         ([ height MATCH_PARENT
         , width MATCH_PARENT
         , orientation VERTICAL
         ] <>> implementation (SectionOverride Wallets))
-        [ -- CardLayout.view push $ state ^. _uiState
+        [ mapDom WalletsView.view push nbViewState WalletsViewAction []
         ]
 
 cardsView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -> PrestoDOM (Effect Unit) w

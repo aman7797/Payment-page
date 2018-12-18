@@ -33,19 +33,26 @@ import UI.Helpers.CommonView
 import UI.Config as Config
 import UI.Utils
 
+data ActionButton
+    = LinkAccount
+    | DeleteAccount
+    | DefaultAction
+
 view
     :: forall r w
      . Props (Effect Unit)
+    -> Props (Effect Unit)
     -> RadioSelected
     -> Int
     -> { piName :: String
        , offer :: String
        , imageUrl :: String
+       , actionButton :: ActionButton
        | r
        }
     -> PrestoDOM (Effect Unit) w
-view proceedImpl selected currIndex value =
-    let config = logAny $ Config.cardSelectionTheme selected currIndex
+view proceedImpl actionImpl selected currIndex value =
+    let config = Config.cardSelectionTheme selected currIndex
      in mainView config
             [ linearLayout
                 [ height MATCH_PARENT
@@ -58,7 +65,8 @@ view proceedImpl selected currIndex value =
                 , offerView value
                 , nextView
                 ]
-            , expandedView proceedImpl config
+            , expandedView actionImpl config
+            {-- , expandedView proceedImpl config --}
             ]
 
 radioButton config =

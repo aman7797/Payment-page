@@ -100,10 +100,11 @@
 
         var config = { auth, headers };
 
+        var _amount = '21.0';
 
         var params = new URLSearchParams();
         params.append('order_id', order_id);
-        params.append('amount', '1.0');
+        params.append('amount', _amount);
         params.append('customer_id', '9438317998a');
         params.append('customer_phone', '9438317998');
         params.append('options.get_client_auth_token', 'true');
@@ -115,13 +116,13 @@
             JP.init({
                 entry_point: 'content',
                 order_id,
-                amount: '1.00',
+                amount: _amount,
                 merchant_id: 'Ashutosh',
                 customer_phone_number: '9438317998',
                 customer_id: '9438317998a',
                 sessionToken: data.juspay.client_auth_token,
                 environment: "sandbox",
-                integration: "redirect"
+                integration: "iframe"
             })
         });
     // }

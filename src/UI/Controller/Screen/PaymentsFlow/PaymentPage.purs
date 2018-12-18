@@ -30,14 +30,15 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types
 import Remote.Accessors (_paymentMethod)
 import Remote.Config (encKey)
-import Remote.Types (StoredCard)
+import Remote.Types (StoredCard, StoredWallet, mockWallet)
 import Tracker.Tracker (trackEventMerchantV2, toString) as T
 import UI.Constant.FontStyle.Default as Font
 import UI.Controller.Component.AddNewCard (Action(..))
 import UI.Controller.Component.AddNewCard as AddNewCard
 import UI.Controller.Component.CardsView as CardsView
-import  UI.Controller.Component.UpiView  as UpiView
+import UI.Controller.Component.UpiView  as UpiView
 import UI.Controller.Component.NetBankingView as NetBankingView
+import UI.Controller.Component.WalletsView as WalletsView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
 import UI.Helpers.SingleSelectRadio as Radio
@@ -63,6 +64,7 @@ newtype UIState = UIState
     , cardsViewState :: CardsView.State
     , upiViewState :: UpiView.State
     , netBankingViewState :: NetBankingView.State
+    , walletsViewState :: WalletsView.State
     , renderType :: RenderType
     }
 
@@ -94,6 +96,7 @@ data PaymentPageUIAction
   | CardsViewAction CardsView.Action
   | UpiViewAction UpiView.Action
   | NetBankingViewAction  NetBankingView.Action
+  | WalletsViewAction WalletsView.Action
   | Resized Int
 -- Exit Type
 
@@ -106,6 +109,8 @@ data PaymentPageResponse
 data PaymentPageAction
     = UserAborted
     | PayUsing PaymentOption
+    | Link PaymentOption
+    | Delete PaymentOption
 
 data ScrollType = SCROLL | HALT
 
@@ -124,6 +129,7 @@ defaultUIState ppInput = UIState
     , sections : [ Wallets, Cards, NetBanking, UPISection]
     , cardsViewState : CardsView.initialState $ ppInput ^. _piInfo ^. _cards
     , netBankingViewState : NetBankingView.initialState $ getBankList ppInput
+    , walletsViewState : WalletsView.initialState $ getWalletsList ppInput
     , upiViewState : UpiView.initialState
     , renderType : getRenderType $ ppInput ^. _screenWidth
     }
@@ -134,6 +140,21 @@ eval
 	-> Eval PaymentPageUIAction PaymentPageResponse PaymentPageState
 eval =
   case _ of
+    -- component
+    CardsViewAction cardAction ->
+        continue <<< (_uiState <<< _cardsViewState %~ CardsView.eval cardAction)
+
+    NetBankingViewAction action ->
+        continue <<< (_uiState <<< _netBankingViewState %~ NetBankingView.eval action)
+
+    WalletsViewAction action ->
+        continue <<< (_uiState <<< _walletsViewState %~ WalletsView.eval action)
+
+    UpiViewAction action ->
+        continue <<< (_uiState <<< _upiViewState %~ UpiView.eval action)
+
+
+
     -- EXIT actions
     CardsViewAction (CardsView.AddNewCardAction (SubmitCard AddNewCard.AddNewCard)) ->
         exitPP $ PayUsing <<< Card <<< mkCardDetails
@@ -172,16 +193,23 @@ eval =
     UpiViewAction UpiView.SubmitUpiCollect ->
         exitPP $ PayUsing <<< UPI <<< mkUpiCollectDetails
 
-    -- component
-    CardsViewAction cardAction ->
-        continue <<< (_uiState <<< _cardsViewState %~ CardsView.eval cardAction)
+    {-- WalletsViewAction WalletsView.LinkWallet -> --}
+    {--     let getExitAction = \ppState -> --}
+    {--         let walletsViewState = ppState ^. _uiState ^. _walletsViewState --}
+    {--             currentSelected  = walletsViewState ^. _walletSelected ^. _currentSelected --}
+    {--             walletList = walletsViewState ^. _walletList --}
+    {--          in case currentSelected of --}
+    {--                             Radio.RadioSelected ind -> --}
+    {--                                 maybe --}
+    {--                                     UserAborted --}
+    {--                                     (Link <<< WalletPayment <<< mkNetBankingDetails) --}
+    {--                                     (walletList !! ind) --}
+    {--                             _ -> UserAborted -- Remove this and pass error --}
+    {--      in exitPP getExitAction --}
 
-    NetBankingViewAction action ->
-        continue <<< (_uiState <<< _netBankingViewState %~ NetBankingView.eval action)
 
-    {-- UpiViewAction action -> --}
-    {--     continue <<< (_uiState <<< _upiViewState %~ UpiView.eval action) --}
 
+    -- -- -- -- -- -- -- -- --
     SectionSelected action ->
         continue <<< (_uiState <<< _sectionSelected %~ Radio.eval action)
 
@@ -198,7 +226,7 @@ exitPP action ppState = exit $ PaymentPageResponse ppState (action ppState)
 
 mkCardDetails :: PaymentPageState -> CardDetails
 mkCardDetails ppState =
-    let addCardState = logAny $ ppState ^. _uiState ^. _cardsViewState ^. _addNewCardState
+    let addCardState = ppState ^. _uiState ^. _cardsViewState ^. _addNewCardState
      in CardDetails
         { cardNumber : addCardState ^. _formState ^. _cardNumber ^. _value
         , expMonth   : show <<< getMonth $ addCardState ^. _formState ^. _expiryDate ^. _value
@@ -211,7 +239,7 @@ mkCardDetails ppState =
 
 mkSavedCardDetails :: PaymentPageState -> StoredCard -> SavedCardDetails
 mkSavedCardDetails ppState card =
-    let cvv = logAny $ ppState  ^. _uiState ^. _cardsViewState ^. _cvv
+    let cvv = ppState  ^. _uiState ^. _cardsViewState ^. _cvv
      in SavedCardDetails
         { cvv
         , cardToken : card ^. _cardToken
@@ -219,7 +247,7 @@ mkSavedCardDetails ppState card =
         }
 
 mkNetBankingDetails :: BankAccount -> Bank
-mkNetBankingDetails bank = logAny $
+mkNetBankingDetails bank =
     Bank
         { name : bank ^. _bankName
         , code  : bank ^. _bankCode
@@ -280,6 +308,14 @@ getBankList ppInput =
                         }
 
           getNB pm = (pm ^. _paymentMethodType) == "NB"
+
+getWalletsList :: PaymentPageInput -> Array StoredWallet
+getWalletsList ppInput =
+    map mkWallet <<< filter getNB $ ppInput ^. _piInfo ^. _merchantPaymentMethods
+    where
+          mkWallet pm =  mockWallet (pm  ^. _paymentMethod) false 0.0
+
+          getNB pm = (pm ^. _paymentMethodType) == "WALLET"
 
 
 

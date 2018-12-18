@@ -1,4 +1,4 @@
-module UI.View.Component.NetBankingView where
+module UI.View.Component.WalletsView where
 
 import Prelude
 
@@ -30,7 +30,7 @@ import UI.Constant.Str.Default as STR
 import UI.Constant.Type (FontColor, FontStyle)
 
 import UI.Helpers.CommonView
-import UI.Controller.Component.NetBankingView
+import UI.Controller.Component.WalletsView
 import UI.View.Component.CardLayout as CardLayout
 import UI.Helpers.SingleSelectRadio as Radio
 import UI.Utils
@@ -53,10 +53,11 @@ view push state _ =
 
 
 savedCardsView push state@(State st) =
-    let radioState = st.nbSelected
-        netBankList = st.netBankList
+    let radioState = st.walletSelected
+        walletList = st.walletList
         currentSelected = radioState ^. _currentSelected
         proceedImpl = overrides push state ProceedToPay
+        actionImpl = overrides push state LinkButton
      in linearLayout
         [ height $ V 600
         , width MATCH_PARENT
@@ -64,18 +65,17 @@ savedCardsView push state@(State st) =
         , gravity CENTER_VERTICAL
         ]
         $ Radio.singleSelectRadio
-            (push <<< NetBankSelected)
+            (push <<< WalletSelected)
             radioState
-            (CardLayout.view proceedImpl [])
-            ( nbInfo <$> take 5 netBankList )
+            (CardLayout.view proceedImpl actionImpl)
+            ( nbInfo <$> walletList )
 
     where
-          nbInfo = \bankAcc -> { piName : bankAcc ^. _bankName
+          nbInfo = \w -> { piName : w ^. _wallet
                          , offer : ""
-                         , imageUrl : baseUrl <> "ic_bank_" <> (bankAcc ^. _iin)
-                         , actionButton : CardLayout.DefaultAction
+                         , imageUrl : "ic_wallet_" <> (w ^. _wallet)
+                         , actionButton : CardLayout.LinkAccount
                          }
-          baseUrl = "https://d2pv62lkmtdxww.cloudfront.net/banks/Images/"
 
 
 expandButton config =

@@ -81,27 +81,27 @@ commonViewConfig =
          Mobile _, RadioSelected 0 ->
              { translationY : 100.0
              , margin : MarginHorizontal 0 0
-             , height : V 300
+             , height : V 600
              }
          Mobile _, RadioSelected 1 ->
              { translationY : 210.0
              , margin : MarginHorizontal 0 0
-             , height : V 826
+             , height : V 1826
              }
          Mobile _, RadioSelected 2 ->
              { translationY : 320.0
              , margin : MarginHorizontal 0 0
-             , height : V 300
+             , height : V 1600
              }
          Mobile _, RadioSelected _ ->
              { translationY : 430.0
              , margin : MarginHorizontal 0 0
-             , height : V 330
+             , height : V 1630
              }
          _, _ ->
              { translationY : 0.0
              , margin : MarginHorizontal 366 32
-             , height : V 300
+             , height : V 1600
              }
 
 

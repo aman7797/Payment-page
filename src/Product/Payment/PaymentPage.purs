@@ -49,7 +49,7 @@ import UI.Controller.Component.AddNewCard as A
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 import UI.Flow as UI
-import UI.Utils (logit, os, getScreenWidth)
+import UI.Utils (logit, logAny, os, getScreenWidth)
 import UI.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
 import UI.View.Screen.PaymentsFlow.Loader as Loader
 import UI.View.Screen.PaymentsFlow.Toast as Toast

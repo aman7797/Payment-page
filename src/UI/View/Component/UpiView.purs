@@ -57,7 +57,7 @@ view push state _ =
             , inputType : TypeText
             }
         , infoView
-        , buttonView (overrides push state BtnPay)
+        , buttonView (overrides push state ProceedToPay)
             { width : V 300
             , margin : MarginTop 30
             , text : "Pay Securely"

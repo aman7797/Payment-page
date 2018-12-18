@@ -52,11 +52,12 @@ eval =
 
 data Overrides
     = UPIeditOverride
-    | BtnPay
+    | ProceedToPay
 
 
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
 overrides push state =
     case _ of
          UPIeditOverride -> [ onChange push VPAchanged ]
+         ProceedToPay -> [ onClick push $ const SubmitUpiCollect ]
          _ -> []

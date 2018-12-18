@@ -42,81 +42,81 @@ instance makeRegReq :: RestEndpoint Reqtype RegRespType where
 
 
 mockWallet :: String -> Boolean -> Number -> StoredWallet
-mockWallet wallet isLinked bal = StoredWallet $ {
-          wallet : Just wallet,
-          token : Just "",
-          linked : Just isLinked,
-          id :  "",
-          current_balance : Just bal,
-          last_refreshed : Just "",
-          object : Just "",
-          currentBalance : Just bal,
-          lastRefreshed : Just "",
-          lastUsed : Just "",
-          count : Just 0.0,
-          rating : Just 0.0
-  }
+mockWallet wallet isLinked bal = StoredWallet $
+    { wallet : wallet
+    , token : Just ""
+    , linked : Just isLinked
+    , id :  ""
+    , current_balance : Just bal
+    , last_refreshed : Just ""
+    , object : Just ""
+    , currentBalance : Just bal
+    , lastRefreshed : Just ""
+    , lastUsed : Just ""
+    , count : Just 0.0
+    , rating : Just 0.0
+    }
 
 mockOfferDescription :: OfferDescription
-mockOfferDescription = OfferDescription {
-    offerDescription : Just ""
-  , offerDisplay1 : Just ""
-  , offerDisplay2 : Just ""
-  , offerDisplay3 : Just ""
-  }
+mockOfferDescription = OfferDescription
+    { offerDescription : Just ""
+    , offerDisplay1 : Just ""
+    , offerDisplay2 : Just ""
+    , offerDisplay3 : Just ""
+    }
 
 mockOffer :: Offer
-mockOffer = Offer { 
-  voucherCode : ""
-  , visibleToCustomer : Just false 
-  , paymentMethodType :  Just ""
-  , paymentMethod : Just []
-  , offerDescription : Just mockOfferDescription
-  }
+mockOffer = Offer
+    { voucherCode : ""
+    , visibleToCustomer : Just false
+    , paymentMethodType :  Just ""
+    , paymentMethod : Just []
+    , offerDescription : Just mockOfferDescription
+    }
 
 
 
-data OrderStatus =
-    CHARGED
-  | UNHANDLED_ERROR String
-  | COD_INITIATED
+data OrderStatus
+    = CHARGED
+    | UNHANDLED_ERROR String
+    | COD_INITIATED
 
-newtype InitiateTxnReq = InitiateTxnReq  {
-    order_id :: String
-  , merchant_id :: String
-  , payment_method_type :: String
-  , payment_method :: String
-  , redirect_after_payment :: Boolean
-  , format :: String
-  , txn_type :: Maybe String
-  , card_token :: Maybe String
-  , card_security_code :: Maybe String
-  , direct_wallet_token :: Maybe String
-  , client_auth_token :: Maybe String
-  , card_number :: Maybe String
-  , card_exp_month :: Maybe String
-  , card_exp_year :: Maybe String
-  , name_on_card :: Maybe String
-  , save_to_locker :: Maybe Boolean
-  , sdk_params :: Maybe Boolean
-  , upi_app :: Maybe String
-  , upi_vpa   :: Maybe String
-  , upi_tr_field  :: Maybe String
-  }
+newtype InitiateTxnReq = InitiateTxnReq
+    { order_id :: String
+    , merchant_id :: String
+    , payment_method_type :: String
+    , payment_method :: String
+    , redirect_after_payment :: Boolean
+    , format :: String
+    , txn_type :: Maybe String
+    , card_token :: Maybe String
+    , card_security_code :: Maybe String
+    , direct_wallet_token :: Maybe String
+    , client_auth_token :: Maybe String
+    , card_number :: Maybe String
+    , card_exp_month :: Maybe String
+    , card_exp_year :: Maybe String
+    , name_on_card :: Maybe String
+    , save_to_locker :: Maybe Boolean
+    , sdk_params :: Maybe Boolean
+    , upi_app :: Maybe String
+    , upi_vpa   :: Maybe String
+    , upi_tr_field  :: Maybe String
+    }
 
-newtype InitiateTxnResp = InitiateTxnResp {
-    order_id:: String
-  , txn_id:: String
-  , txn_uuid:: String
-  , status:: String
-  , payment :: Payment
-  }
+newtype InitiateTxnResp = InitiateTxnResp
+    { order_id:: String
+    , txn_id:: String
+    , txn_uuid:: String
+    , status:: String
+    , payment :: Payment
+    }
 
-newtype Authentication = Authentication {
-    method :: String,
-    url :: String,
-    params :: Maybe String
-}
+newtype Authentication = Authentication
+    { method :: String
+    , url :: String
+    , params :: Maybe String
+    }
 
 newtype Payment = Payment {
     authentication :: Authentication
@@ -149,15 +149,15 @@ instance makeInitiateTxnReq :: RestEndpoint InitiateTxnReq InitiateTxnResp where
 -- Order Status Api
 -----------------------
 
-newtype OrderStatusReq = OrderStatusReq {
-  merchant_id :: String,
-  order_id :: String
-}
+newtype OrderStatusReq = OrderStatusReq
+    { merchant_id :: String
+    , order_id :: String
+    }
 
-newtype OrderStatusResp = OrderStatusResp {
-  order_id :: String,
-  status   :: String
-}
+newtype OrderStatusResp = OrderStatusResp
+    { order_id :: String
+    , status   :: String
+    }
 
 derive instance orderStatusReqNewtype :: Newtype OrderStatusReq _
 derive instance orderStatusReqGeneric :: Generic OrderStatusReq _
@@ -186,20 +186,20 @@ instance checkOrderStatus :: RestEndpoint OrderStatusReq OrderStatusResp where
 newtype StoredWallet = StoredWallet WalletObj
 
 ---------change it to ec response
-type WalletObj = {
-  wallet:: Maybe String,
-  token:: Maybe String,
-  linked:: Maybe Boolean,
-  id :: String,  
-  current_balance:: Maybe Number,
-  last_refreshed:: Maybe String,
-  object:: Maybe String,
-  currentBalance:: Maybe Number,
-  lastRefreshed:: Maybe String,
-  lastUsed:: Maybe String,
-  count:: Maybe Number,
-  rating:: Maybe Number
-}
+type WalletObj =
+    { wallet :: String
+    , token :: Maybe String
+    , linked :: Maybe Boolean
+    , id :: String
+    , current_balance :: Maybe Number
+    , last_refreshed :: Maybe String
+    , object :: Maybe String
+    , currentBalance :: Maybe Number
+    , lastRefreshed :: Maybe String
+    , lastUsed :: Maybe String
+    , count :: Maybe Number
+    , rating :: Maybe Number
+    }
 
 derive instance storedWalletGeneric :: Generic StoredWallet  _
 derive instance storedWalletNewtype :: Newtype StoredWallet _

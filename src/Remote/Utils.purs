@@ -24,7 +24,7 @@ import Presto.Core.Flow (Flow, doAff, oneOf, showScreen)
 import Remote.Types (InitiateTxnReq(InitiateTxnReq), OrderStatusReq(OrderStatusReq), StoredWallet(StoredWallet))
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 import UI.Controller.Screen.PaymentsFlow.GenericError (ScreenInput(..))
-import UI.Utils (logit, os)
+import UI.Utils (logit, os, logAny)
 import UI.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
 import UI.View.Screen.PaymentsFlow.ErrorMessage as GenericError
 import UI.View.Screen.PaymentsFlow.Loader as Loader
@@ -181,7 +181,7 @@ mkPayReqUpiCollect vpa orderId = do
   let updateState = (\cardData ->
         cardData
         { txn_type = Just "UPI_COLLECT"
-        , upi_vpa = Just vpa
+        , upi_vpa = logAny $ Just vpa
         , redirect_after_payment = true
         }
       )
@@ -234,7 +234,7 @@ mkPayReqSavedCard (SavedCardDetails cardData) orderId = do
 
 mockWallet :: String -> Boolean -> Number -> StoredWallet
 mockWallet wallet isLinked bal = StoredWallet
-  { wallet : Just wallet
+  { wallet : wallet
   , token : Just ""
   , linked : Just isLinked
   , id :  ""
