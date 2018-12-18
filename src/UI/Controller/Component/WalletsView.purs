@@ -28,10 +28,15 @@ data Action
     = SubmitWallet
     | LinkWallet
     | WalletSelected Radio.RadioSelected
+    | SectionSelected Section
 
+data Section
+    = WalletListSection
+    | LinkWalletSection
 
 newtype State = State
-    { walletSelected :: Radio.State
+    { sectionSelected :: Section
+    , walletSelected :: Radio.State
     , walletList :: Array StoredWallet
     }
 
@@ -41,13 +46,17 @@ derive instance stateNewtype :: Newtype State _
 
 initialState :: Array StoredWallet -> State
 initialState wallets = State $
-    { walletSelected : Radio.defaultState Radio.NothingSelected
+    { sectionSelected : LinkWalletSection
+    , walletSelected : Radio.defaultState Radio.NothingSelected
     , walletList : wallets
     }
 
 eval :: Action -> State -> State
 eval =
     case _ of
+         SectionSelected section ->
+             _sectionSelected .~ section
+
          SubmitWallet -> identity
 
          LinkWallet -> identity
@@ -67,7 +76,7 @@ eval =
 
 
 data Overrides
-    = ShowAllOverride
+    = SectionSelectionOverride Section
     | ProceedToPay
     | LinkButton
 
@@ -75,6 +84,10 @@ data Overrides
 overrides :: (Action -> Effect Unit) -> State -> Overrides -> Props (Effect Unit)
 overrides push state =
     case _ of
+         SectionSelectionOverride section ->
+             [ onClick push (const $ SectionSelected section)
+             ]
+
          ProceedToPay ->
              [ onClick push (const SubmitWallet)
              ]

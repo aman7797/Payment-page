@@ -100,7 +100,7 @@
 
         var config = { auth, headers };
 
-        var _amount = '21.0';
+        var _amount = '1.0';
 
         var params = new URLSearchParams();
         params.append('order_id', order_id);
@@ -122,7 +122,7 @@
                 customer_id: '9438317998a',
                 sessionToken: data.juspay.client_auth_token,
                 environment: "sandbox",
-                integration: "iframe"
+                integration: "redirect"
             })
         });
     // }

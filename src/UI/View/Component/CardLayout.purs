@@ -93,6 +93,14 @@ radioButton config =
             ]
         ]
 
+
+piInfoView
+    :: forall w r
+     . { imageUrl :: String
+       , piName :: String
+       | r
+       }
+    -> PrestoDOM (Effect Unit) w
 piInfoView value =
     linearLayout
         [ height MATCH_PARENT

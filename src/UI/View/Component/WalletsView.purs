@@ -43,44 +43,110 @@ view
 	-> Object.Object GenProp
 	-> PrestoDOM (Effect Unit) w
 view push state _ =
-    linearLayout
+    relativeLayout
         [ height MATCH_PARENT
         , width MATCH_PARENT
         , orientation VERTICAL
         ]
-        [ savedCardsView push state
+        [ walletListView push state
+        , linkWalletSection push state
         ]
 
 
-savedCardsView push state@(State st) =
+walletListView push state@(State st) =
     let radioState = st.walletSelected
         walletList = st.walletList
         currentSelected = radioState ^. _currentSelected
         proceedImpl = overrides push state ProceedToPay
         actionImpl = overrides push state LinkButton
+        sectionSelected = state ^. _sectionSelected
      in linearLayout
         [ height $ V 600
         , width MATCH_PARENT
         , orientation VERTICAL
-        , gravity CENTER_VERTICAL
+        , visibility $ case sectionSelected of
+                            WalletListSection -> VISIBLE
+                            _ -> GONE
         ]
         $ Radio.singleSelectRadio
             (push <<< WalletSelected)
             radioState
             (CardLayout.view proceedImpl actionImpl)
-            ( nbInfo <$> walletList )
+            ( walletInfo <$> walletList )
 
     where
-          nbInfo = \w -> { piName : w ^. _wallet
+          walletInfo = \w -> { piName : w ^. _wallet
                          , offer : ""
                          , imageUrl : "ic_wallet_" <> (w ^. _wallet)
                          , actionButton : CardLayout.LinkAccount
                          }
 
 
+linkWalletSection push state =
+    let sectionSelected = state ^. _sectionSelected
+        expandBtnImpl = overrides push state $ SectionSelectionOverride  WalletListSection
+     in linearLayout
+        [ height $ V 431
+        , width MATCH_PARENT
+        , orientation VERTICAL
+        , visibility $ case sectionSelected of
+                            LinkWalletSection -> VISIBLE
+                            _ -> GONE
+        ]
+        [ expandButton { text : "Other Wallets", visibility : VISIBLE, implementation : expandBtnImpl}
+        , linkWalletView push state
+        ]
+
+
+linkWalletView push state@(State st) =
+    let radioState = st.walletSelected
+        walletList = st.walletList
+        currentSelected = radioState ^. _currentSelected
+        piName = "JusPay" -- currentSelected ^. _wallet
+     in linearLayout
+        [ height $ V 321
+        , width MATCH_PARENT
+        , orientation VERTICAL
+        , padding $ PaddingLeft 35
+        , background "#FFFFFF"
+        , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
+        ]
+        [  linearLayout
+            [ height $ V 66
+            , width MATCH_PARENT
+            ]
+            [ CardLayout.piInfoView
+                { imageUrl : "ic_wallets_" <> piName
+                , piName : piName
+                }
+            ]
+        , textView
+            [ height $ V 16
+            , width MATCH_PARENT
+            , margin $ MarginTop 60
+            , text $ "Proceed to link " <> piName <> " wallet with your number:"
+            , textSize 14
+            ]
+        , textView
+            [ height $ V 27
+            , width MATCH_PARENT
+            , margin $ MarginTop 15
+            , text "9030173494"
+            , textSize 24
+            ]
+        , buttonView
+            [] -- impl
+            { width : V 300
+            , text : "Proceed"
+            , margin : MarginTop 52
+            }
+        ]
+
+
+
 expandButton config =
     linearLayout
-        ([ height $ V 120
+        ([ height $ V 100
         , width MATCH_PARENT
         , orientation HORIZONTAL
         , gravity CENTER_VERTICAL

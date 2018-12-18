@@ -113,7 +113,7 @@ savedCardsView push state value =
               , cardNumber : card ^. _cardNumber
               , expiryDate : card ^. _cardExpMonth <> "/" <> (String.drop 2 $ card ^. _cardExpYear)
               , offer : ""
-              , imageUrl : getCardIcon $ logAny $ card ^. _cardType
+              , imageUrl : getCardIcon $ card ^. _cardType
               }
 
 ---- helpers
