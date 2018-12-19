@@ -109,21 +109,35 @@
         params.append('customer_phone', '9438317998');
         params.append('options.get_client_auth_token', 'true');
         axios.post('https://sandbox.juspay.in/order/create', params, config).then(({data, status}) => {
+          if (status != 200) {
+            return console.error("Order create failed");
+          }
+          console.warn('order created ', data, status);
+          var orderData = data
+
+          params = {
+            client_auth_token: data.juspay.client_auth_token,
+            offers: "",
+            refresh: ""
+          }
+          axios.get('http://euler-ec-beta.ap-southeast-1.elasticbeanstalk.com/sdk/v1/savedPaymentMethods', {params}).then(({data, status}) => {
             if (status != 200) {
-                return console.error("Order create failed");
+              return console.error("paymentSource failed");
             }
-            console.warn('order created ', data, status);
+            console.warn('paymentSource created ', data, status);
             JP.init({
-                entry_point: 'content',
-                order_id,
-                amount: _amount,
-                merchant_id: 'Ashutosh',
-                customer_phone_number: '9438317998',
-                customer_id: '9438317998a',
-                sessionToken: data.juspay.client_auth_token,
-                environment: "sandbox",
-                integration: "redirect"
+              entry_point: 'content',
+              order_id,
+              amount: _amount,
+              merchant_id: 'Ashutosh',
+              customer_phone_number: '9438317998',
+              customer_id: '9438317998a',
+              sessionToken: orderData.juspay.client_auth_token,
+              paymentSource: encodeURIComponent(JSON.stringify(data)),
+              environment: "sandbox",
+              integration: "redirect"
             })
+          });
         });
     // }
 

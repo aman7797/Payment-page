@@ -57,17 +57,17 @@ savedCardsView push state@(State st) =
         netBankList = st.netBankList
         currentSelected = radioState ^. _currentSelected
         proceedImpl = overrides push state ProceedToPay
+        lists = if length netBankList < 6 then netBankList else take 5 netBankList
      in linearLayout
         [ height $ V 600
         , width MATCH_PARENT
         , orientation VERTICAL
-        , gravity CENTER_VERTICAL
         ]
         $ Radio.singleSelectRadio
             (push <<< NetBankSelected)
             radioState
             (CardLayout.view proceedImpl [])
-            ( nbInfo <$> take 5 netBankList )
+            ( nbInfo <$> lists )
 
     where
           nbInfo = \bankAcc -> { piName : bankAcc ^. _bankName

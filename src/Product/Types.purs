@@ -246,6 +246,7 @@ newtype SDKParams = SDKParams
   , clientId :: String
   , activityRecreated :: Boolean
   , environment :: String
+  , paymentSource :: Maybe PaymentSourceResp
   {-- , fullfilment :: Array CreditCard --}
   , preferedBanks :: Array String
   {-- , billerCardEditable :: String --}

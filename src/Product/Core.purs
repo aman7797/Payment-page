@@ -4,16 +4,21 @@ import Prelude
 
 import Config.Core (staticConfigUrl) as Config
 import Constants (networkStatus) as Constants
-import Control.Monad.Except (runExceptT)
+import Control.Monad.Except (runExceptT, runExcept)
+import Data.Either (hush)
 import Control.Transformers.Back.Trans (runBackT)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Number as NumUtil
 import Engineering.Helpers.Commons (log, liftFlow)
 import Engineering.Helpers.Utils (_getPayload, getString, getArray, eval, readFile, getSessionInfo)
+import Foreign (F)
+import Global.Unsafe (unsafeDecodeURIComponent)
 import JBridge (attach)
 import Presto.Core.Flow (Flow, initUI)
+import Presto.Core.Utils.Encoding (defaultDecodeJSON)
 import Product.Payment.PaymentPage (startPaymentFlow)
 import Product.Types (SDKParams(..))
+import Remote.Types (PaymentSourceResp)
 import Tracker.Tracker (initTracking, trackSession, trackPaymentDetails)
 
 appFlow :: Boolean -> Flow Unit
@@ -50,6 +55,7 @@ readSDKParams payload = log "SDKParams" $ SDKParams
   , activityRecreated : (_getString "activity_recreated") == "true"
   , environment:    if _getString "environment" == "" then "sandbox" else _getString "environment"
   , preferedBanks : _getArrayBanks "preferedBanks"
+  , paymentSource : log "!@ PSource" $ hush $ runExcept $ mkPaymentSource $  _getString "paymentSource"
   {-- , billerCardEditable : _getString "billerCardEditable" --}
   {-- , fullfilment: _getArrayFullfilment "fullfilment" --}
   }
@@ -57,3 +63,7 @@ readSDKParams payload = log "SDKParams" $ SDKParams
     _getString = getString payload
     _getArrayFullfilment = getArray payload
     _getArrayBanks = getArray payload
+
+mkPaymentSource :: String -> F PaymentSourceResp
+mkPaymentSource = defaultDecodeJSON <<< unsafeDecodeURIComponent
+

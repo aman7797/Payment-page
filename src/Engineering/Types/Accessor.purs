@@ -257,6 +257,9 @@ _customerId = lens (unwrap >>> _.customerId) (\oldrec newval -> wrap ((unwrap ol
 _orderId :: forall a b c. Newtype a { orderId :: c | b} => Lens' a c
 _orderId = lens (unwrap >>> _.orderId) (\oldrec newval -> wrap ((unwrap oldrec) { orderId = newval}))
 
+_paymentSource :: forall a b c. Newtype a { paymentSource :: c | b} => Lens' a c
+_paymentSource = lens (unwrap >>> _.paymentSource) (\oldrec newval -> wrap ((unwrap oldrec) { paymentSource = newval}))
+
 _orderToken :: forall a b c. Newtype a { orderToken :: c | b} => Lens' a c
 _orderToken = lens (unwrap >>> _.orderToken) (\oldrec newval -> wrap ((unwrap oldrec) { orderToken = newval}))
 

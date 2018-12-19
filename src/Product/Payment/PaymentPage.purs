@@ -121,7 +121,7 @@ startPaymentFlow sdkParams optPPState = do
           userAbortedError = makeErrorMessage "cancel" (sdkParams ^. _orderId ) "User aborted"
 
 
--- parrallelUPIBankList :: Flow Either 
+-- parrallelUPIBankList :: Flow Either
 -- parrallelUPIBankList  = unit
 
 
@@ -135,11 +135,14 @@ paymentPageFlow sdkParams optPPState = do
         Nothing -> do
             screenWidth <- liftFlowBT $ doAff do liftEffect $ getScreenWidth
             paymentMethods <-
-                Remote.getPaymentMethods
-                        $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken
-                                           , offers: ""
-                                           , refresh : ""
-                                           }
+                case sdkParams ^. _paymentSource of
+                     Nothing ->
+                        Remote.getPaymentMethods
+                                $ PaymentSourceReq { client_auth_token: sdkParams ^. _orderToken
+                                                   , offers: ""
+                                                   , refresh : ""
+                                                   }
+                     Just a -> pure a
             pure $ fromMaybe
                         (mkPaymentPageState sdkParams paymentMethods screenWidth)
                         optPPState
