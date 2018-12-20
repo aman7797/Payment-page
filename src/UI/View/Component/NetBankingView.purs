@@ -66,7 +66,7 @@ savedCardsView push state@(State st) =
         $ Radio.singleSelectRadio
             (push <<< NetBankSelected)
             radioState
-            (CardLayout.view proceedImpl [])
+            (CardLayout.view proceedImpl (\_ -> []))
             ( nbInfo <$> lists )
 
     where
@@ -74,6 +74,7 @@ savedCardsView push state@(State st) =
                          , offer : ""
                          , imageUrl : baseUrl <> "ic_bank_" <> (bankAcc ^. _iin)
                          , actionButton : CardLayout.DefaultAction
+                         , balance : Nothing
                          }
           baseUrl = "https://d2pv62lkmtdxww.cloudfront.net/banks/Images/"
 

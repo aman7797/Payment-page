@@ -33,6 +33,13 @@ foreign import logAny :: forall a. a -> a
 
 foreign import getScreenWidth :: Effect Int
 
+data LinkingState
+    = Linking
+    | OTPView
+    | PayView
+
+derive instance eqLinkingState :: Eq LinkingState
+
 data FieldType = CardNumber | ExpiryDate | CVV | SavedCardCVV | NONE -- | Name | SavedForLater
 
 derive instance eqFieldType :: Eq FieldType

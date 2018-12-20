@@ -44,3 +44,7 @@ exports["startUPI'"] = function(payload){
     }
   }
 
+
+exports.getPayload = function() {
+  return window.__payload;
+}

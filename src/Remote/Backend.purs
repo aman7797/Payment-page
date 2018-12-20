@@ -6,7 +6,7 @@ import Engineering.Types.App (FlowBT, PaymentPageError)
 import Presto.Core.Types.API (Header(..), Headers(..))
 import Presto.Core.Types.Language.Flow (APIResult, Flow, callAPI)
 import Remote.Amazon.Types (AmazonChargeStatusReq, AmazonChargeStatusResp, ValidateAmazonChargeStatusReq, ValidateAmazonChargeStatusResp)
-import Remote.Types (DeleteCardReq, DeleteCardResp, DeleteVpaReq, DeleteVpaResp, DelinkWalletReq, DelinkWalletResp, InitiateTxnReq, InitiateTxnResp, OrderStatusResp, PaymentSourceReq, PaymentSourceResp)
+import Remote.Types (DeleteCardReq, DeleteCardResp, DeleteVpaReq, DeleteVpaResp, DelinkWalletReq, DelinkWalletResp, InitiateTxnReq, InitiateTxnResp, OrderStatusResp, PaymentSourceReq, PaymentSourceResp, CreateWalletReq, CreateWalletResp )
 import Remote.Utils (eitherMatch, makeOrderStatusCheckReqPayload, mkApiConfig, mkRestClientCall)
 
 checkOrderStatus :: String -> FlowBT PaymentPageError OrderStatusResp
@@ -48,12 +48,18 @@ getPaymentMethodsForManagement reqBody = callAPI headers req
       req = reqBody
 
 
+{-- createWallet :: CreateWalletReq -> FlowBT PaymentPageError CreateWalletResp --}
+{-- createWallet reqBody = eitherMatch =<< mkRestClientCall headers req (mkApiConfig 1 true false) --}
+{--   where --}
+{--       headers =  Headers [] --}
+{--       req = reqBody --}
+
 deleteCard :: DeleteCardReq -> Flow (APIResult DeleteCardResp)
 deleteCard reqBody = callAPI headers req where
   headers = Headers []
   req = reqBody
 
- 
+
 deleteVpa :: DeleteVpaReq -> Flow (APIResult DeleteVpaResp)
 deleteVpa reqBody = callAPI headers req where
   headers = Headers []

@@ -41,16 +41,16 @@ instance makeRegReq :: RestEndpoint Reqtype RegRespType where
 ----------------------------------- BankList -----------------------------------------------------------
 
 
-mockWallet :: String -> Boolean -> Number -> StoredWallet
+mockWallet :: String -> Maybe Boolean -> Maybe Number -> StoredWallet
 mockWallet wallet isLinked bal = StoredWallet $
     { wallet : wallet
     , token : Just ""
-    , linked : Just isLinked
+    , linked : isLinked
     , id :  ""
-    , current_balance : Just bal
+    , current_balance : bal
     , last_refreshed : Just ""
     , object : Just ""
-    , currentBalance : Just bal
+    , currentBalance : bal
     , lastRefreshed : Just ""
     , lastUsed : Just ""
     , count : Just 0.0
@@ -332,7 +332,7 @@ derive instance storedOfferNewType :: Newtype Offer  _
 derive instance paymentSourceReqGeneric :: Generic PaymentSourceReq _
 
 derive instance merchantPaymentMethodNewtype :: Newtype MerchantPaymentMethod _
-  
+
 instance decodeAppUsed :: Decode AppUsed where decode = defaultDecode
 instance encodeAppUsed :: Encode AppUsed where encode = defaultEncode
 instance decodeStoredNb :: Decode StoredNb where decode = defaultDecode
@@ -401,11 +401,12 @@ instance makeFreshCardTxn :: RestEndpoint FreshCardTxnReq FreshCardTxnResp where
 
 ------------------------------------------------------------------------------------------
 
-newtype CreateWalletReq = CreateWalletReq {
-  gateway :: String, 
-  customer_id :: String,
-  client_auth_token :: String
-}
+newtype CreateWalletReq = CreateWalletReq
+    { gateway :: String
+    {-- , customer_id :: String --}
+	, command :: String
+    , client_auth_token :: String
+    }
 
 newtype CreateWalletResp = CreateWalletResp WalletObj
 
@@ -415,9 +416,14 @@ derive instance createWalletRespGeneric :: Generic CreateWalletResp _
 instance encodeCreateWalletReq :: Encode CreateWalletReq where encode = defaultEncode
 instance decodeCreateWalletResp :: Decode CreateWalletResp where decode = defaultDecode
 
-instance createWalletInstance :: RestEndpoint CreateWalletReq CreateWalletResp where
-    makeRequest (CreateWalletReq reqBody) headers = urlEncodedMakeRequest POST (baseUrl <> "/customers/"<>reqBody.customer_id<>"/wallets") headers (CreateWalletReq reqBody)
-    decodeResponse body = defaultDecodeResponse body
+{-- instance createWalletInstance :: RestEndpoint CreateWalletReq CreateWalletResp where --}
+{--     makeRequest (CreateWalletReq reqBody) headers = --}
+{--         urlEncodedMakeRequest --}
+{--             POST --}
+{--             (baseUrl <> "/customers/" <> reqBody.customer_id <> "/wallets") --}
+{--             headers --}
+{--             (CreateWalletReq reqBody) --}
+{--     decodeResponse body = defaultDecodeResponse body --}
 
 
 
@@ -463,13 +469,13 @@ instance makeStoredCardTxn :: RestEndpoint StoredCardTxnReq StoredCardTxnResp wh
 ------------------------------------------------------------------------------------------
 ---------------------------Link API ----------------------
 
-newtype LinkWalletReq = LinkWalletReq {
-  command :: String, 
-  otp :: String, 
-  wallet_id :: String, 
-  client_auth_token :: String, 
-  customer_id :: String
-}
+newtype LinkWalletReq = LinkWalletReq
+    { command :: String
+    , otp :: String
+    , wallet_id :: String
+    , client_auth_token :: String
+    , customer_id :: String
+    }
 
 newtype LinkWalletResp = LinkWalletResp WalletObj
 
@@ -539,11 +545,11 @@ instance makeDeleteVpa :: RestEndpoint DeleteVpaReq DeleteVpaResp where
 
 ---------------------------Delink API ----------------------
 
-newtype DelinkWalletReq = DelinkWalletReq {
-  command :: String, 
-  wallet_id :: String, 
-  client_auth_token :: String
-}
+newtype DelinkWalletReq = DelinkWalletReq
+    { command :: String
+    , wallet_id :: String
+    , client_auth_token :: String
+    }
 
 newtype DelinkWalletResp = DelinkWalletResp WalletObj
 

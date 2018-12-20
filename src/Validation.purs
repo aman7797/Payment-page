@@ -149,6 +149,26 @@ getCardIcon cardType = case (String.toLower $ cardType) of
 	"default" -> "white_img"
 	_ -> "white_img"
 
+getWalletName :: String -> String
+getWalletName =
+    case _ of
+         "MOBIKWIK" -> "MobiKwik"
+         "PAYTM" -> "PayTM"
+         "FREECHARGE" -> "FreeCharge"
+         "OLAMONEY" -> "Ola Money"
+         "PAYUMONEY" -> "Payu Money"
+         "AIRTEL_MONEY" -> "Airtel Money"
+         "OXIGEN" -> "Oxigen"
+         "PAYZAPP" -> "PayZapp"
+         "JANACASH" -> "Jana Cash"
+         "JIOMONEY" -> "JioMoney"
+         "PHONEPE" -> "PhonePe"
+         "AMAZONPAY" -> "Amazon Pay"
+         "PAYPAL" -> "PayPal"
+         _ -> "JusPay"
+
+getWalletIcon :: String -> String
+getWalletIcon = (<>) "wallet_" <<< String.toLower
 
 getCardNumberStatus :: String -> CardDetails -> Array MerchantPaymentMethod -> ValidationState
 getCardNumberStatus cardNumber cardDetails supportedMethods = getStatus

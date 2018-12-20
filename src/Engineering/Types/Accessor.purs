@@ -143,6 +143,9 @@ _otp = lens (unwrap >>> _.otp) (\oldrec newval -> wrap ((unwrap oldrec) {otp = n
 _list :: forall a b c. Newtype a {list :: c | b} => Lens' a c
 _list = lens (unwrap >>> _.list) (\oldrec newval -> wrap ((unwrap oldrec) {list = newval}))
 
+_linkWalletDetails :: forall a b c. Newtype a {linkWalletDetails :: c | b} => Lens' a c
+_linkWalletDetails = lens (unwrap >>> _.linkWalletDetails) (\oldrec newval -> wrap ((unwrap oldrec) {linkWalletDetails = newval}))
+
 _offset :: forall a b c. Newtype a {offset :: c | b} => Lens' a c
 _offset = lens (unwrap >>> _.offset) (\oldrec newval -> wrap ((unwrap oldrec) {offset = newval}))
 

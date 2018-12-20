@@ -41,19 +41,23 @@ data ActionButton
 view
     :: forall r w
      . Props (Effect Unit)
-    -> Props (Effect Unit)
+    -> (Int -> Props (Effect Unit))
     -> RadioSelected
     -> Int
     -> { piName :: String
        , offer :: String
        , imageUrl :: String
        , actionButton :: ActionButton
+       , balance :: Maybe Number
        | r
        }
     -> PrestoDOM (Effect Unit) w
-view proceedImpl actionImpl selected currIndex value =
-    let config = Config.cardSelectionTheme selected currIndex
-     in mainView config
+view proceedImpl actionImplFn selected currIndex value =
+    let expandable = case value.actionButton of
+                          LinkAccount -> Config.NonExpandable
+                          _ -> Config.Expandable
+        config = Config.cardSelectionTheme expandable selected currIndex
+     in mainView value config
             [ linearLayout
                 [ height MATCH_PARENT
                 , width MATCH_PARENT
@@ -63,10 +67,10 @@ view proceedImpl actionImpl selected currIndex value =
                 [ radioButton config
                 , piInfoView value
                 , offerView value
-                , nextView
+                , detailsView value
+                , actionView (actionImplFn currIndex) value
                 ]
-            , expandedView actionImpl config
-            {-- , expandedView proceedImpl config --}
+            , expandedView proceedImpl config
             ]
 
 radioButton config =
@@ -118,7 +122,7 @@ piInfoView value =
             , margin $ Margin 7 7 7 7
             ]
         , textView
-            [ height $ V 17
+            [ height $ V 16
             , width MATCH_PARENT
             , text value.piName
             {-- , margin $ MarginTop 5 --}
@@ -149,25 +153,90 @@ offerView value =
             ]
         ]
 
-nextView =
+detailsView value =
     linearLayout
-        [ height $ V 20
-        , width $ V 12
-        , margin $ MarginRight 30
-        , gravity CENTER
+        [ height $ V 47
+        , width $ V 101
+        , orientation VERTICAL
+        , visibility $ case value.actionButton of
+                            DeleteAccount -> VISIBLE
+                            _ -> GONE
         ]
-        [ imageView
-            [ height MATCH_PARENT
+        [ textView
+            [ height $ V 21
             , width MATCH_PARENT
+            , text "Balance"
+            , fontStyle "Arial-Regular"
+            , textSize 16
+            , color "#9B9B9B"
+            , gravity CENTER
+            ]
+        , textView
+            [ height $ V 26
+            , width MATCH_PARENT
+            , text $ case value.balance of
+                          Just b -> "₹ " <> show b
+                          Nothing -> "Fetching"
+            , fontStyle "Arial-Regular"
+            , textSize 22
+            , color "#545758"
             , gravity CENTER
             ]
         ]
+
+
+actionView actionImpl value =
+    case value.actionButton of
+         LinkAccount ->
+             linearLayout
+                ([ height $ V 38
+                , width $ V 58
+                , margin $ MarginHorizontal 60 25
+                , gravity CENTER
+                ] <>> actionImpl)
+                [ textView
+                    [ height $ V 18
+                    , width MATCH_PARENT
+                    , gravity CENTER
+                    , text "LINK"
+                    , fontStyle "Arial-Bold"
+                    , textSize 16
+                    , color "#1BB3E8"
+                    ]
+                ]
+
+         DeleteAccount ->
+            linearLayout
+                [ height $ V 24
+                , width $ V 26
+                , margin $ MarginHorizontal 35 35
+                , gravity CENTER
+                ]
+                [ imageView
+                    [ height MATCH_PARENT
+                    , width MATCH_PARENT
+                    , gravity CENTER
+                    , imageUrl "ic_delete"
+                    ]
+                ]
+
+         DefaultAction ->
+             linearLayout
+                ([ height $ V 26
+                , width $ V 26
+                , margin $ MarginHorizontal 35 35
+                , gravity CENTER
+                ] <>> actionImpl)
+                []
+
 
 expandedView impl config =
     linearLayout
         [ height $ V 101
         , width MATCH_PARENT
+        , clickable false
         , visibility config.visibility
+        , clickable false
         ]
         [ buttonView
             impl
@@ -177,7 +246,7 @@ expandedView impl config =
             }
         ]
 
-mainView config child =
+mainView value config child =
     linearLayout
         [ height config.height
         , width MATCH_PARENT
@@ -186,6 +255,9 @@ mainView config child =
         , background "#ffffff"
         , padding $ PaddingLeft 35
         , margin $ MarginBottom 10
+        , clickable $ case value.actionButton of
+                           LinkAccount -> false
+                           _ -> true
         ]
         child
 

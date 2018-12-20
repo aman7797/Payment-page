@@ -4,6 +4,7 @@ import Prelude (Unit, bind, pure, show, unit, ($), (*>), (/=), (<$>), (<<<), (<>
 import Product.Types (Account(..), Bank(..), SDKParams, SIM, UPIState(..))
 
 import Web.Event.Event (EventType(..), Event) as DOM
+import Control.Monad.Except (runExcept)
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Halogen.VDom.DOM.Prop (Prop(..))
@@ -19,14 +20,14 @@ import Effect.Timer (setTimeout)
 import Control.Monad.State.Trans (evalStateT) as S
 {-- import DOM.Event.Types (EventType(..), Event) as DOM --}
 import Data.Array (length)
-import Data.Either (Either(Right, Left))
+import Data.Either (Either(Right, Left), hush)
 import Data.Function.Uncurried (runFn2)
 import Data.Lens ((^.))
 import Foreign.Object (empty)
 import Data.String (drop) as S
-import Engineering.Helpers.Commons (callAPI', liftFlow, mkNativeRequest, showUI',  unsafeJsonStringify)
+import Engineering.Helpers.Commons (callAPI', liftFlow, mkNativeRequest, showUI',  unsafeJsonStringify,  NativeRequest(..))
 import Engineering.Helpers.Types.Accessor (_customerId, _orderId, _orderToken, _session_token)
-import Engineering.Helpers.Utils (eligibleForUPI, upiMethodPayload)
+import Engineering.Helpers.Utils (eligibleForUPI, upiMethodPayload, getString )
 import Engineering.OS.Permission (checkIfPermissionsGranted, requestPermissions) as P
 import Externals.UPI.Flow (getInstalledUPIAppsPayload)
 import Externals.UPI.Types (UPIIntentPayload)
@@ -34,8 +35,11 @@ import JBridge as UPI
 import Presto.Core.Flow (Flow, doAff)
 import Presto.Core.Language.Runtime.API (APIRunner)
 import Presto.Core.Language.Runtime.Interpreter (PermissionCheckRunner, PermissionRunner(..), PermissionTakeRunner, Runtime(..), UIRunner, run)
+import Presto.Core.Utils.Encoding (defaultEncodeJSON)
 import Presto.Core.Types.Language.Flow (saveS)
-import Remote.Config (encKey, merchantId)
+import Presto.Core.Types.API (defaultDecodeResponse)
+import Remote.Config (encKey, merchantId, baseUrl)
+import Remote.Types
 import Tracker.Tracker (trackHyperPayEvent')
 import UI.Utils
 import UPI.Mapper (AccountList(..))
@@ -45,6 +49,7 @@ foreign import registerEvent :: String -> (DOM.Event → Effect Unit) -> (DOM.Ev
 
 foreign import startUPI' :: forall a. UPIIntentPayload -> (a -> Effect Unit ) -> (forall val . val -> Effect Unit) -> Effect Unit
 
+foreign import getPayload :: forall json. Effect {|json}
 
 makeEvent :: forall a. (a -> Effect Unit) -> (DOM.Event → Effect Unit)
 makeEvent push = \ev -> do
@@ -70,6 +75,44 @@ makeGetUpiAppsEvent orderId push = \ev -> do
 {--     where --}
 {--           fn = (upiOnboardingFlow sdkParams sims) --}
 
+handleWalletEvent :: forall a. LinkingState -> String -> String -> String -> (a -> Effect Unit) -> (DOM.Event → Effect Unit)
+handleWalletEvent st gateway otp walletId push = \ev -> do
+    payload <- getPayload
+    let customer_id = getString payload "customer_id"
+        token = getString payload "sessionToken"
+        headers = [ { field : "Content-Type", value : "application/x-www-form-urlencoded" }]
+        reqBody = case st of
+                       Linking -> unsafeJsonStringify $
+                                    { gateway : gateway
+                                    , command : "authenticate"
+                                    , client_auth_token : token
+                                    }
+                       OTPView -> unsafeJsonStringify $
+                                    { command : "link"
+                                    , client_auth_token : token
+                                    , otp : otp
+                                    }
+                       _ -> ""
+
+        url = case st of
+                   Linking -> baseUrl <> "/customers/" <> customer_id <> "/wallets"
+                   OTPView -> baseUrl <> "/wallets/" <> walletId
+                   _ -> ""
+
+        req = NativeRequest
+                  { method : "POST"
+                  , url
+                  , payload :   reqBody
+                  , headers
+                  }
+
+    _ <- callAPI' (\_ -> pure unit) (push <<< U.unsafeCoerce <<< getResp) req  --  push (U.unsafeCoerce ev)
+    pure unit
+
+	where
+		getResp :: String -> Maybe CreateWalletResp
+		getResp = hush <<< runExcept <<< defaultDecodeResponse
+
 
 onFocus :: forall a. (a -> Effect Unit) -> (Boolean -> a) -> Prop (Effect Unit)
 onFocus push f = Handler (DOM.EventType "onFocus") (Just <<< (makeEvent (push <<< f <<< toBool)))
@@ -77,6 +120,9 @@ onFocus push f = Handler (DOM.EventType "onFocus") (Just <<< (makeEvent (push <<
 onResize :: forall a. (a -> Effect Unit) -> (Int -> a) -> Prop (Effect Unit)
 onResize push f = Handler (DOM.EventType "onResize") (Just <<< (makeEvent (push <<< f)))
 
+
+onClickHandleWallet :: forall a. LinkingState -> String -> String -> String -> (a ->  Effect Unit) -> (Maybe CreateWalletResp -> a) -> Prop (Effect Unit)
+onClickHandleWallet st gateway otp walletId push f = Handler  (DOM.EventType "onClick") (Just <<< (handleWalletEvent st gateway otp walletId (push <<< f)))
 
 {-- lazyLoadList :: forall a. (a -> Effect Unit ) -> (Unit -> a) -> Prop (Effect Unit) --}
 {-- lazyLoadList push f = Handler (DOM.EventType "lazyLoadList") (Just <<< fn) --}
@@ -133,7 +179,7 @@ registerNewEvent eventType push f = Handler (DOM.EventType eventType) (Just <<< 
 
 toAccount :: {accountList :: Array UPIMap.AccountList, regReqId :: String, name :: String, register :: Boolean, status :: Boolean} -> Array Account
 toAccount account = accMap <$> account.accountList
-  where 
+  where
     accMap :: AccountList -> Account
     accMap (AccountList acc) = Account {
         bankCode : acc.bankCode
@@ -145,13 +191,13 @@ toAccount account = accMap <$> account.accountList
       , accountHolderName : account.name
       , register : account.register
       , ifsc : acc.ifscCode
-      } 
+      }
 
 
 toBank :: UPIMap.BankList -> Bank
 toBank (UPIMap.BankList bank) = Bank {code: bank.iin, name : bank.name, ifsc : bank.ifsc}
 
-generateVpa :: String -> String 
+generateVpa :: String -> String
 generateVpa mobile = (S.drop 2 mobile) <> "d5d37924312@yesbank"
 
 

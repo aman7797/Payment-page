@@ -73,6 +73,7 @@ overrides push state =
     case _ of
          ProceedToPay ->
              [ onClick push (const SubmitNetBanking)
+             , clickable true
              ]
 
          _ -> []

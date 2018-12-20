@@ -12,6 +12,10 @@ import PrestoDOM.Utils ((<>>))
 import UI.Helpers.SingleSelectRadio
 
 
+data Expandable
+    = Expandable
+    | NonExpandable
+
 mainViewWidth :: RenderType -> Length
 mainViewWidth =
     case _ of
@@ -149,20 +153,21 @@ tabLayoutWidth =
 
 
 cardSelectionTheme
-    :: RadioSelected
+    :: Expandable
+    -> RadioSelected
     -> Int
     -> { background :: String
        , visibility :: Visibility
        , height :: Length
        }
-cardSelectionTheme selected curr =
-    case compare selected (RadioSelected curr) of
-         EQ ->
+cardSelectionTheme expandable selected curr =
+    case expandable, compare selected (RadioSelected curr) of
+         Expandable, EQ ->
             { background : "#1BB3E8"
             , visibility : VISIBLE
             , height : V 221
             }
-         _ ->
+         _ ,_ ->
             { background : "#D1F0FA"
             , visibility : GONE
             , height : V 120

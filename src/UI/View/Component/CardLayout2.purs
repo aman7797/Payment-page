@@ -192,6 +192,7 @@ expandedView impl cvvImpl config =
         , width MATCH_PARENT
         , orientation VERTICAL
         , visibility config.visibility
+        , clickable false
         ]
         [ editField
             cvvImpl

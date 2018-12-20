@@ -109,7 +109,8 @@ data PaymentPageResponse
 data PaymentPageAction
     = UserAborted
     | PayUsing PaymentOption
-    | Link PaymentOption
+    {-- | CreateWallet String --}
+    {-- | LinkWallet String --}
     | Delete PaymentOption
 
 data ScrollType = SCROLL | HALT
@@ -125,11 +126,11 @@ initialState ppInput = PaymentPageState
 defaultUIState :: PaymentPageInput -> UIState
 defaultUIState ppInput = UIState
     {-- { sectionSelected  : Radio.defaultState Radio.NothingSelected --}
-    { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 1
+    { sectionSelected  : Radio.defaultState $ Radio.RadioSelected 0
     , sections : [ Wallets, Cards, NetBanking, UPISection]
     , cardsViewState : CardsView.initialState $ ppInput ^. _piInfo ^. _cards
     , netBankingViewState : NetBankingView.initialState $ getBankList ppInput
-    , walletsViewState : WalletsView.initialState $ getWalletsList ppInput
+    , walletsViewState : WalletsView.initialState (ppInput ^. _sdk ^. _customerMobile) $ getWalletsList ppInput
     , upiViewState : UpiView.initialState
     , renderType : getRenderType $ ppInput ^. _screenWidth
     }
@@ -193,18 +194,17 @@ eval =
     UpiViewAction UpiView.SubmitUpiCollect ->
         exitPP $ PayUsing <<< UPI <<< mkUpiCollectDetails
 
-    {-- WalletsViewAction WalletsView.LinkWallet -> --}
+
+
+    {-- -- LINK --}
+    {-- WalletsViewAction (WalletsView.Create ind) -> --}
     {--     let getExitAction = \ppState -> --}
     {--         let walletsViewState = ppState ^. _uiState ^. _walletsViewState --}
-    {--             currentSelected  = walletsViewState ^. _walletSelected ^. _currentSelected --}
     {--             walletList = walletsViewState ^. _walletList --}
-    {--          in case currentSelected of --}
-    {--                             Radio.RadioSelected ind -> --}
-    {--                                 maybe --}
-    {--                                     UserAborted --}
-    {--                                     (Link <<< WalletPayment <<< mkNetBankingDetails) --}
-    {--                                     (walletList !! ind) --}
-    {--                             _ -> UserAborted -- Remove this and pass error --}
+    {--          in maybe --}
+    {--                 UserAborted --}
+    {--                 (\wallet -> CreateWallet $ wallet ^. _wallet) --}
+    {--                 (walletList !! ind) --}
     {--      in exitPP getExitAction --}
 
 
@@ -253,6 +253,7 @@ mkNetBankingDetails bank =
         , code  : bank ^. _bankCode
         , ifsc: bank ^. _ifsc
         }
+
 
 mkUpiCollectDetails :: PaymentPageState -> String
 mkUpiCollectDetails ppState =
@@ -313,9 +314,18 @@ getWalletsList :: PaymentPageInput -> Array StoredWallet
 getWalletsList ppInput =
     map mkWallet <<< filter getNB $ ppInput ^. _piInfo ^. _merchantPaymentMethods
     where
-          mkWallet pm =  mockWallet (pm  ^. _paymentMethod) false 0.0
+          mkWallet pm =
+            let walletName = pm  ^. _paymentMethod
+                wallets = ppInput ^. _piInfo ^. _wallets
+                boolFn = \a -> (a ^. _wallet) == walletName
+             in fromMaybe
+                    (mockWallet walletName Nothing Nothing)
+                    (findIndex boolFn wallets >>= index wallets)
+
 
           getNB pm = (pm ^. _paymentMethodType) == "WALLET"
+
+
 
 
 
