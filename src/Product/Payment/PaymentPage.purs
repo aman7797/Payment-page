@@ -41,7 +41,7 @@ import Remote.Accessors (_status, _payment)
 import Remote.Backend (mkPayment, checkOrderStatus, getPaymentMethods) as Remote
 import Remote.Config (encKey, merchantId)
 import Remote.Types -- (InitiateTxnResp(..), PaymentSourceReq(PaymentSourceReq))
-import Remote.Utils (mkPayReqCard, mkPayReqNB, mkPayReqSavedCard, mkPayReqUpiCollect)
+import Remote.Utils (mkPayReqCard, mkPayReqNB, mkPayReqSavedCard, mkPayReqUpiCollect, mkPayReqWallet)
 import Tracker.Tracker (toString) as T
 import Tracker.Tracker (trackEventMerchant)
 import Type.Data.Boolean (kind Boolean)
@@ -158,38 +158,36 @@ paymentPageFlow sdkParams optPPState = do
     where
         callRestOfTheCode :: PaymentPageState -> PaymentPageAction -> FlowBT PaymentPageError PaymentPageExitAction
         callRestOfTheCode ppState userChoice = do
-          _ <- liftFlowBT $ liftFlow requestKeyboardHide
-          _ <- startLoader
+            _ <- liftFlowBT $ liftFlow requestKeyboardHide
+            _ <- startLoader
 
-          case userChoice of
-            -- In-App Payment
-            PayUsing value -> payUsing ppState Nothing value
+            case userChoice of
+                 -- In-App Payment
+                 PayUsing value -> payUsing ppState Nothing value
 
-            -- Failures
-            UserAborted                   -> BackT $ throwError $ Err.UserAborted
-            {-- PayLater (PayLaterResp plrp)  -> orderId >>= \oid -> continue $ ExitApp { status: makeErrorMessage "success" (oid) "Empty Fulfillment", code : (-1)} --}
-            _                             -> BackT $ throwError $ Err.ExitApp "Unable to process"
+                 -- Failures
+                 UserAborted                   -> BackT $ throwError $ Err.UserAborted
+                 {-- PayLater (PayLaterResp plrp)  -> orderId >>= \oid -> continue $ ExitApp { status: makeErrorMessage "success" (oid) "Empty Fulfillment", code : (-1)} --}
+                 _                             -> BackT $ throwError $ Err.ExitApp "Unable to process"
 
         payUsing :: PaymentPageState -> Maybe UpiStore -> PaymentOption -> FlowBT PaymentPageError PaymentPageExitAction
         payUsing ppState upi paymentOption =
-          let
-            order_id = sdkParams ^. _orderId
-          in
-          case paymentOption of
-            NB bank             -> mkPayReqNB bank order_id        # processPayment >>= \_ -> processExit paymentOption
-            Card cd             -> mkPayReqCard cd order_id        # processPayment >>= \_ -> processExit paymentOption
-            SavedCard scd       -> mkPayReqSavedCard scd order_id  # processPayment >>= \_ -> processExit paymentOption
-            UPI vpa             -> mkPayReqUpiCollect vpa order_id # processPayment >>= \_ -> processExit paymentOption
-            {-- SavedUpi vpaAccount -> mkPayReqUPI order_id            # processPayment >>= \_ -> processExit paymentOption --}
-            _                   -> BackT $ throwError $ Err.ExitApp "Unable to process"
+            let order_id = sdkParams ^. _orderId
+             in case paymentOption of
+                     NB bank             -> mkPayReqNB bank order_id        # processPayment >>= \_ -> processExit paymentOption
+                     Card cd             -> mkPayReqCard cd order_id        # processPayment >>= \_ -> processExit paymentOption
+                     SavedCard scd       -> mkPayReqSavedCard scd order_id  # processPayment >>= \_ -> processExit paymentOption
+                     UPI vpa             -> mkPayReqUpiCollect vpa order_id # processPayment >>= \_ -> processExit paymentOption
+                     WalletPayment wallet -> mkPayReqWallet wallet order_id # processPayment >>= \_ -> processExit paymentOption
+                     {-- SavedUpi vpaAccount -> mkPayReqUPI order_id            # processPayment >>= \_ -> processExit paymentOption --}
+                     _                   -> BackT $ throwError $ Err.ExitApp "Unable to process"
 
         processPayment :: InitiateTxnReq -> FlowBT PaymentPageError MicroAppResponse
         processPayment value = do
-          res <- Remote.mkPayment value
-          case os of
-               {-- "WEB" -> redirectForWeb res --}
-               _ -> redirectForWeb res
-               {-- _ -> addlAuth res --}
+            res <- Remote.mkPayment value
+            case os of
+                "WEB" -> redirectForWeb res
+                _ -> addlAuth res
 
         processExit :: PaymentOption -> FlowBT PaymentPageError PaymentPageExitAction
         processExit paymentOption =
@@ -244,26 +242,29 @@ eqArrayMapping a b = foldl (&&) true $ zipWith (\c d -> a == b) a b
 
 startLoader :: FlowBT PaymentPageError {}
 startLoader = do
-          _ <- liftFlowBT $ doAff do liftEffect $ setScreen "LoadingScreen"
-          liftFlowBT $ oneOf [(showScreen (Loader.screen getLoaderConfig)), pure {}]
+    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "LoadingScreen"
+    liftFlowBT $ oneOf
+        [ showScreen $ Loader.screen getLoaderConfig
+        , pure {}
+        ]
 
 errorMessage :: String -> FlowBT PaymentPageError ErrorMessageC.Action
 errorMessage a  = do
-          _ <- liftFlowBT $ doAff do liftEffect $ setScreen "ErrorMessage"
-          _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorFadeIn"
-          _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorSlide"
-          _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorMsgFade"
-          liftFlowBT (showScreen (ErrorMessage.screen (ErrorMessageC.ErrorMessage a)))
+    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "ErrorMessage"
+    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorFadeIn"
+    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorSlide"
+    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorMsgFade"
+    liftFlowBT $ showScreen $ ErrorMessage.screen (ErrorMessageC.ErrorMessage a)
 
 toast :: String -> FlowBT PaymentPageError ErrorMessageC.Action
 toast a  = do
-          _ <- liftFlowBT $ doAff do liftEffect $ setScreen "Toast"
-          _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastFadeIn"
-          _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastSlide"
-          liftFlowBT (oneOf [(showScreen (Toast.screen (ErrorMessageC.ToastMessage a)))
-                            , animateAfterDelay
-                            ]
-                     )
+    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "Toast"
+    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastFadeIn"
+    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastSlide"
+    liftFlowBT $ oneOf
+        [ showScreen $ Toast.screen (ErrorMessageC.ToastMessage a)
+        , animateAfterDelay
+        ]
 
 makeErrorMessage :: String -> String -> String -> String
 makeErrorMessage status orderId message =
@@ -273,11 +274,11 @@ makeErrorMessage status orderId message =
 
 animateAfterDelay :: Flow ErrorMessageC.Action
 animateAfterDelay = do
-          _ <- delay (Milliseconds 1800.0)
-          _ <- doAff do liftEffect $ setScreen "Toast"
-          _ <- doAff do liftEffect $ startAnim "toastFadeOut"
-          _ <- doAff do liftEffect $ startAnim "toastSlideOut"
-          _ <- delay (Milliseconds 400.0)
-          pure ErrorMessageC.UserAbort
+    _ <- delay (Milliseconds 1800.0)
+    _ <- doAff do liftEffect $ setScreen "Toast"
+    _ <- doAff do liftEffect $ startAnim "toastFadeOut"
+    _ <- doAff do liftEffect $ startAnim "toastSlideOut"
+    _ <- delay (Milliseconds 400.0)
+    pure ErrorMessageC.UserAbort
 
 

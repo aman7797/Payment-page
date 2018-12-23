@@ -12,27 +12,27 @@ import Presto.Core.Utils.Encoding (defaultDecode, defaultEncode)
 import Remote.Types (PaymentSourceResp)
 import Type.Data.Boolean (kind Boolean)
 
-data PaymentPageExitAction = ExitApp { status :: String, code :: Int }
-                           | RetryPayment { errorMessage :: String, showError :: Boolean , prevPaymentMethod :: PaymentOption}
-                           | Proceed
+data PaymentPageExitAction
+    = ExitApp { status :: String, code :: Int }
+    | RetryPayment { errorMessage :: String, showError :: Boolean , prevPaymentMethod :: PaymentOption}
+    | Proceed
 
 newtype Bank = Bank
-  {
-    code :: String
-  , name :: String
-  , ifsc :: String
-  }
+    { code :: String
+    , name :: String
+    , ifsc :: String
+    }
 
-newtype BankList = BankList {
-    banks :: Array Bank
-}
+newtype BankList = BankList
+    { banks :: Array Bank
+    }
 
 
-newtype SIM = SIM {
-  slotId :: Int,
-  carrierName :: String,
-  simId :: String
-}
+newtype SIM = SIM
+    { slotId :: Int
+    , carrierName :: String
+    , simId :: String
+    }
 
 derive instance newtypeSim :: Newtype SIM _
 
@@ -61,86 +61,101 @@ instance decodeFetchSIMDetailsUPIResponse :: Decode FetchSIMDetailsUPIResponse w
 
 
 newtype CardDetails = CardDetails
-  { cardNumber :: String
-  , expMonth   :: String
-  , expYear    :: String
-  , nameOnCard :: String
-  , securityCode :: String
-  , saveToLocker :: Boolean
-  , paymentMethod :: String
-  }
+    { cardNumber :: String
+    , expMonth   :: String
+    , expYear    :: String
+    , nameOnCard :: String
+    , securityCode :: String
+    , saveToLocker :: Boolean
+    , paymentMethod :: String
+    }
 
 newtype SavedCardDetails = SavedCardDetails
-  { cvv :: String
-  , cardToken :: String
-  , cardType :: String
-  }
+    { cvv :: String
+    , cardToken :: String
+    , cardType :: String
+    }
 
 newtype Wallet = Wallet
- { name :: Maybe String
- , currentBalance :: Maybe String
- , linked :: Boolean
- , token :: Maybe String
- , balance :: Maybe Number
- , refreshedAt :: Maybe String
- }
+    { name :: String
+    , currentBalance :: Maybe String
+    , linked :: Boolean
+    , token :: Maybe String
+    , balance :: Maybe Number
+    , refreshedAt :: Maybe String
+    }
 
 type CardToken = String
 
 type SaveToLocker = Boolean
 
-newtype RedirectWallet = RedirectWallet
-  { paymentMethodType :: String
-  , paymentMethod :: String
-  }
+{-- newtype RedirectWallet = RedirectWallet --}
+{--     { paymentMethodType :: String --}
+{--     , paymentMethod :: String --}
+{--     } --}
+
+{-- data Wallet --}
+{--     = WalletDirectDebit LinkedWallet --}
+{--     | WalletRedirect String -- RedirectWallet --}
+    {-- | AmazonPayWallet --}
 
 -- data PaymentMethod = NB Bank | Card CardDetails | SavedCard SavedCardDetails | WalletPayment Wallet | WalletRedirect RedirectWallet | COD | AmazonPayWallet
 
 -- data ExternalPaymentOption = UPISDK
 
 data PaymentOption
-    =  NB Bank
+    = NB Bank
     | Card CardDetails
     | SavedCard SavedCardDetails
     | WalletPayment Wallet
-    | WalletRedirect RedirectWallet
-    | COD
-    | AmazonPayWallet
-    | UPISDK Account
+    {-- | UPISDK Account --}
     | UPI String
-    | SavedUpi
+    {-- | SavedUpi --}
+    {-- | COD --}
 
 data WalletType = SDK String | API String
 
-newtype PayLaterResp = PayLaterResp {
-    card_reference :: String
-,   card_removed :: Boolean
-,   amount :: Maybe String
-}
+newtype PayLaterResp = PayLaterResp
+    { card_reference :: String
+    , card_removed :: Boolean
+    , amount :: Maybe String
+    }
 
-type UpiStore = {upiTab :: UPIState, sims :: Array SIM , token :: String, token' :: String, vpa :: String, banks :: Array Bank, mobile :: String, recpMob :: String, smsKey :: String, smsContent :: String, shouldUpdate :: Boolean}
+type UpiStore =
+    { upiTab :: UPIState
+    , sims :: Array SIM
+    , token :: String
+    , token' :: String
+    , vpa :: String
+    , banks :: Array Bank
+    , mobile :: String
+    , recpMob :: String
+    , smsKey :: String
+    , smsContent :: String
+    , shouldUpdate :: Boolean
+    }
 
-instance eqPaylaterResp :: Eq PayLaterResp
-  where
-    eq (PayLaterResp a) (PayLaterResp b) = a.card_reference == b.card_reference && a.amount == b.amount 
+instance eqPaylaterResp :: Eq PayLaterResp where
+    eq (PayLaterResp a) (PayLaterResp b) =
+        a.card_reference == b.card_reference && a.amount == b.amount
 
-newtype CallBack = CallBack { serial_no:: String
-                            , session_id::String
-                            , "type"::String
-                            , value ::Array {
-                                  card_reference:: String 
-                                , amount:: String
-                                }
-                            }
+newtype CallBack = CallBack
+    { serial_no :: String
+    , session_id :: String
+    , "type" :: String
+    , value :: Array { card_reference :: String
+                     , amount :: String
+                     }
+    }
 
 newtype PaymentPageInput = PaymentPageInput
-  { customer  :: Customer
-  , piInfo    :: PaymentSourceResp
-  , orderInfo :: OrderInfo
-  {-- , upiInfo   :: UPIInfo --}
-  , sdk :: SDKParams
-  , screenWidth :: Int
-  }
+    { customer  :: Customer
+    , piInfo    :: PaymentSourceResp
+    , orderInfo :: OrderInfo
+    {-- , upiInfo   :: UPIInfo --}
+    , sdk :: SDKParams
+    , screenWidth :: Int
+    }
 
 data PaymentMethod
     = DEBITCARD
@@ -149,20 +164,20 @@ data PaymentMethod
     | UPIAPPS
 
 instance eqPaymentMethod :: Eq PaymentMethod where
-  eq DEBITCARD DEBITCARD = true
-  eq NETBANK NETBANK = true
-  eq (UPITAB a) (UPITAB b) = a == b
-  eq UPIAPPS UPIAPPS = true
-  eq _ _ = false
+    eq DEBITCARD DEBITCARD = true
+    eq NETBANK NETBANK = true
+    eq (UPITAB a) (UPITAB b) = a == b
+    eq UPIAPPS UPIAPPS = true
+    eq _ _ = false
 
 instance ordPaymentMethod :: Ord PaymentMethod where
-  compare DEBITCARD _ = GT
-  compare _ DEBITCARD = LT
-  compare NETBANK _ = GT
-  compare _ NETBANK = LT
-  compare (UPITAB a) _ = GT
-  compare _ (UPITAB b) = LT
-  compare UPIAPPS _ = GT
+    compare DEBITCARD _ = GT
+    compare _ DEBITCARD = LT
+    compare NETBANK _ = GT
+    compare _ NETBANK = LT
+    compare (UPITAB a) _ = GT
+    compare _ (UPITAB b) = LT
+    compare UPIAPPS _ = GT
 
 
 data CurrentOverlay
@@ -189,110 +204,112 @@ instance eqCurrentOverlay :: Eq CurrentOverlay where
     eq _ _ = false
 
 type OrderInfo =
-  { amount      :: Number
-  , gateway     :: String
-  , orderId     :: String
-  , orderToken  :: String
-  , merchantId  :: String
-  {-- , fullfilment :: Array CreditCard --}
-  {-- , preferedBanks       :: Array String --}
-  {-- , billerCardEditable  :: String --}
-  }
+    { amount      :: Number
+    , gateway     :: String
+    , orderId     :: String
+    , orderToken  :: String
+    , merchantId  :: String
+    {-- , fullfilment :: Array CreditCard --}
+    {-- , preferedBanks       :: Array String --}
+    {-- , billerCardEditable  :: String --}
+    }
 
 type Customer =
-  { mobileNumber :: Maybe String
-  , id :: Maybe String
-  , clientId :: String
-  }
+    { mobileNumber :: Maybe String
+    , id :: Maybe String
+    , clientId :: String
+    }
 
-newtype UPIInfo = UPIInfo 
-  { apps :: Array App
-  , mobile :: String
-  , upiState :: UpiStore
-  }
+newtype UPIInfo = UPIInfo
+    { apps :: Array App
+    , mobile :: String
+    , upiState :: UpiStore
+    }
 
-data UPIState  
-  = Fresh (Array SIM)
-  | Bound (Array Bank)
-  | Linked (Array Account)
-  | PreLink (Array Account)
-  | Disabled
+data UPIState
+    = Fresh (Array SIM)
+    | Bound (Array Bank)
+    | Linked (Array Account)
+    | PreLink (Array Account)
+    | Disabled
 
 instance eqUPIState :: Eq UPIState where
-  eq (Fresh _) (Fresh _) = true
-  eq (Bound _) (Bound _) = true
-  eq (Linked _) (Linked _) = true
-  eq (PreLink _) (PreLink _) = true
-  eq Disabled Disabled = true
-  eq _ _ = false
+    eq (Fresh _) (Fresh _) = true
+    eq (Bound _) (Bound _) = true
+    eq (Linked _) (Linked _) = true
+    eq (PreLink _) (PreLink _) = true
+    eq Disabled Disabled = true
+    eq _ _ = false
 
 
-type App = 
-  { packageName :: String
-  , appName :: String
-  }
+type App =
+    { packageName :: String
+    , appName :: String
+    }
 
 
 
-data PaymentProcessingApp = Godel | AmazonPay
+data PaymentProcessingApp
+    = Godel
+    | AmazonPay
 
 newtype SDKParams = SDKParams
-  { orderToken :: String
-  , amount :: Number
-  , orderId :: String
-  , merchantId :: String
-  , customerMobile :: String
-  , customerId :: String
-  , clientId :: String
-  , activityRecreated :: Boolean
-  , environment :: String
-  , paymentSource :: Maybe PaymentSourceResp
-  {-- , fullfilment :: Array CreditCard --}
-  , preferedBanks :: Array String
-  {-- , billerCardEditable :: String --}
-  {-- , session_token :: String --}
-  }
+    { orderToken :: String
+    , amount :: Number
+    , orderId :: String
+    , merchantId :: String
+    , customerMobile :: String
+    , customerId :: String
+    , clientId :: String
+    , activityRecreated :: Boolean
+    , environment :: String
+    , paymentSource :: Maybe PaymentSourceResp
+    {-- , fullfilment :: Array CreditCard --}
+    , preferedBanks :: Array String
+    {-- , billerCardEditable :: String --}
+    {-- , session_token :: String --}
+    }
 
 newtype Carddetails = Carddetails
-  { message :: String
-  , message_color :: String
-  }
+    { message :: String
+    , message_color :: String
+    }
 
-newtype CreditCard = CreditCard {
-    id :: String
-  ,	masked_card_number	:: String --"4242424242424242”
-  , card_issuer :: String
-  -- , bank_code :: String
-  , card_brand 	:: String --"VISA”
-  , amount_payable :: String
-  , amount :: String
-  ,	card_reference	:: String --"7433AC1C-0187-4DBF-91F0-9AEFF5157C6D”
-  , minimum_amount :: String --"3553.0"
-  ,	custom_amount :: String --"0"
-  , card_details :: Carddetails
-  , iin :: Maybe String
-}
+newtype CreditCard = CreditCard
+    { id :: String
+    ,	masked_card_number	:: String --"4242424242424242”
+    , card_issuer :: String
+    -- , bank_code :: String
+    , card_brand 	:: String --"VISA”
+    , amount_payable :: String
+    , amount :: String
+    ,	card_reference	:: String --"7433AC1C-0187-4DBF-91F0-9AEFF5157C6D”
+    , minimum_amount :: String --"3553.0"
+    ,	custom_amount :: String --"0"
+    , card_details :: Carddetails
+    , iin :: Maybe String
+    }
 
 
-newtype Account = Account {
-		bankCode :: String
-  , bankName :: String
-  , maskedAccountNumber :: String
-  , mpinSet :: Boolean
-  , referenceId :: String
-  , regRefId :: String
-  , accountHolderName :: String
-  , register :: Boolean
-  -- , "type" :: Maybe String
-  -- , branchName :: Maybe String
-  -- , bankAccountUniqueId :: Maybe String
-  -- , ifsc :: Maybe String
-  -- , name :: Maybe String
-  -- , otpLength :: Maybe String
-  -- , format :: Maybe String
-  -- , atmPinLength :: Maybe String
-  , ifsc :: String
-}
+newtype Account = Account
+    { bankCode :: String
+    , bankName :: String
+    , maskedAccountNumber :: String
+    , mpinSet :: Boolean
+    , referenceId :: String
+    , regRefId :: String
+    , accountHolderName :: String
+    , register :: Boolean
+    -- , "type" :: Maybe String
+    -- , branchName :: Maybe String
+    -- , bankAccountUniqueId :: Maybe String
+    -- , ifsc :: Maybe String
+    -- , name :: Maybe String
+    -- , otpLength :: Maybe String
+    -- , format :: Maybe String
+    -- , atmPinLength :: Maybe String
+    , ifsc :: String
+    }
 
 newtype BankAccount = BankAccount
     { bankCode :: String
@@ -308,38 +325,40 @@ newtype BankAccount = BankAccount
     }
 
 instance eqBankAccount :: Eq BankAccount where
-  eq (BankAccount a) (BankAccount b) = a.referenceId == b.referenceId
+    eq (BankAccount a) (BankAccount b) = a.referenceId == b.referenceId
 
 instance eqAccount :: Eq Account where
-  eq (Account a) (Account b) = a.referenceId == b.referenceId
+    eq (Account a) (Account b) = a.referenceId == b.referenceId
 
 derive instance sdkParamsNewtype :: Newtype SDKParams _
 derive instance paymentPageInput :: Newtype PaymentPageInput _
 derive instance bankNewtype :: Newtype Bank _
-derive instance ccNewtype :: Newtype CreditCard _  
-derive instance userCardDetails :: Newtype Carddetails _   
+derive instance ccNewtype :: Newtype CreditCard _
+derive instance userCardDetails :: Newtype Carddetails _
 derive instance bankAccountNewtype :: Newtype BankAccount _
 
 instance eqBank :: Eq Bank where
-  eq (Bank { code }) (Bank { code : c2 }) = code == c2
+    eq (Bank { code }) (Bank { code : c2 }) = code == c2
 
 instance ordBank :: Ord Bank where
-  compare b1 b2 | (getCardOrd b1 b2 == 0) = EQ
-                | (getCardOrd b1 b2 > 0)  = GT
-                | (getCardOrd b1 b2 < 0)  = LT
-                | otherwise               = EQ
+    compare b1 b2 | (getCardOrd b1 b2 == 0) = EQ
+                  | (getCardOrd b1 b2 > 0)  = GT
+                  | (getCardOrd b1 b2 < 0)  = LT
+                  | otherwise               = EQ
 
 getCardOrd :: Bank -> Bank -> Int
-getCardOrd b1 b2 = (bankCodeToInt (b1 ^. _code)) - (bankCodeToInt $ b2 ^. _code)
+getCardOrd b1 b2 =
+    (bankCodeToInt (b1 ^. _code)) - (bankCodeToInt $ b2 ^. _code)
 
 instance ordBankAccount :: Ord BankAccount where
-  compare b1 b2 | (getBankAccountOrd b1 b2 == 0) = EQ
-                | (getBankAccountOrd b1 b2 > 0)  = GT
-                | (getBankAccountOrd b1 b2 < 0)  = LT
-                | otherwise               = EQ
+    compare b1 b2 | (getBankAccountOrd b1 b2 == 0) = EQ
+                  | (getBankAccountOrd b1 b2 > 0)  = GT
+                  | (getBankAccountOrd b1 b2 < 0)  = LT
+                  | otherwise               = EQ
 
 getBankAccountOrd :: BankAccount -> BankAccount -> Int
-getBankAccountOrd b1 b2 = (bankCodeToInt (b1 ^. _referenceId)) - (bankCodeToInt $ b2 ^. _referenceId)
+getBankAccountOrd b1 b2 =
+    (bankCodeToInt (b1 ^. _referenceId)) - (bankCodeToInt $ b2 ^. _referenceId)
 
 bankCodeToInt :: String -> Int
 bankCodeToInt "NB_ICICI"  = 0
@@ -350,9 +369,11 @@ bankCodeToInt "NB_KOTAK"  = 4
 bankCodeToInt "NB_CANR" = 5
 bankCodeToInt _ = 100
 
+
+------ --------- --------- ---------- ----------
 type Numeric = Number
 
---tracker type
+-- tracker type
 newtype JusPayLoad = 
   JusPayLoad {
             you_pay :: Numeric
