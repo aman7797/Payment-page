@@ -50,7 +50,7 @@ newtype LinkWalletDetails = LinkWalletDetails
 newtype State = State
     { sectionSelected :: Section
     , walletSelected :: Radio.State
-    , walletList :: Array StoredWallet
+    , walletList :: Array Wallet
     , customerMobile :: String
     , linkWalletDetails :: LinkWalletDetails
     }
@@ -60,7 +60,7 @@ derive instance stateNewtype :: Newtype State _
 derive instance linkWalletDetailsNewtype :: Newtype LinkWalletDetails  _
 
 
-initialState :: String -> Array StoredWallet -> State
+initialState :: String -> Array Wallet -> State
 initialState mobile wallets = State $
     { sectionSelected : WalletListSection
     , walletSelected : Radio.defaultState Radio.NothingSelected
@@ -114,13 +114,13 @@ eval =
          {-- SectionSelected section -> --}
          {--     _sectionSelected .~ section --}
 
-unsafeGetGateway :: Array StoredWallet -> Radio.RadioSelected -> String
+unsafeGetGateway :: Array Wallet -> Radio.RadioSelected -> String
 unsafeGetGateway wallets =
     case _ of
          Radio.RadioSelected ind ->
              fromMaybe
                 ""
-                ((\w -> w ^. _wallet) <$>  (wallets !! ind))
+                ((\w -> w ^. _name) <$>  (wallets !! ind))
          _ -> ""
 
 

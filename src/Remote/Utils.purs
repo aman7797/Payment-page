@@ -241,7 +241,7 @@ mkPayReqSavedCard (SavedCardDetails cardData) =
 mkPayReqWallet :: Wallet -> String -> InitiateTxnReq
 mkPayReqWallet (Wallet wallet) =
     let updateState = case wallet.token, wallet.linked of
-            Just token, true ->
+            Just token, Just true ->
                 _   { direct_wallet_token = Just token
                     , payment_method = wallet.name
                     , client_auth_token = Just checkoutDetails.order_token

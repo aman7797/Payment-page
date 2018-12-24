@@ -80,9 +80,9 @@ walletListView push state =
             ( walletInfo <$> walletList )
 
     where
-          walletInfo = \w -> { piName : getWalletName (w ^. _wallet)
+          walletInfo = \w -> { piName : getWalletName (w ^. _name)
                          , offer : ""
-                         , imageUrl : getWalletIcon (w ^. _wallet)
+                         , imageUrl : getWalletIcon (w ^. _name)
                          , balance : w ^. _currentBalance
                          , actionButton : case w ^. _currentBalance of
                                                Just _ -> CardLayout.DeleteAccount

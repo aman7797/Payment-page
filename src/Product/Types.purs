@@ -78,16 +78,25 @@ newtype SavedCardDetails = SavedCardDetails
 
 newtype Wallet = Wallet
     { name :: String
-    , currentBalance :: Maybe String
-    , linked :: Boolean
+    , currentBalance :: Maybe Number
+    , linked :: Maybe Boolean
     , token :: Maybe String
-    , balance :: Maybe Number
-    , refreshedAt :: Maybe String
+    {-- , balance :: Maybe Number --}
+    , lastRefreshed :: Maybe String
     }
 
 type CardToken = String
 
 type SaveToLocker = Boolean
+
+derive instance walletGeneric :: Generic Wallet  _
+derive instance walletNewtype :: Newtype Wallet _
+instance decodeWallet :: Decode Wallet where decode = defaultDecode
+instance encodeWallet :: Encode Wallet where encode = defaultEncode
+instance eqWallet :: Eq Wallet where
+    eq (Wallet s1) (Wallet s2) = s1.name == s2.name
+
+
 
 {-- newtype RedirectWallet = RedirectWallet --}
 {--     { paymentMethodType :: String --}

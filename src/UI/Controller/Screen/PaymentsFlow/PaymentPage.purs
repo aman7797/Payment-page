@@ -30,7 +30,7 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types
 import Remote.Accessors (_paymentMethod)
 import Remote.Config (encKey)
-import Remote.Types (StoredCard, StoredWallet, mockWallet)
+import Remote.Types (StoredCard, mockWallet)
 import Tracker.Tracker (trackEventMerchantV2, toString) as T
 import UI.Constant.FontStyle.Default as Font
 import UI.Controller.Component.AddNewCard (Action(..))
@@ -299,31 +299,49 @@ getBankList ppInput =
     where
           mkBank pm = BankAccount
                         { bankCode : pm  ^. _paymentMethod
-                        , bankName : pm ^. _description,maskedAccountNumber: ""
-                        , mpinSet:true,referenceId:pm  ^. _paymentMethod
+                        , bankName : pm ^. _description
+                        , maskedAccountNumber : ""
+                        , mpinSet : true
+                        , referenceId : pm  ^. _paymentMethod
                         , regRefId : ""
                         , accountHolderName : ""
-                        , register: true
+                        , register : true
                         , ifsc : ""
                         , iin : getNbIin $ pm  ^. _paymentMethod
                         }
 
           getNB pm = (pm ^. _paymentMethodType) == "NB"
 
-getWalletsList :: PaymentPageInput -> Array StoredWallet
+getWalletsList :: PaymentPageInput -> Array Wallet
 getWalletsList ppInput =
-    map mkWallet <<< filter getNB $ ppInput ^. _piInfo ^. _merchantPaymentMethods
+    map mkWallet <<< filter getWallet $ ppInput ^. _piInfo ^. _merchantPaymentMethods
     where
+          defaultWallet name = Wallet
+                { name : name
+                , currentBalance : Nothing
+                , linked : Nothing
+                , token : Nothing
+                , lastRefreshed : Nothing
+                }
+
           mkWallet pm =
             let walletName = pm  ^. _paymentMethod
                 wallets = ppInput ^. _piInfo ^. _wallets
                 boolFn = \a -> (a ^. _wallet) == walletName
+                maybeWallet = findIndex boolFn wallets
+                                >>= index wallets
+                                >>= \w -> Just $ Wallet { name : w ^. _wallet
+                                               , currentBalance : w ^. _currentBalance
+                                               , linked : w ^. _linked
+                                               , token : w ^. _token
+                                               , lastRefreshed : w ^. _lastRefreshed
+                                               }
              in fromMaybe
-                    (mockWallet walletName Nothing Nothing)
-                    (findIndex boolFn wallets >>= index wallets)
+                    (defaultWallet walletName)
+                    maybeWallet
 
 
-          getNB pm = (pm ^. _paymentMethodType) == "WALLET"
+          getWallet pm = (pm ^. _paymentMethodType) == "WALLET"
 
 
 
