@@ -42,8 +42,6 @@ import Remote.Config (encKey, merchantId, baseUrl)
 import Remote.Types
 import Tracker.Tracker (trackHyperPayEvent')
 import UI.Utils
-import UPI.Mapper (AccountList(..))
-import UPI.Mapper as UPIMap
 
 foreign import registerEvent :: String -> (DOM.Event → Effect Unit) -> (DOM.Event -> Effect Unit)
 
@@ -176,29 +174,6 @@ registerNewEvent eventType push f = Handler (DOM.EventType eventType) (Just <<< 
 
 -- attachTimer :: forall a. Int -> (a ->  Effect Unit) -> (Int -> a) -> Prop (Effect Unit)
 -- attachTimer time push f = Handler (DOM.EventType "executeTimer") (Just <<< timerHandler time (push <<< f))
-
-toAccount :: {accountList :: Array UPIMap.AccountList, regReqId :: String, name :: String, register :: Boolean, status :: Boolean} -> Array Account
-toAccount account = accMap <$> account.accountList
-  where
-    accMap :: AccountList -> Account
-    accMap (AccountList acc) = Account {
-        bankCode : acc.bankCode
-      , bankName : acc.bankName
-      , maskedAccountNumber : acc.accNo
-      , mpinSet :acc.mpinStatus  == "Y"
-      , referenceId : show acc.accId
-      , regRefId : account.regReqId
-      , accountHolderName : account.name
-      , register : account.register
-      , ifsc : acc.ifscCode
-      }
-
-
-toBank :: UPIMap.BankList -> Bank
-toBank (UPIMap.BankList bank) = Bank {code: bank.iin, name : bank.name, ifsc : bank.ifsc}
-
-generateVpa :: String -> String
-generateVpa mobile = (S.drop 2 mobile) <> "d5d37924312@yesbank"
 
 
 getFlag :: String

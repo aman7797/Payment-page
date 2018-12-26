@@ -99,10 +99,12 @@ overrides push state =
 
          ProceedToPay ->
              [ onClick push (const SubmitSavedCard)
+             , clickable true
              ]
 
          CvvEditField ->
              [ onChange push CvvChanged
+             , clickable true
              ]
 
          _ -> []
