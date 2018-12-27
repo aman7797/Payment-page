@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.UpiView where
+module UI.Client.Idea.View.Component.UpiView where
 
 import Prelude
 
@@ -21,7 +21,7 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 
-import UI.Idea.Helpers.CommonView
+import UI.Client.Idea.Helpers.CommonView
 import UI.Common.Controller.Component.UpiView
 
 import UI.Utils

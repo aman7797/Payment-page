@@ -17,10 +17,10 @@ import UI.Utils (os)
 
 import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 
-import UI.Idea.View.Screen.PaymentsFlow.PaymentPage as PaymentPage
-import UI.Idea.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
-import UI.Idea.View.Screen.PaymentsFlow.Loader as Loader
-import UI.Idea.View.Screen.PaymentsFlow.Toast as Toast
+import UI.Client.Idea.View.Screen.PaymentsFlow.PaymentPage as PaymentPage
+import UI.Client.Idea.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
+import UI.Client.Idea.View.Screen.PaymentsFlow.Loader as Loader
+import UI.Client.Idea.View.Screen.PaymentsFlow.Toast as Toast
 
 showPaymentPage :: PaymentPageState -> FlowBT PaymentPageError PaymentPageResponse
 showPaymentPage ppState = do

@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.CardsView where
+module UI.Client.Idea.View.Component.CardsView where
 
 import Prelude
 
@@ -23,12 +23,12 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 
-import UI.Idea.Helpers.CommonView
+import UI.Client.Idea.Helpers.CommonView
 import UI.Common.Controller.Component.CardsView
 
-import UI.Idea.View.Component.CardLayout2 as CardLayout2
-import UI.Helpers.SingleSelectRadio as Radio
-import UI.Idea.View.Component.AddNewCard as AddNewCard
+import UI.Client.Idea.Helpers.CardLayout2 as CardLayout2
+import UI.Common.Helpers.SingleSelectRadio as Radio
+import UI.Client.Idea.View.Component.AddNewCard as AddNewCard
 import UI.Utils
 import Validation
 

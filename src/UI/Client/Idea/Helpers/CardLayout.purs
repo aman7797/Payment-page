@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.CardLayout where
+module UI.Client.Idea.Helpers.CardLayout where
 
 import Prelude
 
@@ -20,10 +20,10 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
-import UI.Helpers.SingleSelectRadio (RadioSelected(..))
-import UI.Idea.Helpers.CommonView
+import UI.Common.Helpers.SingleSelectRadio (RadioSelected(..))
+import UI.Client.Idea.Helpers.CommonView
 
-import UI.Idea.Config as Config
+import UI.Client.Idea.Config as Config
 import UI.Utils
 
 data ActionButton

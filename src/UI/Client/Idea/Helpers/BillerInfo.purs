@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.BillerInfo where
+module UI.Client.Idea.Helpers.BillerInfo where
 
 import Prelude
 
@@ -22,8 +22,8 @@ import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 
-import UI.Idea.Helpers.CommonView
-import UI.Idea.Config as Config
+import UI.Client.Idea.Helpers.CommonView
+import UI.Client.Idea.Config as Config
 
 import UI.Utils
 

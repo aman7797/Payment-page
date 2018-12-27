@@ -16,7 +16,7 @@ import Remote.Types (StoredCard(..))
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)
-import UI.Helpers.SingleSelectRadio as Radio
+import UI.Common.Helpers.SingleSelectRadio as Radio
 
 
 

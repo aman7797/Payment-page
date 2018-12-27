@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.AddNewCard where
+module UI.Client.Idea.View.Component.AddNewCard where
 
 import Prelude
 
@@ -21,7 +21,7 @@ import UI.Animations (slideInBottomDelay, slideOutBottom, setSlideToBottom, fade
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Common.Controller.Component.AddNewCard (Action, Method(..), Overrides(..), State, getCardStatus, overrides)
-import UI.Idea.Helpers.CommonView
+import UI.Client.Idea.Helpers.CommonView
 import UI.Utils
 import Validation (ValidationState(..))
 

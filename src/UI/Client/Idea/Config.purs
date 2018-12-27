@@ -1,4 +1,4 @@
-module UI.Idea.Config where
+module UI.Client.Idea.Config where
 
 import Prelude
 
@@ -9,7 +9,7 @@ import PrestoDOM
 import Data.Ord ( class Ord, compare)
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Utils ((<>>))
-import UI.Helpers.SingleSelectRadio
+import UI.Common.Helpers.SingleSelectRadio
 
 
 data Expandable

@@ -1,4 +1,4 @@
-module UI.Helpers.SingleSelectRadio where
+module UI.Common.Helpers.SingleSelectRadio where
 
 import Prelude
 

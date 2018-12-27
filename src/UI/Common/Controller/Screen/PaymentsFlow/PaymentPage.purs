@@ -41,7 +41,7 @@ import UI.Common.Controller.Component.NetBankingView as NetBankingView
 import UI.Common.Controller.Component.WalletsView as WalletsView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
-import UI.Helpers.SingleSelectRadio as Radio
+import UI.Common.Helpers.SingleSelectRadio as Radio
 import UI.Utils
 
 -- Types

@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.NetBankingView where
+module UI.Client.Idea.View.Component.NetBankingView where
 
 import Prelude
 
@@ -22,12 +22,12 @@ import PrestoDOM.Utils ((<>>))
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 
-import UI.Idea.Helpers.CommonView
+import UI.Client.Idea.Helpers.CommonView
 import UI.Common.Controller.Component.NetBankingView
-import UI.Idea.View.Component.CardLayout as CardLayout
-import UI.Helpers.SingleSelectRadio as Radio
+import UI.Client.Idea.Helpers.CardLayout as CardLayout
+import UI.Common.Helpers.SingleSelectRadio as Radio
 import UI.Utils
-import UI.Idea.Config as Config
+import UI.Client.Idea.Config as Config
 
 view
 	:: forall w

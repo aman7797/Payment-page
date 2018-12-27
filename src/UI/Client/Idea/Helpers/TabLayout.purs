@@ -1,4 +1,4 @@
-module UI.Idea.View.Component.TabLayout where
+module UI.Client.Idea.Helpers.TabLayout where
 
 import Prelude
 
@@ -21,8 +21,8 @@ import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
 import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 
-import UI.Helpers.SingleSelectRadio (RadioSelected(..))
-import UI.Idea.Config as Config
+import UI.Common.Helpers.SingleSelectRadio (RadioSelected(..))
+import UI.Client.Idea.Config as Config
 import UI.Utils
 
 

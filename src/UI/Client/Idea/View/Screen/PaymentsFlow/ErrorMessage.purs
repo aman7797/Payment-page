@@ -1,4 +1,4 @@
-module UI.Idea.View.Screen.PaymentsFlow.ErrorMessage where
+module UI.Client.Idea.View.Screen.PaymentsFlow.ErrorMessage where
 
 import Prelude
 import UI.Animations

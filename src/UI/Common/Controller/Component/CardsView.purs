@@ -19,7 +19,7 @@ import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)
 
 import UI.Common.Controller.Component.AddNewCard as AddNewCard
-import UI.Helpers.SingleSelectRadio as Radio
+import UI.Common.Helpers.SingleSelectRadio as Radio
 
 
 

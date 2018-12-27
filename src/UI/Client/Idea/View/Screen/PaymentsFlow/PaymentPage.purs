@@ -1,4 +1,4 @@
-module UI.Idea.View.Screen.PaymentsFlow.PaymentPage where
+module UI.Client.Idea.View.Screen.PaymentsFlow.PaymentPage where
 
 import Prelude
 import UI.Animations
@@ -27,17 +27,19 @@ import UI.Constant.Str.Default as STR
 import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Utils
-import UI.Idea.View.Component.AddNewCard as AddNewCard
-import UI.Idea.View.Component.CardLayout as CardLayout
-import UI.Idea.View.Component.BillerInfo as BillerInfo
-import UI.Idea.View.Component.UpiView as UpiView
-import UI.Idea.View.Component.CardsView as CardsView
-import UI.Idea.View.Component.NetBankingView as NetBankingView
-import UI.Idea.View.Component.WalletsView as WalletsView
-import UI.Idea.View.Component.TabLayout as TabLayout
 
-import UI.Helpers.SingleSelectRadio as Radio
-import UI.Idea.Config as Config
+import UI.Client.Idea.View.Component.AddNewCard as AddNewCard
+import UI.Client.Idea.View.Component.UpiView as UpiView
+import UI.Client.Idea.View.Component.CardsView as CardsView
+import UI.Client.Idea.View.Component.NetBankingView as NetBankingView
+import UI.Client.Idea.View.Component.WalletsView as WalletsView
+
+import UI.Client.Idea.Helpers.CardLayout as CardLayout
+import UI.Client.Idea.Helpers.BillerInfo as BillerInfo
+import UI.Client.Idea.Helpers.TabLayout as TabLayout
+
+import UI.Common.Helpers.SingleSelectRadio as Radio
+import UI.Client.Idea.Config as Config
 
 import Validation (getCardIcon)
 
