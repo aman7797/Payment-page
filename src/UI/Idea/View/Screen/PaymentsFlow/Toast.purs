@@ -1,4 +1,4 @@
-module UI.View.Screen.PaymentsFlow.Toast where
+module UI.Idea.View.Screen.PaymentsFlow.Toast where
 
 import Prelude
 

@@ -1,4 +1,4 @@
-module UI.View.Component.BillerInfo where
+module UI.Idea.View.Component.BillerInfo where
 
 import Prelude
 
@@ -30,7 +30,7 @@ import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Helpers.CommonView
-import UI.Config as Config
+import UI.Idea.Config as Config
 
 import UI.Utils
 

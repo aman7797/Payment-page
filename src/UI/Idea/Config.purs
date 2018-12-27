@@ -1,4 +1,4 @@
-module UI.Config where
+module UI.Idea.Config where
 
 import Prelude
 

@@ -45,14 +45,14 @@ import Remote.Utils (mkPayReqCard, mkPayReqNB, mkPayReqSavedCard, mkPayReqUpiCol
 import Tracker.Tracker (toString) as T
 import Tracker.Tracker (trackEventMerchant)
 import Type.Data.Boolean (kind Boolean)
+
 import UI.Controller.Component.AddNewCard as A
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
-import UI.Flow as UI
+
 import UI.Utils (logit, logAny, os, getScreenWidth)
-import UI.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
-import UI.View.Screen.PaymentsFlow.Loader as Loader
-import UI.View.Screen.PaymentsFlow.Toast as Toast
+
+import UI.Flow as UI
 
 startPaymentFlow
     :: SDKParams
@@ -159,7 +159,7 @@ paymentPageFlow sdkParams optPPState = do
         callRestOfTheCode :: PaymentPageState -> PaymentPageAction -> FlowBT PaymentPageError PaymentPageExitAction
         callRestOfTheCode ppState userChoice = do
             _ <- liftFlowBT $ liftFlow requestKeyboardHide
-            _ <- startLoader
+            _ <- UI.startLoader
 
             case userChoice of
                  -- In-App Payment
@@ -227,7 +227,7 @@ handlePayResp paymentOption sdkParams status = do
 
     -- Pending -- Failure
     value           -> BackT $ throwError $ Err.MicroAppError "Payment Failed"
-                  -- RetryPayment { showError : true, errorMessage : Config.paymentsPendingErrMsg, prevPaymentMethod : paymentOption }
+                  -- RetryPayment { showError : true, UI.errorMessage : Config.paymentsPendingErrMsg, prevPaymentMethod : paymentOption }
     -- activity recreated has to handled - need to discuss about where to handle
 
 ----------------------------------------------- MOVE TO UTILS ----------------------------------------------
@@ -240,45 +240,10 @@ eqArrayMapping :: forall a. Eq a => Array a -> Array a -> Boolean
 eqArrayMapping a b = foldl (&&) true $ zipWith (\c d -> a == b) a b
 
 
-startLoader :: FlowBT PaymentPageError {}
-startLoader = do
-    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "LoadingScreen"
-    liftFlowBT $ oneOf
-        [ showScreen $ Loader.screen getLoaderConfig
-        , pure {}
-        ]
-
-errorMessage :: String -> FlowBT PaymentPageError ErrorMessageC.Action
-errorMessage a  = do
-    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "ErrorMessage"
-    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorFadeIn"
-    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorSlide"
-    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "errorMsgFade"
-    liftFlowBT $ showScreen $ ErrorMessage.screen (ErrorMessageC.ErrorMessage a)
-
-toast :: String -> FlowBT PaymentPageError ErrorMessageC.Action
-toast a  = do
-    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "Toast"
-    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastFadeIn"
-    _ <- liftFlowBT $ doAff do liftEffect $ startAnim "toastSlide"
-    liftFlowBT $ oneOf
-        [ showScreen $ Toast.screen (ErrorMessageC.ToastMessage a)
-        , animateAfterDelay
-        ]
 
 makeErrorMessage :: String -> String -> String -> String
 makeErrorMessage status orderId message =
     "{\"status\":\"" <> status <> "\",\"order_id\":\"" <> orderId <> "\",\"message\":\"" <> message <> "\"}"
 
-
-
-animateAfterDelay :: Flow ErrorMessageC.Action
-animateAfterDelay = do
-    _ <- delay (Milliseconds 1800.0)
-    _ <- doAff do liftEffect $ setScreen "Toast"
-    _ <- doAff do liftEffect $ startAnim "toastFadeOut"
-    _ <- doAff do liftEffect $ startAnim "toastSlideOut"
-    _ <- delay (Milliseconds 400.0)
-    pure ErrorMessageC.UserAbort
 
 

@@ -1,4 +1,4 @@
-module UI.View.Component.TabLayout where
+module UI.Idea.View.Component.TabLayout where
 
 import Prelude
 
@@ -29,7 +29,7 @@ import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Helpers.SingleSelectRadio (RadioSelected(..))
-import UI.Config as Config
+import UI.Idea.Config as Config
 import UI.Utils
 
 

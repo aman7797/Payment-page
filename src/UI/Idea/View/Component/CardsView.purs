@@ -1,4 +1,4 @@
-module UI.View.Component.CardsView where
+module UI.Idea.View.Component.CardsView where
 
 import Prelude
 
@@ -33,9 +33,9 @@ import UI.Constant.Type (FontColor, FontStyle)
 import UI.Helpers.CommonView
 import UI.Controller.Component.CardsView
 
-import UI.View.Component.CardLayout2 as CardLayout2
+import UI.Idea.View.Component.CardLayout2 as CardLayout2
 import UI.Helpers.SingleSelectRadio as Radio
-import UI.View.Component.AddNewCard as AddNewCard
+import UI.Idea.View.Component.AddNewCard as AddNewCard
 import UI.Utils
 import Validation
 

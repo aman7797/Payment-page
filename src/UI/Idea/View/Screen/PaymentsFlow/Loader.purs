@@ -1,4 +1,4 @@
-module UI.View.Screen.PaymentsFlow.Loader where
+module UI.Idea.View.Screen.PaymentsFlow.Loader where
 
 
 import Effect (Effect)

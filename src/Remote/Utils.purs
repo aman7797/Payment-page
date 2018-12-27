@@ -25,9 +25,9 @@ import Remote.Types (InitiateTxnReq(InitiateTxnReq), OrderStatusReq(OrderStatusR
 import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 import UI.Controller.Screen.PaymentsFlow.GenericError (ScreenInput(..))
 import UI.Utils (logit, os, logAny)
-import UI.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage
-import UI.View.Screen.PaymentsFlow.ErrorMessage as GenericError
-import UI.View.Screen.PaymentsFlow.Loader as Loader
+
+import UI.Flow as UI
+
 
 type ApiConfig =
     { noOfRetries :: Int
@@ -60,11 +60,6 @@ callAPIWithBackHandling
     -> FlowBT PaymentPageError (Either (Response ErrorPayload) t199)
 callAPIWithBackHandling headers req apiConfig = do
   BackT <<< ExceptT $ (Right <$> (oneOf $ [(NoBack <$> callAPI headers req) ] <> if apiConfig.shouldShowLoader then [] else [] ))
-  where
-        showLoadingScreen = do
-            _ <- doAff do liftEffect $ setScreen "LoadingScreen"
-            _ <- (showScreen (Loader.screen getLoaderConfig))
-            pure $ NoBack $ Left Constants.userAbortedErrorResponse
 
 eitherMatch
     :: forall a err
@@ -117,8 +112,7 @@ handleGenericError
     -> ScreenInput
     -> FlowBT PaymentPageError (Either PaymentPageError b)
 handleGenericError headers req apiConfig errorType = do
-    _ <- liftFlowBT $ doAff do liftEffect $ setScreen "GenericError"
-    action <- (liftFlowBT $ showScreen (GenericError.screen $ ErrorMessageC.ErrorMessage "Unable to process" ))
+    action <- UI.errorMessage "Unable to process"
     case action of
          ErrorMessageC.Retry ->
             mkRestClientCall headers req (defaultConfig apiConfig.noOfRetries)
@@ -286,29 +280,3 @@ mkPayReqWallet (Wallet wallet) =
 
 -- mkInitiateTxnPayload _  = defaultTxnReq "Default" "Default"
 
-{-- mockWallet :: String -> Boolean -> Number -> StoredWallet --}
-{-- mockWallet wallet isLinked bal = StoredWallet --}
-{--   { wallet : wallet --}
-{--   , token : Just "" --}
-{--   , linked : Just isLinked --}
-{--   , id :  "" --}
-{--   , current_balance : Just bal --}
-{--   , last_refreshed : Just "" --}
-{--   , object : Just "" --}
-{--   , currentBalance : Just bal --}
-{--   , lastRefreshed : Just "" --}
-{--   , lastUsed : Just "" --}
-{--   , count : Just 0.0 --}
-{--   , rating : Just 0.0 --}
-{--   } --}
-
--- showScreen' = if os == "IOS" then runScreen else showScreen
-
-
-errorMessage :: String -> Flow ErrorMessageC.Action
-errorMessage a  = do
-          _ <- doAff do liftEffect $ setScreen "ErrorMessage"
-          _ <- doAff do liftEffect $ startAnim "errorFadeIn"
-          _ <- doAff do liftEffect $ startAnim "errorSlide"
-          _ <- doAff do liftEffect $ startAnim "errorMsgFade"
-          (showScreen (ErrorMessage.screen (ErrorMessageC.ErrorMessage a)))

@@ -1,4 +1,4 @@
-module UI.View.Component.AddNewCard where
+module UI.Idea.View.Component.AddNewCard where
 
 import Prelude
 

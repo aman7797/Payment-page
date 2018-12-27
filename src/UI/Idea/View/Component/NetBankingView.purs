@@ -1,4 +1,4 @@
-module UI.View.Component.NetBankingView where
+module UI.Idea.View.Component.NetBankingView where
 
 import Prelude
 
@@ -31,10 +31,10 @@ import UI.Constant.Type (FontColor, FontStyle)
 
 import UI.Helpers.CommonView
 import UI.Controller.Component.NetBankingView
-import UI.View.Component.CardLayout as CardLayout
+import UI.Idea.View.Component.CardLayout as CardLayout
 import UI.Helpers.SingleSelectRadio as Radio
 import UI.Utils
-import UI.Config as Config
+import UI.Idea.Config as Config
 
 view
 	:: forall w

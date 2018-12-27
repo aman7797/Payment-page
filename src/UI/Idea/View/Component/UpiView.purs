@@ -1,4 +1,4 @@
-module UI.View.Component.UpiView where
+module UI.Idea.View.Component.UpiView where
 
 import Prelude
 

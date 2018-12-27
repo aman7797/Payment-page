@@ -1,4 +1,4 @@
-module UI.View.Component.CardLayout where
+module UI.Idea.View.Component.CardLayout where
 
 import Prelude
 
@@ -30,7 +30,7 @@ import UI.Controller.Screen.PaymentsFlow.PaymentPage
 import UI.Helpers.SingleSelectRadio (RadioSelected(..))
 import UI.Helpers.CommonView
 
-import UI.Config as Config
+import UI.Idea.Config as Config
 import UI.Utils
 
 data ActionButton

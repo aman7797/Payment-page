@@ -1,4 +1,4 @@
-module UI.View.Screen.PaymentsFlow.GenericError where
+module UI.Idea.View.Screen.PaymentsFlow.GenericError where
 
 import Data.Lens ((^.))
 import Effect (Effect)

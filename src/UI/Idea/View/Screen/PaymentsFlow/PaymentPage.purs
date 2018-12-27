@@ -1,4 +1,4 @@
-module UI.View.Screen.PaymentsFlow.PaymentPage where
+module UI.Idea.View.Screen.PaymentsFlow.PaymentPage where
 
 import Prelude
 import UI.Animations
@@ -32,17 +32,17 @@ import UI.Constant.Type (FontColor, FontStyle)
 import UI.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Utils
-import UI.View.Component.AddNewCard as AddNewCard
-import UI.View.Component.CardLayout as CardLayout
-import UI.View.Component.BillerInfo as BillerInfo
-import UI.View.Component.UpiView as UpiView
-import UI.View.Component.CardsView as CardsView
-import UI.View.Component.NetBankingView as NetBankingView
-import UI.View.Component.WalletsView as WalletsView
-import UI.View.Component.TabLayout as TabLayout
+import UI.Idea.View.Component.AddNewCard as AddNewCard
+import UI.Idea.View.Component.CardLayout as CardLayout
+import UI.Idea.View.Component.BillerInfo as BillerInfo
+import UI.Idea.View.Component.UpiView as UpiView
+import UI.Idea.View.Component.CardsView as CardsView
+import UI.Idea.View.Component.NetBankingView as NetBankingView
+import UI.Idea.View.Component.WalletsView as WalletsView
+import UI.Idea.View.Component.TabLayout as TabLayout
 
 import UI.Helpers.SingleSelectRadio as Radio
-import UI.Config as Config
+import UI.Idea.Config as Config
 
 import Validation (getCardIcon)
 
