@@ -5,13 +5,11 @@ import Prelude
 import Effect
 import Data.Lens ((^.))
 import Engineering.Helpers.Types.Accessor (_error)
-import PrestoDOM 
+import PrestoDOM
 import Simple.JSON (writeJSON)
 import UI.Animations (errorFade, errorFade', errorSlide, errorSlide')
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
-import UI.Controller.Screen.PaymentsFlow.ErrorMessage (Action(UserAbort), GenericErrorState, ScreenInput, ScreenOutput, eval, initialState)
+import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage (Action(UserAbort), GenericErrorState, ScreenInput, ScreenOutput, eval, initialState)
 import UI.Utils (os)
 
 
@@ -80,8 +78,8 @@ view push state =
                         , letterSpacing 0.83
                         , margin (Margin 10 0 0 0)
                         , text $ state ^. _error
-                        , textSize FontSize.a_12
-                        , color FontColor.a_FFFFFFFF
+                        , textSize 12
+                        , color "#FFFFFFFF"
                         , fontStyle Font.gILROYMEDIUM
                         ]
                     ]

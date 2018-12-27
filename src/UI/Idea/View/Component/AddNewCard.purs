@@ -18,18 +18,15 @@ import PrestoDOM.Types.DomAttributes (Gravity(..), InputType(..), Length(..), Ma
 import PrestoDOM.Utils ((<>>))
 import Simple.JSON (writeJSON)
 import UI.Animations (slideInBottomDelay, slideOutBottom, setSlideToBottom, fadeInAnim, fadeOutAnim, setFadeOutAnim)
-import UI.Constant.Color.Default as Color
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
-import UI.Controller.Component.AddNewCard (Action, Method(..), Overrides(..), State, getCardStatus, overrides)
-import UI.Helpers.CommonView
+import UI.Common.Controller.Component.AddNewCard (Action, Method(..), Overrides(..), State, getCardStatus, overrides)
+import UI.Idea.Helpers.CommonView
 import UI.Utils
 import Validation (ValidationState(..))
 
 
-import UI.Controller.Component.AddNewCard (Action(..), Method(..), Overrides(..), State, getCardStatus, overrides)
+import UI.Common.Controller.Component.AddNewCard (Action(..), Method(..), Overrides(..), State, getCardStatus, overrides)
 import UI.Utils (userInteraction, FieldType(..))
 import Validation (InvalidState(..), ValidationState(..))
 

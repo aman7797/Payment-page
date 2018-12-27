@@ -1,4 +1,4 @@
-module UI.Helpers.CommonView where
+module UI.Idea.Helpers.CommonView where
 
 import Effect (Effect)
 import Prelude
@@ -10,12 +10,6 @@ import Foreign.Object as Object
 import Data.Maybe (Maybe(..))
 import Simple.JSON (writeJSON)
 import UI.Animations (slideMaView1)
-import UI.Constant.Accessibility.Default as HINT
-import UI.Constant.Color.Default as Color
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
-import UI.Constant.FontStyle.Default as Font
-import UI.Constant.Str.Default as STR
 import UI.Utils
 
 

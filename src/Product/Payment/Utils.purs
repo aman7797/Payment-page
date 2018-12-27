@@ -15,7 +15,10 @@ import Engineering.Helpers.Utils (getSimOperators')
 import Product.Types
 import Remote.Types (PaymentSourceResp)
 import Presto.Core.Flow (Flow)
-import UI.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
+
+-- Remove this dependency
+import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage (PaymentPageState, initialState)
+
 import UI.Utils (os)
 
 mkPaymentPageState :: SDKParams -> PaymentSourceResp -> Int -> PaymentPageState

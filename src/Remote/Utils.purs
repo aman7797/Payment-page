@@ -22,8 +22,10 @@ import Engineering.Helpers.Commons (startAnim)
 import Engineering.Helpers.Utils (checkoutDetails, isOnline, setScreen, getLoaderConfig, null, mapNewtype)
 import Presto.Core.Flow (Flow, doAff, oneOf, showScreen)
 import Remote.Types (InitiateTxnReq(InitiateTxnReq), OrderStatusReq(OrderStatusReq), StoredWallet(StoredWallet))
-import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
-import UI.Controller.Screen.PaymentsFlow.GenericError (ScreenInput(..))
+
+import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
+import UI.Common.Controller.Screen.PaymentsFlow.GenericError (ScreenInput(..))
+
 import UI.Utils (logit, os, logAny)
 
 import UI.Flow as UI

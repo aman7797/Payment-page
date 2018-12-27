@@ -1,4 +1,4 @@
-module UI.Controller.Screen.PaymentsFlow.ErrorMessage where
+module UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage where
 
 
 import Prelude

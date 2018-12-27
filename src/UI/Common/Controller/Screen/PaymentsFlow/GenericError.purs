@@ -1,4 +1,4 @@
-module UI.Controller.Screen.PaymentsFlow.GenericError where
+module UI.Common.Controller.Screen.PaymentsFlow.GenericError where
 
 
 import Prelude

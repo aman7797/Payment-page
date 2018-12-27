@@ -1,4 +1,4 @@
-module UI.Controller.Component.UpiView where
+module UI.Common.Controller.Component.UpiView where
 
 import Prelude
 
@@ -11,8 +11,6 @@ import Engineering.Helpers.Events
 import Engineering.Helpers.Types.Accessor
 import JBridge
 import PrestoDOM
-import UI.Constant.FontColor.Default as Color
-import UI.Constant.FontSize.Default (a_16)
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)

@@ -12,10 +12,10 @@ import Engineering.Helpers.Types.Accessor (_uiState, _updatedBillercardArray, _b
 import Engineering.Helpers.Utils (liftFlowBT, setScreen, getLoaderConfig)
 import Engineering.Types.App (FlowBT, PaymentPageError)
 import Presto.Core.Flow (Flow, delay, doAff, runScreen, oneOf, showScreen)
-import UI.Controller.Screen.PaymentsFlow.PaymentPage
+import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 import UI.Utils (os)
 
-import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
+import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
 
 import UI.Idea.View.Screen.PaymentsFlow.PaymentPage as PaymentPage
 import UI.Idea.View.Screen.PaymentsFlow.ErrorMessage as ErrorMessage

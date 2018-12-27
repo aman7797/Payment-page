@@ -13,10 +13,6 @@ import Engineering.Helpers.Types.Accessor
 import PrestoDOM
 import PrestoDOM.Types.DomAttributes
 import PrestoDOM.Utils ((<>>))
-import UI.Constant.FontColor.Default as Color
-import UI.Constant.FontSize.Default (a_16)
-import UI.Constant.FontStyle.Default as Font
-import UI.Constant.Str.Default as STR
 
 
 

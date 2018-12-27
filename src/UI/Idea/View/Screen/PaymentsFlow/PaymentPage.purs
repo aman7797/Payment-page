@@ -22,14 +22,9 @@ import PrestoDOM.Elements.Keyed as Keyed
 
 import Product.Types (CurrentOverlay(DebitCardOverlay), SIM(..), UPIState(..))
 import Product.Types as Types
-import UI.Constant.Color.Default as Color
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
-import UI.Constant.FontStyle.Default as Font
 import UI.Constant.FontStyle.Default as FontStyle
 import UI.Constant.Str.Default as STR
-import UI.Constant.Type (FontColor, FontStyle)
-import UI.Controller.Screen.PaymentsFlow.PaymentPage
+import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Utils
 import UI.Idea.View.Component.AddNewCard as AddNewCard

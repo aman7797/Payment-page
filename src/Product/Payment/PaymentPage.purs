@@ -46,9 +46,9 @@ import Tracker.Tracker (toString) as T
 import Tracker.Tracker (trackEventMerchant)
 import Type.Data.Boolean (kind Boolean)
 
-import UI.Controller.Component.AddNewCard as A
-import UI.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
-import UI.Controller.Screen.PaymentsFlow.PaymentPage
+import UI.Common.Controller.Component.AddNewCard as A
+import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage as ErrorMessageC
+import UI.Common.Controller.Screen.PaymentsFlow.PaymentPage
 
 import UI.Utils (logit, logAny, os, getScreenWidth)
 

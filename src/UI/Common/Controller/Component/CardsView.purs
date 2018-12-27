@@ -1,4 +1,4 @@
-module UI.Controller.Component.CardsView where
+module UI.Common.Controller.Component.CardsView where
 
 import Prelude
 
@@ -14,13 +14,11 @@ import Engineering.Helpers.Types.Accessor
 import JBridge
 import PrestoDOM
 import Remote.Types (StoredCard(..))
-import UI.Constant.FontColor.Default as Color
-import UI.Constant.FontSize.Default (a_16)
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)
 
-import UI.Controller.Component.AddNewCard as AddNewCard
+import UI.Common.Controller.Component.AddNewCard as AddNewCard
 import UI.Helpers.SingleSelectRadio as Radio
 
 

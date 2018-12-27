@@ -1,4 +1,4 @@
-module UI.Controller.Screen.PaymentsFlow.Loader where
+module UI.Common.Controller.Screen.PaymentsFlow.Loader where
 
 import Prelude
 

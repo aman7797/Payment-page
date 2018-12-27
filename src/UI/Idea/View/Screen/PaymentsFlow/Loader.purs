@@ -7,7 +7,7 @@ import PrestoDOM (Gravity(..), Length(..), Margin(..), Namespace(..), Orientatio
 import Data.Semigroup ((<>))
 import PrestoDOM (Gravity(..), Length(..), Margin(..), Namespace(..), Orientation(..), Padding(..), PrestoDOM, Screen, background, clickable, color, cornerRadius, fontStyle, gravity, height, lineHeight, linearLayout, relativeLayout, linearLayout_, margin, orientation, padding, progressBar, root, text, textSize, textView, translationZ, width, id)
 import UI.Constant.FontStyle.Default (gILROYMEDIUM)
-import UI.Controller.Screen.PaymentsFlow.Loader (Action, ScreenOutput, State, eval, initialState, overrides)
+import UI.Common.Controller.Screen.PaymentsFlow.Loader (Action, ScreenOutput, State, eval, initialState, overrides)
 import UI.Utils (bringToFront, os)
 
 screen :: State -> Screen Action State ScreenOutput
@@ -33,9 +33,8 @@ view push state =
 		, root true
 		, clickable true
 		] <> overrides "MainContent" push state )
-        if state.customLoader then 
-            [   
-                relativeLayout
+        if state.customLoader then
+            [ relativeLayout
                 ([ height MATCH_PARENT
                 , width MATCH_PARENT
                 , id state.parentId

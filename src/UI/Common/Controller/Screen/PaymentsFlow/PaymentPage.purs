@@ -1,4 +1,4 @@
-module UI.Controller.Screen.PaymentsFlow.PaymentPage where
+module UI.Common.Controller.Screen.PaymentsFlow.PaymentPage where
 
 import Prelude
 
@@ -33,12 +33,12 @@ import Remote.Config (encKey)
 import Remote.Types (StoredCard, mockWallet)
 import Tracker.Tracker (trackEventMerchantV2, toString) as T
 import UI.Constant.FontStyle.Default as Font
-import UI.Controller.Component.AddNewCard (Action(..))
-import UI.Controller.Component.AddNewCard as AddNewCard
-import UI.Controller.Component.CardsView as CardsView
-import UI.Controller.Component.UpiView  as UpiView
-import UI.Controller.Component.NetBankingView as NetBankingView
-import UI.Controller.Component.WalletsView as WalletsView
+import UI.Common.Controller.Component.AddNewCard (Action(..))
+import UI.Common.Controller.Component.AddNewCard as AddNewCard
+import UI.Common.Controller.Component.CardsView as CardsView
+import UI.Common.Controller.Component.UpiView  as UpiView
+import UI.Common.Controller.Component.NetBankingView as NetBankingView
+import UI.Common.Controller.Component.WalletsView as WalletsView
 import Validation (InvalidState(..), ValidationState(..), getMonth, getYear)
 
 import UI.Helpers.SingleSelectRadio as Radio

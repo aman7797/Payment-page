@@ -8,12 +8,9 @@ import PrestoDOM (Namespace(..), PrestoDOM, Screen, background, clickable, color
 import PrestoDOM.Core (mapDom)
 import PrestoDOM.Properties.SetChildProps (height_c, margin_c, override_c, width_c)
 import PrestoDOM.Types.DomAttributes (Gravity(..), Length(..), Margin(..), Orientation(..), Padding(..))
-import UI.Constant.Color.Default as Color
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
-import UI.Controller.Screen.PaymentsFlow.GenericError (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
+import UI.Common.Controller.Screen.PaymentsFlow.GenericError (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
 import UI.Utils (bringToFront)
 
 
@@ -44,7 +41,7 @@ view push state =
 		[ linearLayout
 			([ height $ V 0
         , width MATCH_PARENT
-        , background Color.a_B2000000
+        , background "#B2000000"
         , weight 1.0
         , clickable true
         , onClick push (const UserAbort)
@@ -55,7 +52,7 @@ view push state =
 			, width MATCH_PARENT
 			, orientation VERTICAL
 			, padding (Padding 30 30 30 30)
-			, background Color.a_FFFFFFFF
+			, background "#FFFFFFFF"
 			, cornerRadius 0.00
       , clickable true
 			] <> overrides "ErrorOverlayGroup" push state )
@@ -71,8 +68,8 @@ view push state =
 				, margin (MarginTop 30)
 				, letterSpacing 0.58
 				, text STR.errorTitleText5
-				, textSize FontSize.a_14
-				, color FontColor.a_FF000000
+				, textSize 14
+				, color "#FF000000"
 				, fontStyle Font.gILROYSEMIBOLD
 				, gravity LEFT
 				] <> overrides "ErrorTitleText" push state )
@@ -82,8 +79,8 @@ view push state =
 				, margin (MarginTop 12)
 				, letterSpacing 0.46
 				, text STR.errorHelpText6
-				, textSize FontSize.a_13
-				, color FontColor.a_FF919BAC
+				, textSize 13
+				, color "#FF919BAC"
 				, fontStyle Font.gILROYREGULAR
 				, lineHeight "22px"
 				, gravity LEFT

@@ -1,4 +1,4 @@
-module UI.Controller.Component.AddNewCard where
+module UI.Common.Controller.Component.AddNewCard where
 
 import Prelude
 
@@ -12,8 +12,6 @@ import Engineering.Helpers.Types.Accessor (_cardDetails, _cardNumber, _card_type
 import JBridge (CardDetails, defaultValidatorOutput, getCardValidation)
 import PrestoDOM (Props, letterSpacing, color, focus, fontStyle, hint, id, imageUrl, onChange, onClick, pattern, text, textSize)
 import Remote.Types (MerchantPaymentMethod, StoredCard(..))
-import UI.Constant.FontColor.Default as Color
-import UI.Constant.FontSize.Default (a_16)
 import UI.Constant.FontStyle.Default as Font
 import UI.Constant.Str.Default as STR
 import UI.Utils (FieldType(..), os, getFieldTypeID)
@@ -323,8 +321,8 @@ overrides CardNumberEditField push state =
          SavedCard (StoredCard card) ->
              [ text $ formattedCardNumber card.cardNumber
              , fontStyle Font.gILROYBOLD
-             , textSize a_16
-             , color Color.a_FF000000
+             , textSize 16
+             , color "#FF000000"
              , letterSpacing 2.67
              ]
 
@@ -364,8 +362,8 @@ overrides ExpiryDateEditField push state =
          SavedCard (StoredCard card) ->
              [ text $ card.cardExpMonth <> "/" <> drop 2 card.cardExpYear
              , fontStyle Font.gILROYBOLD
-             , textSize a_16
-             , color Color.a_FF000000
+             , textSize 16
+             , color "#FF000000"
              , letterSpacing 2.67
              ]
 

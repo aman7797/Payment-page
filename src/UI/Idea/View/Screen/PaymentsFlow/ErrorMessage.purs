@@ -14,12 +14,8 @@ import PrestoDOM.Properties.SetChildProps (height_c, margin_c, override_c, width
 import PrestoDOM.Types.DomAttributes (Gravity(..), Length(..), Margin(..), Orientation(..), Padding(..), Gradient(..), Shadow(..))
 import PrestoDOM.Utils ((<>>))
 import Simple.JSON (writeJSON)
-import UI.Constant.Color.Default as Color
-import UI.Constant.FontColor.Default as FontColor
-import UI.Constant.FontSize.Default as FontSize
+import UI.Common.Controller.Screen.PaymentsFlow.ErrorMessage (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
 import UI.Constant.FontStyle.Default as Font
-import UI.Constant.Str.Default as STR
-import UI.Controller.Screen.PaymentsFlow.ErrorMessage (Action(..), GenericErrorState, ScreenInput, ScreenOutput, initialState, eval, overrides)
 import UI.Utils (bringToFront, os)
 
 
@@ -95,8 +91,8 @@ view push state =
                         , gravity CENTER
                         , margin (Margin 10 0 0 0)
                         , text $ state ^. _error
-                        , textSize FontSize.a_12
-                        , color FontColor.a_FFFFFFFF
+                        , textSize 12
+                        , color "#FFFFFFFF"
                         , fontStyle Font.gILROYMEDIUM
                         ]
                     ]
@@ -115,9 +111,9 @@ view push state =
                     ([ height MATCH_PARENT
                     , width MATCH_PARENT
                     , text "Try another payment method"
-                    , textSize FontSize.a_12
+                    , textSize 12
                     , letterSpacing 0.87
-                    , color FontColor.a_FFFFFFFF
+                    , color "#FFFFFFFF"
                     , fontStyle Font.gILROYBOLD
                     , gravity CENTER
                     ] <> overrides "" push state )
