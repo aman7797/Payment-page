@@ -104,7 +104,7 @@ commonViewConfig =
              }
          _, _ ->
              { translationY : 0.0
-             , margin : MarginHorizontal 366 32
+             , margin : MarginHorizontal 0 32
              , height : V 1600
              }
 

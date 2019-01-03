@@ -44,12 +44,11 @@ view renderType selected currIndex value =
     let config = Config.tabSelectionTheme renderType selected currIndex
      in linearLayout
         [ height $ V 100
-        , width MATCH_PARENT
+        , width $ V 300
         , orientation VERTICAL
         , margin $ MarginBottom 10
         , shadow $ Shadow 0.0 2.0 4.0 1.0 "#12000000" 1.0
         , background config.background
-        , translationY config.translationY
         ]
         [ linearLayout
             [ height $ V 25

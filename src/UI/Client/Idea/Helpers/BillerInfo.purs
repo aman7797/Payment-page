@@ -34,6 +34,7 @@ view state =
      in linearLayout
         [ height config.height
         , width config.width
+        , translationY 120.0
         , orientation config.orientation
         ]
         [ verticalView

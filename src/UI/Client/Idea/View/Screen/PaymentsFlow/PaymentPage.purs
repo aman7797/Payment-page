@@ -82,7 +82,7 @@ headingView =
             , color "#4A4D4E"
             , fontStyle "Arial-Regular"
             , text "Choose Payment Mode"
-            , gravity LEFT
+            , gravity CENTER
             ]
         ]
 
@@ -107,6 +107,7 @@ paymentView push state =
      in relativeLayout
             [ height MATCH_PARENT
             , width MATCH_PARENT
+            , orientation HORIZONTAL
             {-- , orientation $ Config.paymentViewOrientation renderType --}
             {-- , orientation HORIZONTAL --}
             ]
@@ -120,10 +121,10 @@ tabView :: forall w. (PaymentPageUIAction  -> Effect Unit) -> PaymentPageState -
 tabView push state =
     let radioState = state ^. _uiState ^. _sectionSelected
         renderType = state ^. _uiState ^. _renderType
-     in relativeLayout
+     in linearLayout
         [ height $ V 440
-        , width $ logAny $ Config.tabViewWidth renderType -- $ V 334
-        , orientation VERTICAL
+        , width MATCH_PARENT
+        , orientation HORIZONTAL
         ]
         $ Radio.singleSelectRadio
             (push <<< SectionSelected)
@@ -168,7 +169,7 @@ commonView push state =
         , orientation VERTICAL
         {-- , padding $ PaddingHorizontal 32 32 --}
         , margin config.margin
-        , translationY config.translationY
+        , translationY 120.0
         ]
         [ walletsView push state
         , cardsView push state

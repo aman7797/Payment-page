@@ -101,28 +101,29 @@ piInfoView
 piInfoView value =
     linearLayout
         [ height MATCH_PARENT
-        , width $ V 140
-        , orientation VERTICAL
+        , width $ V 540
+        , orientation HORIZONTAL
         , padding $ Padding 24 24 24 0
         , gravity CENTER_HORIZONTAL
         , margin $ MarginTop 11
         ]
         [ imageView
-            [ height $ V 36
-            , width $ V 86
+            [ height $ V 46
+            , width $ V 96
             , gravity CENTER
             , imageUrl value.imageUrl
-            , margin $ Margin 7 7 7 7
+            , margin $ Margin 7 0 7 7
             ]
         , textView
-            [ height $ V 16
+            [ height $ V 24
             , width MATCH_PARENT
             , text value.piName
             {-- , margin $ MarginTop 5 --}
             , fontStyle "Arial-Regular"
-            , textSize 14
+            , textSize 20
             , color "#545758"
-            , gravity CENTER
+            , gravity LEFT
+            , margin $ Margin 20 10 0 0
             ]
         ]
 
